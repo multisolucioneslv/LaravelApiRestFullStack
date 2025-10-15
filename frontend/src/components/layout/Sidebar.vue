@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   HomeIcon,
@@ -96,7 +96,7 @@ const route = useRoute()
 
 // Estado de grupos abiertos/cerrados (persistente en localStorage)
 const openGroups = reactive({
-  operaciones: true,
+  operaciones: false,
   inventario: false,
   empresas: false,
   usuarios: false,
@@ -313,31 +313,34 @@ const detectActiveGroup = () => {
   return null
 }
 
-// Cargar estado de grupos desde localStorage
-onMounted(() => {
-  const saved = localStorage.getItem('sidebarOpenGroups')
-
-  // Intentar cargar desde localStorage
-  if (saved) {
-    try {
-      const parsedState = JSON.parse(saved)
-      Object.assign(openGroups, parsedState)
-    } catch (error) {
-      console.error('Error al cargar estado del sidebar:', error)
-    }
-  }
-
-  // Detectar grupo activo y abrirlo (sobrescribe localStorage si es necesario)
+// Actualizar grupos cuando cambia la ruta
+const updateGroupsBasedOnRoute = () => {
+  // Detectar grupo activo basado en la ruta actual
   const activeGroup = detectActiveGroup()
+
+  // Cerrar todos los grupos primero
+  Object.keys(openGroups).forEach(key => {
+    openGroups[key] = false
+  })
+
+  // Si hay un grupo activo, abrirlo
   if (activeGroup) {
-    // Cerrar todos los grupos
-    Object.keys(openGroups).forEach(key => {
-      openGroups[key] = false
-    })
-    // Abrir el grupo activo
     openGroups[activeGroup] = true
-    // Guardar en localStorage
-    localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups))
   }
+  // Si no hay grupo activo (estamos en dashboard u otra ruta independiente),
+  // todos quedan cerrados
+
+  // Guardar estado en localStorage
+  localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups))
+}
+
+// Cargar estado de grupos al montar
+onMounted(() => {
+  updateGroupsBasedOnRoute()
+})
+
+// Actualizar cuando cambia la ruta
+watch(() => route.path, () => {
+  updateGroupsBasedOnRoute()
 })
 </script>

@@ -1,0 +1,156 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+class PermissionsSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Resetear caché de permisos
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Definir todos los módulos y sus permisos CRUD
+        $modules = [
+            'users' => 'Usuarios',
+            'roles' => 'Roles',
+            'permissions' => 'Permisos',
+            'empresas' => 'Empresas',
+            'sistemas' => 'Sistemas',
+            'bodegas' => 'Bodegas',
+            'inventarios' => 'Inventarios',
+            'monedas' => 'Monedas',
+            'taxes' => 'Impuestos',
+            'galerias' => 'Galerías',
+            'cotizaciones' => 'Cotizaciones',
+            'ventas' => 'Ventas',
+            'pedidos' => 'Pedidos',
+            'sexes' => 'Sexos',
+            'telefonos' => 'Teléfonos',
+            'chatids' => 'Chat IDs',
+            'rutas' => 'Rutas API',
+            'settings' => 'Configuraciones',
+            'reports' => 'Reportes',
+        ];
+
+        $actions = ['index', 'show', 'store', 'update', 'destroy'];
+
+        // Crear permisos para cada módulo
+        foreach ($modules as $module => $description) {
+            foreach ($actions as $action) {
+                Permission::firstOrCreate(
+                    ['name' => "{$module}.{$action}"],
+                    ['guard_name' => 'api']
+                );
+            }
+        }
+
+        // Permisos especiales
+        $specialPermissions = [
+            'users.change-password' => 'Cambiar contraseña de usuario',
+            'users.delete-avatar' => 'Eliminar avatar de usuario',
+            'users.bulk-delete' => 'Eliminar usuarios en lote',
+            'empresa.config.view' => 'Ver configuración de empresa',
+            'empresa.config.update' => 'Actualizar configuración de empresa',
+            'dashboard.view' => 'Ver dashboard',
+            'profile.view' => 'Ver perfil',
+            'profile.edit' => 'Editar perfil',
+        ];
+
+        foreach ($specialPermissions as $name => $description) {
+            Permission::firstOrCreate(
+                ['name' => $name],
+                ['guard_name' => 'api']
+            );
+        }
+
+        // Crear roles si no existen
+        $superAdmin = Role::firstOrCreate(
+            ['name' => 'SuperAdmin'],
+            ['guard_name' => 'api']
+        );
+
+        $admin = Role::firstOrCreate(
+            ['name' => 'Administrador'],
+            ['guard_name' => 'api']
+        );
+
+        $supervisor = Role::firstOrCreate(
+            ['name' => 'Supervisor'],
+            ['guard_name' => 'api']
+        );
+
+        $vendedor = Role::firstOrCreate(
+            ['name' => 'Vendedor'],
+            ['guard_name' => 'api']
+        );
+
+        $usuario = Role::firstOrCreate(
+            ['name' => 'Usuario'],
+            ['guard_name' => 'api']
+        );
+
+        $contabilidad = Role::firstOrCreate(
+            ['name' => 'Contabilidad'],
+            ['guard_name' => 'api']
+        );
+
+        // SuperAdmin tiene TODOS los permisos
+        $superAdmin->syncPermissions(Permission::all());
+
+        // Administrador tiene permisos de gestión de su empresa
+        $admin->syncPermissions([
+            // Usuarios
+            'users.index', 'users.show', 'users.store', 'users.update', 'users.destroy',
+            'users.change-password', 'users.delete-avatar',
+
+            // Bodegas
+            'bodegas.index', 'bodegas.show', 'bodegas.store', 'bodegas.update', 'bodegas.destroy',
+
+            // Inventarios
+            'inventarios.index', 'inventarios.show', 'inventarios.store', 'inventarios.update', 'inventarios.destroy',
+
+            // Ventas y cotizaciones
+            'cotizaciones.index', 'cotizaciones.show', 'cotizaciones.store', 'cotizaciones.update', 'cotizaciones.destroy',
+            'ventas.index', 'ventas.show', 'ventas.store', 'ventas.update', 'ventas.destroy',
+            'pedidos.index', 'pedidos.show', 'pedidos.store', 'pedidos.update', 'pedidos.destroy',
+
+            // Configuración
+            'empresa.config.view', 'empresa.config.update',
+            'settings.index', 'settings.show',
+
+            // Reportes
+            'reports.index', 'reports.show',
+            'dashboard.view',
+
+            // Perfil
+            'profile.view', 'profile.edit',
+        ]);
+
+        // Vendedor - solo operaciones de venta
+        $vendedor->syncPermissions([
+            'cotizaciones.index', 'cotizaciones.show', 'cotizaciones.store', 'cotizaciones.update',
+            'ventas.index', 'ventas.show', 'ventas.store',
+            'pedidos.index', 'pedidos.show', 'pedidos.store', 'pedidos.update',
+            'inventarios.index', 'inventarios.show',
+            'dashboard.view',
+            'profile.view', 'profile.edit',
+        ]);
+
+        // Usuario - solo lectura
+        $usuario->syncPermissions([
+            'dashboard.view',
+            'profile.view', 'profile.edit',
+        ]);
+
+        $this->command->info('✓ Permisos y roles creados exitosamente');
+        $this->command->info('✓ Total de permisos: ' . Permission::count());
+        $this->command->info('✓ Total de roles: ' . Role::count());
+    }
+}

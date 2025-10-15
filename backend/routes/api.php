@@ -197,5 +197,15 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/fondo-login', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'deleteFondoLogin']);
     });
 
+    // Módulo de Roles y Permisos
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\RoleController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\RoleController::class, 'store']);
+        Route::get('/permissions', [App\Http\Controllers\Api\RoleController::class, 'allPermissions']);
+        Route::get('/{id}', [App\Http\Controllers\Api\RoleController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\RoleController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\RoleController::class, 'destroy']);
+    });
+
     // Aquí irán más módulos del ERP
 });
