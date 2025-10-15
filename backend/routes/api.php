@@ -12,7 +12,8 @@ Route::get('/', function () {
 // Rutas públicas de autenticación (con rate limiting)
 Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
+    // Registro deshabilitado - solo SuperAdmin y Admin pueden crear usuarios
+    // Route::post('/register', [AuthController::class, 'register']);
 });
 
 // Rutas protegidas (requieren autenticación JWT)
