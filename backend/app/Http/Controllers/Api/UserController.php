@@ -213,4 +213,78 @@ class UserController extends Controller
             'deleted_count' => $deleted,
         ]);
     }
+
+    /**
+     * Eliminar avatar del usuario
+     */
+    public function deleteAvatar(int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        // Verificar que el usuario solo puede eliminar su propio avatar
+        if ($user->id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para eliminar este avatar',
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        // Eliminar archivo de avatar si existe
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        // Actualizar registro en la base de datos
+        $user->update(['avatar' => null]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar eliminado exitosamente',
+        ]);
+    }
+
+    /**
+     * Cambiar contraseña del usuario
+     */
+    public function updatePassword(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        // Verificar que el usuario solo puede cambiar su propia contraseña
+        if ($user->id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para cambiar esta contraseña',
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        // Validar datos
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'current_password.required' => 'La contraseña actual es requerida',
+            'password.required' => 'La nueva contraseña es requerida',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres',
+            'password.confirmed' => 'Las contraseñas no coinciden',
+        ]);
+
+        // Verificar que la contraseña actual es correcta
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La contraseña actual es incorrecta',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Actualizar contraseña
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña actualizada exitosamente',
+        ]);
+    }
 }

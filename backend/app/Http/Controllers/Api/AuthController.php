@@ -125,6 +125,11 @@ class AuthController extends Controller
      */
     protected function respondWithToken(string $token, User $user, int $statusCode = Response::HTTP_OK): JsonResponse
     {
+        // Cargar roles si no están cargados
+        if (!$user->relationLoaded('roles')) {
+            $user->load('roles');
+        }
+
         return response()->json([
             'success' => true,
             'access_token' => $token,
@@ -135,7 +140,14 @@ class AuthController extends Controller
                 'usuario' => $user->usuario,
                 'name' => $user->name,
                 'email' => $user->email,
-                'roles' => $user->roles->pluck('name'),
+                'avatar' => $user->avatar,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                        'guard_name' => $role->guard_name,
+                    ];
+                }),
                 'permissions' => $user->getAllPermissions()->pluck('name'),
             ]
         ], $statusCode);

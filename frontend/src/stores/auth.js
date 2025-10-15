@@ -21,7 +21,14 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
   const userName = computed(() => user.value?.name || '')
   const userEmail = computed(() => user.value?.email || '')
-  const userRole = computed(() => user.value?.role || '')
+  const userRole = computed(() => {
+    // Si el usuario tiene roles (Spatie), tomar el primer rol
+    if (user.value?.roles && user.value.roles.length > 0) {
+      return user.value.roles[0].name
+    }
+    return 'Usuario'
+  })
+  const userRoles = computed(() => user.value?.roles || [])
 
   /**
    * Inicializar el estado desde localStorage
@@ -218,6 +225,7 @@ export const useAuthStore = defineStore('auth', () => {
     userName,
     userEmail,
     userRole,
+    userRoles,
     // Acciones
     initAuth, // Exportar para llamar desde main.js
     login,
