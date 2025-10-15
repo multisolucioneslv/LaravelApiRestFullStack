@@ -28,7 +28,7 @@ class UserController extends Controller
 
         $users = User::query()
             ->forCurrentUser() // Multi-tenancy: Admin solo ve usuarios de su empresa
-            ->with(['roles', 'sex', 'empresa'])
+            ->with(['roles', 'gender', 'empresa'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('usuario', 'like', "%{$search}%")
@@ -63,7 +63,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'sexo_id' => $request->sexo_id,
+            'gender_id' => $request->gender_id,
             'telefono' => $request->telefono,
             'chatid' => $request->chatid,
             // Multi-tenancy: Admin solo puede crear usuarios para su empresa
@@ -89,7 +89,7 @@ class UserController extends Controller
             $user->syncRoles($request->roles);
         }
 
-        $user->load(['roles', 'sex', 'empresa']);
+        $user->load(['roles', 'gender', 'empresa']);
 
         return response()->json([
             'success' => true,
@@ -103,7 +103,7 @@ class UserController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $user = User::with(['roles', 'sex', 'empresa'])
+        $user = User::with(['roles', 'gender', 'empresa'])
             ->findOrFail($id);
 
         // Multi-tenancy: Validar acceso a la empresa
@@ -129,7 +129,7 @@ class UserController extends Controller
             'usuario' => $request->usuario,
             'name' => $request->name,
             'email' => $request->email,
-            'sexo_id' => $request->sexo_id,
+            'gender_id' => $request->gender_id,
             'telefono' => $request->telefono,
             'chatid' => $request->chatid,
             // Multi-tenancy: Admin no puede cambiar empresa_id del usuario
@@ -165,7 +165,7 @@ class UserController extends Controller
             $user->syncRoles($request->roles);
         }
 
-        $user->load(['roles', 'sex', 'empresa']);
+        $user->load(['roles', 'gender', 'empresa']);
 
         return response()->json([
             'success' => true,

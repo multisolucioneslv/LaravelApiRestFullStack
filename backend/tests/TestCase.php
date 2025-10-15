@@ -28,14 +28,14 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createBasicData(): void
     {
-        // Crear sexos (modelo en inglés: Sex)
-        \App\Models\Sex::create(['id' => 1, 'sexo' => 'Masculino', 'inicial' => 'M']);
-        \App\Models\Sex::create(['id' => 2, 'sexo' => 'Femenino', 'inicial' => 'F']);
-        \App\Models\Sex::create(['id' => 3, 'sexo' => 'Otro', 'inicial' => 'O']);
+        // Crear géneros (modelo en inglés: Gender)
+        \App\Models\Gender::create(['id' => 1, 'sexo' => 'Masculino', 'inicial' => 'M']);
+        \App\Models\Gender::create(['id' => 2, 'sexo' => 'Femenino', 'inicial' => 'F']);
+        \App\Models\Gender::create(['id' => 3, 'sexo' => 'Otro', 'inicial' => 'O']);
 
         // Crear teléfono y moneda base
-        $telefono = \App\Models\Telefono::create(['telefono' => '(702)337-9581']);
-        $moneda = \App\Models\Moneda::create([
+        $telefono = \App\Models\Phone::create(['telefono' => '(702)337-9581']);
+        $currency = \App\Models\Currency::create([
             'codigo' => 'USD',
             'nombre' => 'Dólar Estadounidense',
             'simbolo' => '$',
@@ -48,7 +48,7 @@ abstract class TestCase extends BaseTestCase
             'id' => 1,
             'nombre' => 'Empresa Test',
             'telefono_id' => $telefono->id,
-            'moneda_id' => $moneda->id,
+            'currency_id' => $currency->id,
             'email' => 'test@empresa.com',
             'direccion' => 'Dirección Test',
             'zona_horaria' => 'America/Los_Angeles',

@@ -36,7 +36,7 @@ class UpdateUserRequest extends FormRequest
             ],
             'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
             'avatar' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120', // Max 5MB
-            'sexo_id' => 'nullable|exists:sexes,id',
+            'gender_id' => 'nullable|exists:genders,id',
             'telefono' => 'nullable|string|max:20',
             'chatid' => 'nullable|string|max:100',
             'empresa_id' => 'nullable|exists:empresas,id',
@@ -63,7 +63,7 @@ class UpdateUserRequest extends FormRequest
             'avatar.image' => 'El archivo debe ser una imagen.',
             'avatar.mimes' => 'La imagen debe ser de tipo: jpeg, jpg, png, gif o webp.',
             'avatar.max' => 'La imagen no puede exceder los 5MB.',
-            'sexo_id.exists' => 'El sexo seleccionado no es válido.',
+            'gender_id.exists' => 'El género seleccionado no es válido.',
             'telefono.max' => 'El teléfono no puede exceder los :max caracteres.',
             'chatid.max' => 'El chat ID no puede exceder los :max caracteres.',
             'empresa_id.exists' => 'La empresa seleccionada no es válida.',

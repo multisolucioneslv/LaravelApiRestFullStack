@@ -33,9 +33,9 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Api\UserController::class, 'update'])->middleware('permission:users.update');
         Route::delete('/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy'])->middleware('permission:users.destroy');
         Route::delete('/bulk/delete', [App\Http\Controllers\Api\UserController::class, 'destroyBulk'])->middleware('permission:users.destroy');
-        // Rutas específicas para perfil
-        Route::delete('/{id}/avatar', [App\Http\Controllers\Api\UserController::class, 'deleteAvatar'])->middleware('permission:users.update');
-        Route::put('/{id}/password', [App\Http\Controllers\Api\UserController::class, 'updatePassword'])->middleware('permission:users.update');
+        // Rutas específicas para perfil propio (sin requerir permisos - el controller valida que sea el propio usuario)
+        Route::delete('/{id}/avatar', [App\Http\Controllers\Api\UserController::class, 'deleteAvatar']);
+        Route::put('/{id}/password', [App\Http\Controllers\Api\UserController::class, 'updatePassword']);
     });
 
     // Módulo de Sistemas
