@@ -27,6 +27,7 @@ class UserController extends Controller
         $search = $request->input('search', '');
 
         $users = User::query()
+            ->forCurrentUser() // Multi-tenancy: Admin solo ve usuarios de su empresa
             ->with(['roles', 'sex', 'empresa'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -55,6 +56,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
+        $user = new User();
+
         $data = [
             'usuario' => $request->usuario,
             'name' => $request->name,
@@ -63,7 +66,8 @@ class UserController extends Controller
             'sexo_id' => $request->sexo_id,
             'telefono' => $request->telefono,
             'chatid' => $request->chatid,
-            'empresa_id' => $request->empresa_id,
+            // Multi-tenancy: Admin solo puede crear usuarios para su empresa
+            'empresa_id' => $user->getEmpresaIdForCreate($request->empresa_id),
             'activo' => $request->input('activo', true),
         ];
 
@@ -102,6 +106,9 @@ class UserController extends Controller
         $user = User::with(['roles', 'sex', 'empresa'])
             ->findOrFail($id);
 
+        // Multi-tenancy: Validar acceso a la empresa
+        $user->validateEmpresaAccess($user->empresa_id);
+
         return response()->json([
             'success' => true,
             'data' => new UserResource($user),
@@ -115,6 +122,9 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        // Multi-tenancy: Validar acceso a la empresa
+        $user->validateEmpresaAccess($user->empresa_id);
+
         $data = [
             'usuario' => $request->usuario,
             'name' => $request->name,
@@ -122,7 +132,8 @@ class UserController extends Controller
             'sexo_id' => $request->sexo_id,
             'telefono' => $request->telefono,
             'chatid' => $request->chatid,
-            'empresa_id' => $request->empresa_id,
+            // Multi-tenancy: Admin no puede cambiar empresa_id del usuario
+            'empresa_id' => $user->getEmpresaIdForCreate($request->empresa_id),
             'activo' => $request->activo,
         ];
 
@@ -169,6 +180,9 @@ class UserController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $user = User::findOrFail($id);
+
+        // Multi-tenancy: Validar acceso a la empresa
+        $user->validateEmpresaAccess($user->empresa_id);
 
         // Prevenir eliminar al usuario autenticado
         if ($user->id === auth()->id()) {
