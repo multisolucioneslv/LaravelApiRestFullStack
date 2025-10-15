@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Scripts de utilidad con datos sensibles
+check_empresas.php
+update_superadmin.php
+*.utility.php
