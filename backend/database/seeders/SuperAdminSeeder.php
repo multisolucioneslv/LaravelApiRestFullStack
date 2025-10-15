@@ -20,7 +20,7 @@ class SuperAdminSeeder extends Seeder
             'name' => 'jscothserver',
             'email' => 'jscothserver@gmail.com',
             'password' => Hash::make('72900968'),
-            'sexo_id' => 1, // Masculino
+            'gender_id' => 1, // Masculino
             'telefono' => '(702)337-9581',  // Campo string directo
             'chatid' => '5332512577',       // Campo string directo
             'empresa_id' => 1, // Yapame (empresa por default)

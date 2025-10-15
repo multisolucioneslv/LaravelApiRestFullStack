@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('empresas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 200);
-            $table->foreignId('telefono_id')->nullable()->constrained('telefonos')->onDelete('set null');
-            $table->foreignId('moneda_id')->nullable()->constrained('monedas')->onDelete('set null');
+            $table->foreignId('telefono_id')->nullable()->constrained('phones')->onDelete('set null');
+            $table->foreignId('currency_id')->nullable()->constrained('currencies')->onDelete('set null');
             $table->string('email', 100)->nullable();
             $table->text('direccion')->nullable();
             $table->string('logo')->nullable();

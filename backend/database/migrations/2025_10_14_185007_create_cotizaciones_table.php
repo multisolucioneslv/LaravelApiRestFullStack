@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('observaciones')->nullable();
             $table->foreignId('empresa_id')->constrained('empresas')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('moneda_id')->nullable()->constrained('monedas')->onDelete('set null');
+            $table->foreignId('currency_id')->nullable()->constrained('currencies')->onDelete('set null');
             $table->foreignId('tax_id')->nullable()->constrained('taxes')->onDelete('set null');
             $table->decimal('subtotal', 12, 2)->default(0.00);
             $table->decimal('impuesto', 12, 2)->default(0.00);

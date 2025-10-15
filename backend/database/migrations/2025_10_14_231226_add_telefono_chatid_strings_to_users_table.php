@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Agregar nuevas columnas tipo string para telefono y chatid
-            $table->string('telefono', 20)->nullable()->after('sexo_id');
+            $table->string('telefono', 20)->nullable()->after('gender_id');
             $table->string('chatid', 100)->nullable()->after('telefono');
         });
     }
