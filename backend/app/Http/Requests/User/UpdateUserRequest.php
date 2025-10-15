@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
 class UpdateUserRequest extends FormRequest
@@ -33,7 +34,7 @@ class UpdateUserRequest extends FormRequest
                 'max:100',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
-            'password' => 'nullable|string|min:6|confirmed',
+            'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
             'avatar' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120', // Max 5MB
             'sexo_id' => 'nullable|exists:sexes,id',
             'telefono' => 'nullable|string|max:20',

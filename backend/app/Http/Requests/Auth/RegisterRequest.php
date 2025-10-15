@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
 class RegisterRequest extends FormRequest
@@ -28,7 +29,7 @@ class RegisterRequest extends FormRequest
             'usuario' => 'required|string|max:100|unique:users,usuario',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:100|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
             'sexo_id' => 'nullable|exists:sexes,id',
             'telefono_id' => 'nullable|exists:telefonos,id',
             'chatid_id' => 'nullable|exists:chatids,id',
@@ -51,12 +52,23 @@ class RegisterRequest extends FormRequest
             'email.email' => 'El email debe ser una dirección válida.',
             'email.unique' => 'Este email ya está registrado.',
             'password.required' => 'El campo contraseña es requerido.',
-            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
             'sexo_id.exists' => 'El sexo seleccionado no es válido.',
             'telefono_id.exists' => 'El teléfono seleccionado no es válido.',
             'chatid_id.exists' => 'El chat ID seleccionado no es válido.',
             'empresa_id.exists' => 'La empresa seleccionada no es válida.',
+        ];
+    }
+
+    /**
+     * Get custom attribute names for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'password' => 'contraseña',
         ];
     }
 

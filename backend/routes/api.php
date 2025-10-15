@@ -9,8 +9,8 @@ Route::get('/', function () {
         'message'=>"Imgrese sus credenciales de acceso"
     ]);
 });
-// Rutas públicas de autenticación
-Route::prefix('auth')->group(function () {
+// Rutas públicas de autenticación (con rate limiting)
+Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 });

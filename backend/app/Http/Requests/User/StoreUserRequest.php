@@ -5,6 +5,7 @@ namespace App\Http\Requests\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
 class StoreUserRequest extends FormRequest
@@ -20,7 +21,7 @@ class StoreUserRequest extends FormRequest
             'usuario' => 'required|string|max:100|unique:users,usuario',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:100|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()],
             'avatar' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120', // Max 5MB
             'sexo_id' => 'nullable|exists:sexes,id',
             'telefono' => 'nullable|string|max:20',
