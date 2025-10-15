@@ -35,6 +35,13 @@ class MonedaSeeder extends Seeder
                 'tasa_cambio' => 0.9200,
                 'activo' => true,
             ],
+            [
+                'codigo' => 'Bol',
+                'nombre' => 'Boliviano',
+                'simbolo' => 'B',
+                'tasa_cambio' => 7.5000,
+                'activo' => true,
+            ],
         ];
 
         foreach ($monedas as $moneda) {

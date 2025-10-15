@@ -23,7 +23,5 @@ class EmpresaSeeder extends Seeder
             'zona_horaria' => 'America/Los_Angeles',
             'activo' => true,
         ]);
-
-        echo "✅ Empresa default 'Yapame' creada exitosamente\n";
     }
 }
