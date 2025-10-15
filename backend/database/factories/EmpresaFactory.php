@@ -18,8 +18,8 @@ class EmpresaFactory extends Factory
     {
         return [
             'nombre' => fake()->company(),
-            'telefono_id' => \App\Models\Telefono::factory(),
-            'moneda_id' => \App\Models\Moneda::factory(),
+            'telefono_id' => \App\Models\Phone::factory(),
+            'currency_id' => \App\Models\Currency::factory(),
             'email' => fake()->unique()->companyEmail(),
             'direccion' => fake()->address(),
             'logo' => null,

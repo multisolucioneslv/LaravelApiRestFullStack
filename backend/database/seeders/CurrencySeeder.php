@@ -2,18 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\Moneda;
+use App\Models\Currency;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class MonedaSeeder extends Seeder
+class CurrencySeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $monedas = [
+        $currencies = [
             [
                 'codigo' => 'USD',
                 'nombre' => 'Dólar Estadounidense',
@@ -36,16 +36,19 @@ class MonedaSeeder extends Seeder
                 'activo' => true,
             ],
             [
-                'codigo' => 'Bol',
+                'codigo' => 'BOB',
                 'nombre' => 'Boliviano',
-                'simbolo' => 'B',
-                'tasa_cambio' => 7.5000,
+                'simbolo' => 'Bs',
+                'tasa_cambio' => 6.9100,
                 'activo' => true,
             ],
         ];
 
-        foreach ($monedas as $moneda) {
-            Moneda::create($moneda);
+        foreach ($currencies as $currency) {
+            Currency::firstOrCreate(
+                ['codigo' => $currency['codigo']],
+                $currency
+            );
         }
     }
 }

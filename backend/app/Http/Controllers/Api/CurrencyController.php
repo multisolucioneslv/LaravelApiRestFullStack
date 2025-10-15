@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Moneda\StoreMonedaRequest;
-use App\Http\Requests\Moneda\UpdateMonedaRequest;
-use App\Http\Resources\MonedaResource;
-use App\Models\Moneda;
+use App\Http\Requests\Currency\StoreCurrencyRequest;
+use App\Http\Requests\Currency\UpdateCurrencyRequest;
+use App\Http\Resources\CurrencyResource;
+use App\Models\Currency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class MonedaController extends Controller
+class CurrencyController extends Controller
 {
     /**
      * Listar monedas con paginación y búsqueda
@@ -23,7 +23,7 @@ class MonedaController extends Controller
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search', '');
 
-        $monedas = Moneda::query()
+        $currencies = Currency::query()
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('codigo', 'like', "%{$search}%")
@@ -36,12 +36,12 @@ class MonedaController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => MonedaResource::collection($monedas),
+            'data' => CurrencyResource::collection($currencies),
             'meta' => [
-                'current_page' => $monedas->currentPage(),
-                'last_page' => $monedas->lastPage(),
-                'per_page' => $monedas->perPage(),
-                'total' => $monedas->total(),
+                'current_page' => $currencies->currentPage(),
+                'last_page' => $currencies->lastPage(),
+                'per_page' => $currencies->perPage(),
+                'total' => $currencies->total(),
             ],
         ]);
     }
@@ -49,7 +49,7 @@ class MonedaController extends Controller
     /**
      * Crear nueva moneda
      */
-    public function store(StoreMonedaRequest $request): JsonResponse
+    public function store(StoreCurrencyRequest $request): JsonResponse
     {
         $data = [
             'codigo' => $request->codigo,
@@ -59,12 +59,12 @@ class MonedaController extends Controller
             'activo' => $request->input('activo', true),
         ];
 
-        $moneda = Moneda::create($data);
+        $currency = Currency::create($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Moneda creada exitosamente',
-            'data' => new MonedaResource($moneda),
+            'data' => new CurrencyResource($currency),
         ], Response::HTTP_CREATED);
     }
 
@@ -73,20 +73,20 @@ class MonedaController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $moneda = Moneda::findOrFail($id);
+        $currency = Currency::findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'data' => new MonedaResource($moneda),
+            'data' => new CurrencyResource($currency),
         ]);
     }
 
     /**
      * Actualizar moneda
      */
-    public function update(UpdateMonedaRequest $request, int $id): JsonResponse
+    public function update(UpdateCurrencyRequest $request, int $id): JsonResponse
     {
-        $moneda = Moneda::findOrFail($id);
+        $currency = Currency::findOrFail($id);
 
         $data = [
             'codigo' => $request->codigo,
@@ -96,12 +96,12 @@ class MonedaController extends Controller
             'activo' => $request->activo,
         ];
 
-        $moneda->update($data);
+        $currency->update($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Moneda actualizada exitosamente',
-            'data' => new MonedaResource($moneda),
+            'data' => new CurrencyResource($currency),
         ]);
     }
 
@@ -110,8 +110,8 @@ class MonedaController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $moneda = Moneda::findOrFail($id);
-        $moneda->delete();
+        $currency = Currency::findOrFail($id);
+        $currency->delete();
 
         return response()->json([
             'success' => true,
@@ -126,11 +126,11 @@ class MonedaController extends Controller
     {
         $request->validate([
             'ids' => 'required|array|min:1',
-            'ids.*' => 'required|integer|exists:monedas,id',
+            'ids.*' => 'required|integer|exists:currencies,id',
         ]);
 
         $ids = $request->input('ids');
-        $deleted = Moneda::whereIn('id', $ids)->delete();
+        $deleted = Currency::whereIn('id', $ids)->delete();
 
         return response()->json([
             'success' => true,

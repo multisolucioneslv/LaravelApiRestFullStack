@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Sex\StoreSexRequest;
-use App\Http\Requests\Sex\UpdateSexRequest;
-use App\Http\Resources\SexResource;
-use App\Models\Sex;
+use App\Http\Requests\Gender\StoreGenderRequest;
+use App\Http\Requests\Gender\UpdateGenderRequest;
+use App\Http\Resources\GenderResource;
+use App\Models\Gender;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SexController extends Controller
+class GenderController extends Controller
 {
     /**
-     * Listar sexos con paginación y búsqueda
+     * Listar géneros con paginación y búsqueda
      * Búsqueda por: sexo, inicial
      * Orden: DESC por defecto
      */
@@ -23,7 +23,7 @@ class SexController extends Controller
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search', '');
 
-        $sexes = Sex::query()
+        $genders = Gender::query()
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('sexo', 'like', "%{$search}%")
@@ -35,95 +35,95 @@ class SexController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => SexResource::collection($sexes),
+            'data' => GenderResource::collection($genders),
             'meta' => [
-                'current_page' => $sexes->currentPage(),
-                'last_page' => $sexes->lastPage(),
-                'per_page' => $sexes->perPage(),
-                'total' => $sexes->total(),
+                'current_page' => $genders->currentPage(),
+                'last_page' => $genders->lastPage(),
+                'per_page' => $genders->perPage(),
+                'total' => $genders->total(),
             ],
         ]);
     }
 
     /**
-     * Crear nuevo sexo
+     * Crear nuevo género
      */
-    public function store(StoreSexRequest $request): JsonResponse
+    public function store(StoreGenderRequest $request): JsonResponse
     {
-        $sex = Sex::create([
+        $gender = Gender::create([
             'sexo' => $request->sexo,
             'inicial' => $request->inicial,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Sexo creado exitosamente',
-            'data' => new SexResource($sex),
+            'message' => 'Género creado exitosamente',
+            'data' => new GenderResource($gender),
         ], Response::HTTP_CREATED);
     }
 
     /**
-     * Mostrar un sexo específico
+     * Mostrar un género específico
      */
     public function show(int $id): JsonResponse
     {
-        $sex = Sex::findOrFail($id);
+        $gender = Gender::findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'data' => new SexResource($sex),
+            'data' => new GenderResource($gender),
         ]);
     }
 
     /**
-     * Actualizar sexo
+     * Actualizar género
      */
-    public function update(UpdateSexRequest $request, int $id): JsonResponse
+    public function update(UpdateGenderRequest $request, int $id): JsonResponse
     {
-        $sex = Sex::findOrFail($id);
+        $gender = Gender::findOrFail($id);
 
-        $sex->update([
+        $gender->update([
             'sexo' => $request->sexo,
             'inicial' => $request->inicial,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Sexo actualizado exitosamente',
-            'data' => new SexResource($sex),
+            'message' => 'Género actualizado exitosamente',
+            'data' => new GenderResource($gender),
         ]);
     }
 
     /**
-     * Eliminar un sexo
+     * Eliminar un género
      */
     public function destroy(int $id): JsonResponse
     {
-        $sex = Sex::findOrFail($id);
-        $sex->delete();
+        $gender = Gender::findOrFail($id);
+        $gender->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Sexo eliminado exitosamente',
+            'message' => 'Género eliminado exitosamente',
         ]);
     }
 
     /**
-     * Eliminar múltiples sexos (por lotes)
+     * Eliminar múltiples géneros (por lotes)
      */
     public function destroyBulk(Request $request): JsonResponse
     {
         $request->validate([
             'ids' => 'required|array|min:1',
-            'ids.*' => 'required|integer|exists:sexes,id',
+            'ids.*' => 'required|integer|exists:genders,id',
         ]);
 
         $ids = $request->input('ids');
-        $deleted = Sex::whereIn('id', $ids)->delete();
+        $deleted = Gender::whereIn('id', $ids)->delete();
 
         return response()->json([
             'success' => true,
-            'message' => "Se eliminaron {$deleted} sexo(s) exitosamente",
+            'message' => "Se eliminaron {$deleted} género(s) exitosamente",
             'deleted_count' => $deleted,
         ]);
     }

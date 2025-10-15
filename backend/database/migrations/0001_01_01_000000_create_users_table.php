@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('sexo_id')->nullable()->constrained('sexes')->onDelete('set null');
-            $table->foreignId('telefono_id')->nullable()->constrained('telefonos')->onDelete('set null');
+            $table->foreignId('gender_id')->nullable()->constrained('genders')->onDelete('set null');
+            $table->foreignId('phone_id')->nullable()->constrained('phones')->onDelete('set null');
             $table->foreignId('chatid_id')->nullable()->constrained('chatids')->onDelete('set null');
             $table->foreignId('empresa_id')->nullable()->constrained('empresas')->onDelete('set null');
             $table->string('avatar')->nullable();

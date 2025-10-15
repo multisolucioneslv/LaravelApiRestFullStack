@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Sex extends Model
+class Currency extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -15,7 +15,7 @@ class Sex extends Model
      *
      * @var string
      */
-    protected $table = 'sexes';
+    protected $table = 'currencies';
 
     /**
      * The attributes that are mass assignable.
@@ -23,8 +23,11 @@ class Sex extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'sexo',
-        'inicial',
+        'codigo',
+        'nombre',
+        'simbolo',
+        'tasa_cambio',
+        'activo',
     ];
 
     /**
@@ -33,6 +36,8 @@ class Sex extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'tasa_cambio' => 'decimal:4',
+        'activo' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -43,12 +48,32 @@ class Sex extends Model
     // ==========================================
 
     /**
-     * Un sexo tiene muchos usuarios
+     * A currency can be used in many empresas
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function users()
+    public function empresas()
     {
-        return $this->hasMany(User::class, 'sexo_id');
+        return $this->hasMany(Empresa::class, 'moneda_id');
+    }
+
+    /**
+     * A currency can be used in many cotizaciones
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function cotizaciones()
+    {
+        return $this->hasMany(Cotizacion::class, 'moneda_id');
+    }
+
+    /**
+     * A currency can be used in many ventas
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'moneda_id');
     }
 }

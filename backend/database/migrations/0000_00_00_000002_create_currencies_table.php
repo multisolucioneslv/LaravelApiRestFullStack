@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rutas', function (Blueprint $table) {
+        Schema::create('currencies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sistema_id')->constrained('sistemas')->onDelete('cascade');
-            $table->string('ruta', 255);
-            $table->string('metodo', 20)->default('GET');
-            $table->text('descripcion')->nullable();
-            $table->string('controlador', 255)->nullable();
-            $table->string('accion', 100)->nullable();
-            $table->json('middleware')->nullable();
+            $table->string('codigo', 10);
+            $table->string('nombre', 100);
+            $table->string('simbolo', 10);
+            $table->decimal('tasa_cambio', 10, 4)->default(1.0000);
             $table->boolean('activo')->default(true);
             $table->timestamps();
             $table->softDeletes();
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rutas');
+        Schema::dropIfExists('currencies');
     }
 };

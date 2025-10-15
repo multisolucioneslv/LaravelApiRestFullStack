@@ -25,7 +25,7 @@ class Empresa extends Model
     protected $fillable = [
         'nombre',
         'telefono_id',
-        'moneda_id',
+        'currency_id',
         'email',
         'direccion',
         'logo',
@@ -60,7 +60,7 @@ class Empresa extends Model
      */
     public function telefono()
     {
-        return $this->belongsTo(Telefono::class, 'telefono_id');
+        return $this->belongsTo(Phone::class, 'telefono_id');
     }
 
     /**
@@ -68,9 +68,9 @@ class Empresa extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function moneda()
+    public function currency()
     {
-        return $this->belongsTo(Moneda::class, 'moneda_id');
+        return $this->belongsTo(Currency::class, 'currency_id');
     }
 
     // ==========================================

@@ -17,11 +17,12 @@ class DatabaseSeeder extends Seeder
         // Orden de ejecución de seeders (respetar dependencias)
         $this->call([
             SistemaSeeder::class,    // 1. Sistema por default
-            SexSeeder::class,         // 2. Sexos (Masculino, Femenino)
-            MonedaSeeder::class,      // 3. Monedas (USD, MXN, EUR)
+            GenderSeeder::class,      // 2. Genders (Masculino, Femenino, Otro)
+            CurrencySeeder::class,    // 3. Currencies (USD, MXN, EUR, BOB)
             EmpresaSeeder::class,     // 4. Empresa default (Yapame)
             RoleSeeder::class,        // 5. Roles (SuperAdmin, Administrador, etc.)
-            SuperAdminSeeder::class,  // 6. Usuario SuperAdmin (jscothserver)
+            PermissionsSeeder::class, // 6. Permisos del sistema
+            SuperAdminSeeder::class,  // 7. Usuario SuperAdmin (jscothserver)
         ]);
     }
 }

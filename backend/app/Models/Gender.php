@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Telefono extends Model
+class Gender extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -15,7 +15,7 @@ class Telefono extends Model
      *
      * @var string
      */
-    protected $table = 'telefonos';
+    protected $table = 'genders';
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,8 @@ class Telefono extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'telefono',
+        'sexo',
+        'inicial',
     ];
 
     /**
@@ -42,22 +43,12 @@ class Telefono extends Model
     // ==========================================
 
     /**
-     * Un teléfono puede pertenecer a muchos usuarios
+     * A gender has many users
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function users()
     {
-        return $this->hasMany(User::class, 'telefono_id');
-    }
-
-    /**
-     * Un teléfono puede pertenecer a muchas empresas
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function empresas()
-    {
-        return $this->hasMany(Empresa::class, 'telefono_id');
+        return $this->hasMany(User::class, 'gender_id');
     }
 }

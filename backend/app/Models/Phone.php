@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Moneda extends Model
+class Phone extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -15,7 +15,7 @@ class Moneda extends Model
      *
      * @var string
      */
-    protected $table = 'monedas';
+    protected $table = 'phones';
 
     /**
      * The attributes that are mass assignable.
@@ -23,11 +23,7 @@ class Moneda extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'codigo',
-        'nombre',
-        'simbolo',
-        'tasa_cambio',
-        'activo',
+        'telefono',
     ];
 
     /**
@@ -36,8 +32,6 @@ class Moneda extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'tasa_cambio' => 'decimal:4',
-        'activo' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -48,32 +42,23 @@ class Moneda extends Model
     // ==========================================
 
     /**
-     * Una moneda puede ser usada en muchas empresas
+     * Un teléfono puede pertenecer a muchos usuarios
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class, 'phone_id');
+    }
+
+    /**
+     * Un teléfono puede pertenecer a muchas empresas
+     * NOTA: Se mantiene 'telefono_id' porque la tabla empresas aún no se ha renombrado
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function empresas()
     {
-        return $this->hasMany(Empresa::class, 'moneda_id');
-    }
-
-    /**
-     * Una moneda puede ser usada en muchas cotizaciones
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function cotizaciones()
-    {
-        return $this->hasMany(Cotizacion::class, 'moneda_id');
-    }
-
-    /**
-     * Una moneda puede ser usada en muchas ventas
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function ventas()
-    {
-        return $this->hasMany(Venta::class, 'moneda_id');
+        return $this->hasMany(Empresa::class, 'telefono_id');
     }
 }

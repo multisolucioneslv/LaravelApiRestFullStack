@@ -48,24 +48,24 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/bulk/delete', [App\Http\Controllers\Api\SistemaController::class, 'destroyBulk']);
     });
 
-    // Módulo de Sexes
-    Route::prefix('sexes')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\SexController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Api\SexController::class, 'store']);
-        Route::get('/{id}', [App\Http\Controllers\Api\SexController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Api\SexController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Api\SexController::class, 'destroy']);
-        Route::post('/bulk/delete', [App\Http\Controllers\Api\SexController::class, 'destroyBulk']);
+    // Módulo de Genders
+    Route::prefix('genders')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\GenderController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\GenderController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\GenderController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\GenderController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\GenderController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\GenderController::class, 'destroyBulk']);
     });
 
-    // Módulo de Monedas
-    Route::prefix('monedas')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\MonedaController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Api\MonedaController::class, 'store']);
-        Route::get('/{id}', [App\Http\Controllers\Api\MonedaController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Api\MonedaController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Api\MonedaController::class, 'destroy']);
-        Route::post('/bulk/delete', [App\Http\Controllers\Api\MonedaController::class, 'destroyBulk']);
+    // Módulo de Currencies
+    Route::prefix('currencies')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\CurrencyController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\CurrencyController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\CurrencyController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\CurrencyController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\CurrencyController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\CurrencyController::class, 'destroyBulk']);
     });
 
     // Módulo de Teléfonos
