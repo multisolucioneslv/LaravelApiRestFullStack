@@ -32,6 +32,7 @@ class Empresa extends Model
         'favicon',
         'fondo_login',
         'zona_horaria',
+        'horarios',
         'activo',
     ];
 
@@ -42,6 +43,7 @@ class Empresa extends Model
      */
     protected $casts = [
         'activo' => 'boolean',
+        'horarios' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',

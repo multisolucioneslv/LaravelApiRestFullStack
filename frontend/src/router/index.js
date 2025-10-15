@@ -45,6 +45,26 @@ const routes = [
     }
   },
 
+  // Rutas de Perfil del Usuario
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/profile/ProfileView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Mi Perfil'
+    }
+  },
+  {
+    path: '/profile/edit',
+    name: 'profile.edit',
+    component: () => import('@/views/profile/ProfileEdit.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Perfil'
+    }
+  },
+
   // Rutas de Usuarios
   {
     path: '/users',
@@ -303,6 +323,17 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: 'Editar Empresa'
+    }
+  },
+
+  // Configuración de Empresa (para Admin - solo SU empresa)
+  {
+    path: '/empresa/configuracion',
+    name: 'empresa.config',
+    component: () => import('@/views/empresa/EmpresaConfigView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Configuración de Empresa'
     }
   },
 

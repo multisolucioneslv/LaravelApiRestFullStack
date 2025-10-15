@@ -48,6 +48,7 @@ import {
   ShoppingCartIcon,
   ClipboardDocumentListIcon,
   ArrowPathIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -89,6 +90,12 @@ const menuItems = [
     label: 'Empresas',
     to: '/empresas',
     icon: BuildingOfficeIcon,
+  },
+  {
+    name: 'empresa-config',
+    label: 'Configuración de Empresa',
+    to: '/empresa/configuracion',
+    icon: WrenchScrewdriverIcon,
   },
   {
     name: 'bodegas',

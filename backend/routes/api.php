@@ -32,6 +32,9 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Api\UserController::class, 'update']);
         Route::delete('/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy']);
         Route::delete('/bulk/delete', [App\Http\Controllers\Api\UserController::class, 'destroyBulk']);
+        // Rutas específicas para perfil
+        Route::delete('/{id}/avatar', [App\Http\Controllers\Api\UserController::class, 'deleteAvatar']);
+        Route::put('/{id}/password', [App\Http\Controllers\Api\UserController::class, 'updatePassword']);
     });
 
     // Módulo de Sistemas
@@ -182,6 +185,15 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Api\SettingController::class, 'update']);
         Route::delete('/{id}', [App\Http\Controllers\Api\SettingController::class, 'destroy']);
         Route::post('/bulk/delete', [App\Http\Controllers\Api\SettingController::class, 'destroyBulk']);
+    });
+
+    // Configuración de Empresa (para Admin - solo SU empresa)
+    Route::prefix('empresa/configuracion')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'show']);
+        Route::post('/', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'update']);
+        Route::delete('/logo', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'deleteLogo']);
+        Route::delete('/favicon', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'deleteFavicon']);
+        Route::delete('/fondo-login', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'deleteFondoLogin']);
     });
 
     // Aquí irán más módulos del ERP

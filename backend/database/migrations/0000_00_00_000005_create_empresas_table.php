@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('favicon')->nullable();
             $table->string('fondo_login')->nullable();
             $table->string('zona_horaria', 50)->default('America/Los_Angeles');
+            $table->json('horarios')->nullable()->comment('Horarios de atención en formato JSON');
             $table->boolean('activo')->default(true);
             $table->timestamps();
             $table->softDeletes();
