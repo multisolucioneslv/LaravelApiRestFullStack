@@ -1,0 +1,145 @@
+<template>
+  <AppLayout>
+    <div class="space-y-6">
+      <!-- Encabezado -->
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          Gestión de Usuarios
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">
+          Administra los usuarios del sistema
+        </p>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="loading" class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+
+      <!-- DataTable -->
+      <UsersDataTable
+        v-else
+        :users="users"
+        :current-page="currentPage"
+        :last-page="lastPage"
+        :total="total"
+        :has-prev-page="hasPrevPage"
+        :has-next-page="hasNextPage"
+        @search="handleSearch"
+        @edit="handleEdit"
+        @delete="handleDelete"
+        @bulk-delete="handleBulkDelete"
+        @create="handleCreate"
+        @previous-page="handlePreviousPage"
+        @next-page="handleNextPage"
+        @open-avatar-modal="handleOpenAvatarModal"
+      />
+
+      <!-- Modal de Avatar -->
+      <AvatarEditModal
+        v-model:open="avatarModalOpen"
+        :user="selectedUser"
+        @avatar-updated="handleAvatarUpdated"
+      />
+    </div>
+  </AppLayout>
+</template>
+
+<script setup>
+import { ref, onMounted, nextTick } from 'vue'
+import { useUsers } from '@/composables/useUsers'
+import UsersDataTable from '@/components/users/UsersDataTable.vue'
+import AvatarEditModal from '@/components/users/AvatarEditModal.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
+
+const {
+  users,
+  loading,
+  currentPage,
+  lastPage,
+  total,
+  hasPrevPage,
+  hasNextPage,
+  fetchUsers,
+  deleteUser,
+  deleteUsersBulk,
+  searchUsers,
+  changePage,
+  goToCreate,
+  goToEdit,
+} = useUsers()
+
+// Cargar usuarios al montar
+onMounted(() => {
+  fetchUsers()
+})
+
+// Manejadores
+const handleSearch = (searchTerm) => {
+  searchUsers(searchTerm)
+}
+
+const handleEdit = (id) => {
+  goToEdit(id)
+}
+
+const handleDelete = async (id) => {
+  const deleted = await deleteUser(id)
+  if (deleted) {
+    // La lista se recarga automáticamente en el composable
+  }
+}
+
+const handleBulkDelete = async (ids) => {
+  const deleted = await deleteUsersBulk(ids)
+  if (deleted) {
+    // La lista se recarga automáticamente en el composable
+  }
+}
+
+const handleCreate = () => {
+  goToCreate()
+}
+
+const handlePreviousPage = () => {
+  changePage(currentPage.value - 1)
+}
+
+const handleNextPage = () => {
+  changePage(currentPage.value + 1)
+}
+
+// Modal de Avatar
+const avatarModalOpen = ref(false)
+const selectedUser = ref(null)
+
+const handleOpenAvatarModal = (user) => {
+  selectedUser.value = user
+  avatarModalOpen.value = true
+}
+
+const handleAvatarUpdated = async (updatedUser) => {
+  // Actualizar el usuario en la lista
+  const index = users.value.findIndex(u => u.id === updatedUser.id)
+
+  if (index !== -1) {
+    // Agregar timestamp para evitar caché del navegador
+    if (updatedUser.avatar) {
+      updatedUser.avatar = `${updatedUser.avatar}?t=${Date.now()}`
+    }
+
+    // Crear un nuevo array completo para forzar reactividad profunda
+    const newUsers = [...users.value]
+    newUsers[index] = { ...updatedUser }
+    users.value = newUsers
+
+    // También actualizar selectedUser si es el mismo
+    if (selectedUser.value && selectedUser.value.id === updatedUser.id) {
+      selectedUser.value = { ...updatedUser }
+    }
+
+    // Forzar actualización en el siguiente tick
+    await nextTick()
+  }
+}
+</script>

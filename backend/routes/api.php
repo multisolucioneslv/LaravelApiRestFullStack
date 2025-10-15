@@ -1,0 +1,188 @@
+<?php
+
+use App\Http\Controllers\Api\AuthController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return response()->json([
+        'message'=>"Imgrese sus credenciales de acceso"
+    ]);
+});
+// Rutas públicas de autenticación
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+// Rutas protegidas (requieren autenticación JWT)
+Route::middleware('auth:api')->group(function () {
+    // Rutas de autenticación
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/me', [AuthController::class, 'me']);
+    });
+
+    // Módulo de Usuarios
+    Route::prefix('users')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\UserController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\UserController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\UserController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\UserController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy']);
+        Route::delete('/bulk/delete', [App\Http\Controllers\Api\UserController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Sistemas
+    Route::prefix('sistemas')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\SistemaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\SistemaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\SistemaController::class, 'show']);
+        Route::post('/{id}', [App\Http\Controllers\Api\SistemaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\SistemaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\SistemaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Sexes
+    Route::prefix('sexes')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\SexController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\SexController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\SexController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\SexController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\SexController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\SexController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Monedas
+    Route::prefix('monedas')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\MonedaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\MonedaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\MonedaController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\MonedaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\MonedaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\MonedaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Teléfonos
+    Route::prefix('telefonos')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\TelefonoController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\TelefonoController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\TelefonoController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\TelefonoController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\TelefonoController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\TelefonoController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Chat IDs
+    Route::prefix('chatids')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\ChatidController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\ChatidController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\ChatidController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\ChatidController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\ChatidController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\ChatidController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Bodegas
+    Route::prefix('bodegas')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\BodegaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\BodegaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\BodegaController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\BodegaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\BodegaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\BodegaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Empresas
+    Route::prefix('empresas')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\EmpresaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\EmpresaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\EmpresaController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\EmpresaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\EmpresaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\EmpresaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Inventarios
+    Route::prefix('inventarios')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\InventarioController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\InventarioController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\InventarioController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\InventarioController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\InventarioController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\InventarioController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Impuestos (Taxes)
+    Route::prefix('taxes')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\TaxController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\TaxController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\TaxController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\TaxController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\TaxController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\TaxController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Galerías
+    Route::prefix('galerias')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\GaleriaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\GaleriaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\GaleriaController::class, 'show']);
+        Route::post('/{id}', [App\Http\Controllers\Api\GaleriaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\GaleriaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\GaleriaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Cotizaciones
+    Route::prefix('cotizaciones')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\CotizacionController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\CotizacionController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\CotizacionController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\CotizacionController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\CotizacionController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\CotizacionController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Ventas
+    Route::prefix('ventas')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\VentaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\VentaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\VentaController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\VentaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\VentaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\VentaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Pedidos
+    Route::prefix('pedidos')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\PedidoController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\PedidoController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\PedidoController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\PedidoController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\PedidoController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\PedidoController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Rutas API del Sistema
+    Route::prefix('rutas')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\RutaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\RutaController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\RutaController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\RutaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\RutaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\RutaController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Configuraciones (Settings)
+    Route::prefix('settings')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\SettingController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\SettingController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\SettingController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\SettingController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\SettingController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\SettingController::class, 'destroyBulk']);
+    });
+
+    // Aquí irán más módulos del ERP
+});

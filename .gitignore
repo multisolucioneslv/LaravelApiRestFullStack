@@ -1,0 +1,96 @@
+# ==========================================
+# ARCHIVOS Y CARPETAS EXCLUIDAS
+# ==========================================
+
+# Datos sensibles
+.env
+.env.*
+!.env.example
+*.key
+secrets/
+credentials/
+
+# Carpetas excluidas por solicitud del usuario
+docker/
+docs/
+logs/
+log/
+
+# Laravel Backend
+backend/vendor/
+backend/node_modules/
+backend/storage/*.key
+backend/storage/app/*
+!backend/storage/app/.gitkeep
+!backend/storage/app/public/
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitkeep
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitkeep
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitkeep
+backend/storage/logs/*
+!backend/storage/logs/.gitkeep
+backend/bootstrap/cache/*
+!backend/bootstrap/cache/.gitkeep
+backend/public/storage
+backend/public/hot
+
+# Vue Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+
+# Logs generales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDEs y Editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Archivos temporales
+*.tmp
+*.temp
+*.cache
+nul
+
+# Certificados SSL
+*.pem
+*.crt
+*.cer
+*.p12
+*.pfx
+
+# Backups
+*.bak
+*.backup
+*.old

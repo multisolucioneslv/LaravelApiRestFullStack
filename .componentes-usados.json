@@ -1,0 +1,291 @@
+{
+  "proyecto": "BackendProfesional",
+  "descripcion": "Sistema ERP con Laravel 12 + Vue 3 - API REST con autenticación JWT",
+  "fecha_creacion": "2025-10-15",
+  "ultima_actualizacion": "2025-10-15",
+  "componentes": {
+    "vue": [
+      {
+        "nombre": "LoginView.vue",
+        "ruta_origen": "../../.componentes/vue/auth/LoginView.vue",
+        "ruta_destino": "frontend/src/views/auth/LoginView.vue",
+        "modificado": false,
+        "notas": "Vista de login con integración JWT y Pinia store"
+      },
+      {
+        "nombre": "RegisterView.vue",
+        "ruta_origen": "../../.componentes/vue/auth/RegisterView.vue",
+        "ruta_destino": "frontend/src/views/auth/RegisterView.vue",
+        "modificado": false,
+        "notas": "Vista de registro de usuarios nuevos"
+      },
+      {
+        "nombre": "AppLayout.vue",
+        "ruta_origen": "../../.componentes/vue/layouts/AppLayout.vue",
+        "ruta_destino": "frontend/src/components/layout/AppLayout.vue",
+        "modificado": false,
+        "notas": "Layout principal con Sidebar y Navbar incluidos"
+      },
+      {
+        "nombre": "Sidebar.vue",
+        "ruta_origen": "../../.componentes/vue/layouts/Sidebar.vue",
+        "ruta_destino": "frontend/src/components/layout/Sidebar.vue",
+        "modificado": true,
+        "notas": "Sidebar personalizado con 18 módulos del ERP. Se agregaron módulos específicos del proyecto."
+      },
+      {
+        "nombre": "Navbar.vue",
+        "ruta_origen": "../../.componentes/vue/layouts/Navbar.vue",
+        "ruta_destino": "frontend/src/components/layout/Navbar.vue",
+        "modificado": false,
+        "notas": "Navbar con perfil de usuario y notificaciones"
+      },
+      {
+        "nombre": "DarkModeToggle.vue",
+        "ruta_origen": "../../.componentes/vue/layouts/DarkModeToggle.vue",
+        "ruta_destino": "frontend/src/components/layout/DarkModeToggle.vue",
+        "modificado": false,
+        "notas": "Toggle para cambiar entre modo claro y oscuro"
+      },
+      {
+        "nombre": "AvatarEditModal.vue",
+        "ruta_origen": "../../.componentes/vue/modals/AvatarEditModal.vue",
+        "ruta_destino": "frontend/src/components/modals/AvatarEditModal.vue",
+        "modificado": false,
+        "notas": "Modal para editar avatar del usuario con upload de imagen"
+      }
+    ],
+    "composables": [
+      {
+        "nombre": "useAlert.js",
+        "ruta_origen": "../../.componentes/composables/useAlert.js",
+        "ruta_destino": "frontend/src/composables/useAlert.js",
+        "modificado": false,
+        "notas": "Sistema de alertas con SweetAlert2"
+      },
+      {
+        "nombre": "useDarkMode.js",
+        "ruta_origen": "../../.componentes/composables/useDarkMode.js",
+        "ruta_destino": "frontend/src/composables/useDarkMode.js",
+        "modificado": false,
+        "notas": "Manejo de modo oscuro con localStorage"
+      },
+      {
+        "nombre": "useFileUpload.js",
+        "ruta_origen": "../../.componentes/composables/useFileUpload.js",
+        "ruta_destino": "frontend/src/composables/useFileUpload.js",
+        "modificado": false,
+        "notas": "Helper para carga de archivos con FormData"
+      },
+      {
+        "nombre": "useUsers.js",
+        "ruta_origen": "../../.componentes/composables/useUsers.js",
+        "ruta_destino": "frontend/src/composables/useUsers.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de usuarios"
+      },
+      {
+        "nombre": "useBodegas.js",
+        "ruta_origen": "../../.componentes/composables/useBodegas.js",
+        "ruta_destino": "frontend/src/composables/useBodegas.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de bodegas/almacenes"
+      },
+      {
+        "nombre": "useChatids.js",
+        "ruta_origen": "../../.componentes/composables/useChatids.js",
+        "ruta_destino": "frontend/src/composables/useChatids.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de chat IDs de Telegram"
+      },
+      {
+        "nombre": "useCotizaciones.js",
+        "ruta_origen": "../../.componentes/composables/useCotizaciones.js",
+        "ruta_destino": "frontend/src/composables/useCotizaciones.js",
+        "modificado": false,
+        "notas": "CRUD completo con master-detail para cotizaciones. Incluye carga de catálogos."
+      },
+      {
+        "nombre": "useEmpresas.js",
+        "ruta_origen": "../../.componentes/composables/useEmpresas.js",
+        "ruta_destino": "frontend/src/composables/useEmpresas.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de empresas"
+      },
+      {
+        "nombre": "useGalerias.js",
+        "ruta_origen": "../../.componentes/composables/useGalerias.js",
+        "ruta_destino": "frontend/src/composables/useGalerias.js",
+        "modificado": false,
+        "notas": "CRUD completo para galerías de imágenes con relación polimórfica"
+      },
+      {
+        "nombre": "useInventarios.js",
+        "ruta_origen": "../../.componentes/composables/useInventarios.js",
+        "ruta_destino": "frontend/src/composables/useInventarios.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de inventario"
+      },
+      {
+        "nombre": "useMonedas.js",
+        "ruta_origen": "../../.componentes/composables/useMonedas.js",
+        "ruta_destino": "frontend/src/composables/useMonedas.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de monedas"
+      },
+      {
+        "nombre": "usePedidos.js",
+        "ruta_origen": "../../.componentes/composables/usePedidos.js",
+        "ruta_destino": "frontend/src/composables/usePedidos.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de pedidos con códigos autogenerados"
+      },
+      {
+        "nombre": "useRutas.js",
+        "ruta_origen": "../../.componentes/composables/useRutas.js",
+        "ruta_destino": "frontend/src/composables/useRutas.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de rutas API del sistema"
+      },
+      {
+        "nombre": "useSettings.js",
+        "ruta_origen": "../../.componentes/composables/useSettings.js",
+        "ruta_destino": "frontend/src/composables/useSettings.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de configuraciones del sistema"
+      },
+      {
+        "nombre": "useSexes.js",
+        "ruta_origen": "../../.componentes/composables/useSexes.js",
+        "ruta_destino": "frontend/src/composables/useSexes.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de géneros/sexos"
+      },
+      {
+        "nombre": "useSistemas.js",
+        "ruta_origen": "../../.componentes/composables/useSistemas.js",
+        "ruta_destino": "frontend/src/composables/useSistemas.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de sistemas de medida"
+      },
+      {
+        "nombre": "useTaxes.js",
+        "ruta_origen": "../../.componentes/composables/useTaxes.js",
+        "ruta_destino": "frontend/src/composables/useTaxes.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de impuestos"
+      },
+      {
+        "nombre": "useTelefonos.js",
+        "ruta_origen": "../../.componentes/composables/useTelefonos.js",
+        "ruta_destino": "frontend/src/composables/useTelefonos.js",
+        "modificado": false,
+        "notas": "CRUD completo para gestión de tipos de teléfono"
+      },
+      {
+        "nombre": "useVentas.js",
+        "ruta_origen": "../../.componentes/composables/useVentas.js",
+        "ruta_destino": "frontend/src/composables/useVentas.js",
+        "modificado": false,
+        "notas": "CRUD completo con master-detail para ventas. Incluye tipo de pago."
+      }
+    ],
+    "laravel": [
+      {
+        "nombre": "BaseApiController.php",
+        "ruta_origen": "../../.componentes/laravel/controllers/BaseApiController.php",
+        "ruta_destino": "backend/app/Http/Controllers/BaseApiController.php",
+        "modificado": false,
+        "notas": "Controlador abstracto base usado por todos los controladores API del proyecto. Incluye métodos CRUD estándar."
+      },
+      {
+        "nombre": "BaseFormRequest.php",
+        "ruta_origen": "../../.componentes/laravel/requests/BaseFormRequest.php",
+        "ruta_destino": "backend/app/Http/Requests/BaseFormRequest.php",
+        "modificado": false,
+        "notas": "FormRequest base con validaciones en español usadas en todos los FormRequests del proyecto."
+      },
+      {
+        "nombre": "BaseResource.php",
+        "ruta_origen": "../../.componentes/laravel/resources/BaseResource.php",
+        "ruta_destino": "backend/app/Http/Resources/BaseResource.php",
+        "modificado": false,
+        "notas": "Resource abstracto base con helpers de formateo usado por todos los Resources API."
+      }
+    ],
+    "comandos_artisan": [
+      {
+        "nombre": "RegisterApiRoutes.php",
+        "ruta_origen": "../../.componentes/laravel/commands/RegisterApiRoutes.php",
+        "ruta_destino": "backend/app/Console/Commands/RegisterApiRoutes.php",
+        "modificado": false,
+        "notas": "Comando artisan para registrar automáticamente todas las rutas API en la tabla 'rutas'. Uso: php artisan routes:register"
+      }
+    ]
+  },
+  "estadisticas": {
+    "total_componentes": 30,
+    "componentes_vue": 7,
+    "composables": 19,
+    "laravel_templates": 3,
+    "comandos_artisan": 1
+  },
+  "modulos_implementados": [
+    "Usuarios (Users)",
+    "Sistemas",
+    "Sexos (Sexes)",
+    "Monedas",
+    "Teléfonos",
+    "Chat IDs (Telegram)",
+    "Bodegas",
+    "Empresas",
+    "Inventarios",
+    "Impuestos (Taxes)",
+    "Galerías",
+    "Cotizaciones (Master-Detail)",
+    "Ventas (Master-Detail)",
+    "Pedidos",
+    "Configuraciones (Settings)",
+    "Rutas API"
+  ],
+  "tecnologias": {
+    "backend": {
+      "framework": "Laravel 12",
+      "autenticacion": "tymon/jwt-auth",
+      "permisos": "spatie/laravel-permission",
+      "base_datos": "MySQL",
+      "patron": "Repository + Service Layer"
+    },
+    "frontend": {
+      "framework": "Vue 3 Composition API",
+      "router": "Vue Router",
+      "state_management": "Pinia",
+      "estilos": "Tailwind CSS",
+      "http_client": "Axios",
+      "tablas": "@tanstack/vue-table",
+      "alertas": "SweetAlert2",
+      "iconos": "Heroicons",
+      "build_tool": "Vite"
+    }
+  },
+  "patrones_implementados": [
+    "CRUD estándar (6 métodos: index, show, store, update, destroy, destroyBulk)",
+    "Master-Detail con transacciones DB (Cotizaciones, Ventas)",
+    "Códigos autogenerados por año (COT-2025-NNNN, VEN-2025-NNNN, PED-2025-NNNN)",
+    "Relaciones polimórficas (Galerías con morphs)",
+    "Soft Deletes en todos los modelos",
+    "Eager Loading para performance",
+    "Carga múltiple de archivos",
+    "Real-time calculations en formularios"
+  ],
+  "notas": [
+    "Todos los componentes del frontend siguen Vue 3 Composition API",
+    "Todos los controladores extienden de BaseApiController",
+    "Todos los FormRequests extienden de BaseFormRequest con validaciones en español",
+    "Todos los Resources extienden de BaseResource para formateo consistente",
+    "El Sidebar fue modificado para incluir los 18 módulos del ERP",
+    "Se implementó sistema de paginación, búsqueda y ordenamiento en todos los CRUDs",
+    "Las rutas API fueron registradas automáticamente con el comando routes:register",
+    "Total de 101 rutas API registradas en la base de datos"
+  ]
+}
