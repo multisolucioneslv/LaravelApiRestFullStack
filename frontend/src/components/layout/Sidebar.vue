@@ -6,35 +6,72 @@
       </h2>
 
       <!-- Lista de navegación -->
-      <nav class="space-y-2">
+      <nav class="space-y-1">
+        <!-- Dashboard (sin dropdown) -->
         <router-link
-          v-for="item in menuItems"
-          :key="item.name"
-          :to="item.to"
+          to="/dashboard"
           class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200"
           :class="[
-            isActive(item.to)
+            isActive('/dashboard')
               ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           ]"
         >
-          <component :is="item.icon" class="w-5 h-5" />
-          <span class="font-medium">{{ item.label }}</span>
+          <HomeIcon class="w-5 h-5" />
+          <span class="font-medium">Dashboard</span>
         </router-link>
+
+        <!-- Grupos con dropdown -->
+        <div v-for="group in menuGroups" :key="group.name" class="space-y-1">
+          <!-- Encabezado del grupo -->
+          <button
+            @click="toggleGroup(group.name)"
+            class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <div class="flex items-center space-x-3">
+              <component :is="group.icon" class="w-5 h-5" />
+              <span class="font-medium">{{ group.label }}</span>
+            </div>
+            <ChevronDownIcon
+              class="w-4 h-4 transition-transform duration-200"
+              :class="{ 'transform rotate-180': openGroups[group.name] }"
+            />
+          </button>
+
+          <!-- Items del grupo (colapsable) -->
+          <div
+            v-show="openGroups[group.name]"
+            class="ml-4 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-2"
+          >
+            <router-link
+              v-for="item in group.items"
+              :key="item.name"
+              :to="item.to"
+              class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors duration-200 text-sm"
+              :class="[
+                isActive(item.to)
+                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              ]"
+            >
+              <component :is="item.icon" class="w-4 h-4" />
+              <span>{{ item.label }}</span>
+            </router-link>
+          </div>
+        </div>
       </nav>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   HomeIcon,
   UsersIcon,
   Cog6ToothIcon,
   ChartBarIcon,
-  CubeIcon,
   PhoneIcon,
   ChatBubbleLeftRightIcon,
   CurrencyDollarIcon,
@@ -44,130 +81,187 @@ import {
   ReceiptPercentIcon,
   PhotoIcon,
   DocumentTextIcon,
-  AdjustmentsHorizontalIcon,
   ShoppingCartIcon,
   ClipboardDocumentListIcon,
   ArrowPathIcon,
   WrenchScrewdriverIcon,
+  AdjustmentsHorizontalIcon,
+  ChevronDownIcon,
+  TagIcon,
+  BriefcaseIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
 
-// Elementos del menú
-const menuItems = [
+// Estado de grupos abiertos/cerrados (persistente en localStorage)
+const openGroups = reactive({
+  operaciones: true,
+  inventario: false,
+  empresas: false,
+  usuarios: false,
+  catalogos: false,
+  administracion: false,
+  reportes: false,
+})
+
+// Grupos del menú
+const menuGroups = [
   {
-    name: 'dashboard',
-    label: 'Dashboard',
-    to: '/dashboard',
-    icon: HomeIcon,
+    name: 'operaciones',
+    label: 'Operaciones',
+    icon: BriefcaseIcon,
+    items: [
+      {
+        name: 'cotizaciones',
+        label: 'Cotizaciones',
+        to: '/cotizaciones',
+        icon: DocumentTextIcon,
+      },
+      {
+        name: 'ventas',
+        label: 'Ventas',
+        to: '/ventas',
+        icon: ShoppingCartIcon,
+      },
+      {
+        name: 'pedidos',
+        label: 'Pedidos',
+        to: '/pedidos',
+        icon: ClipboardDocumentListIcon,
+      },
+    ],
   },
   {
-    name: 'users',
-    label: 'Usuarios',
-    to: '/users',
-    icon: UsersIcon,
-  },
-  {
-    name: 'sistemas',
-    label: 'Sistemas',
-    to: '/sistemas',
-    icon: Cog6ToothIcon,
-  },
-  {
-    name: 'rutas',
-    label: 'Rutas API',
-    to: '/rutas',
-    icon: ArrowPathIcon,
-  },
-  {
-    name: 'settings',
-    label: 'Configuraciones',
-    to: '/settings',
-    icon: AdjustmentsHorizontalIcon,
+    name: 'inventario',
+    label: 'Inventario',
+    icon: ArchiveBoxIcon,
+    items: [
+      {
+        name: 'bodegas',
+        label: 'Bodegas',
+        to: '/bodegas',
+        icon: BuildingStorefrontIcon,
+      },
+      {
+        name: 'inventarios',
+        label: 'Inventarios',
+        to: '/inventarios',
+        icon: ArchiveBoxIcon,
+      },
+      {
+        name: 'galerias',
+        label: 'Galerías',
+        to: '/galerias',
+        icon: PhotoIcon,
+      },
+    ],
   },
   {
     name: 'empresas',
     label: 'Empresas',
-    to: '/empresas',
     icon: BuildingOfficeIcon,
+    items: [
+      {
+        name: 'empresas',
+        label: 'Gestión de Empresas',
+        to: '/empresas',
+        icon: BuildingOfficeIcon,
+      },
+      {
+        name: 'empresa-config',
+        label: 'Mi Empresa',
+        to: '/empresa/configuracion',
+        icon: WrenchScrewdriverIcon,
+      },
+    ],
   },
   {
-    name: 'empresa-config',
-    label: 'Configuración de Empresa',
-    to: '/empresa/configuracion',
-    icon: WrenchScrewdriverIcon,
-  },
-  {
-    name: 'bodegas',
-    label: 'Bodegas',
-    to: '/bodegas',
-    icon: BuildingStorefrontIcon,
-  },
-  {
-    name: 'inventarios',
-    label: 'Inventarios',
-    to: '/inventarios',
-    icon: ArchiveBoxIcon,
-  },
-  {
-    name: 'monedas',
-    label: 'Monedas',
-    to: '/monedas',
-    icon: CurrencyDollarIcon,
-  },
-  {
-    name: 'taxes',
-    label: 'Impuestos',
-    to: '/taxes',
-    icon: ReceiptPercentIcon,
-  },
-  {
-    name: 'galerias',
-    label: 'Galerías',
-    to: '/galerias',
-    icon: PhotoIcon,
-  },
-  {
-    name: 'cotizaciones',
-    label: 'Cotizaciones',
-    to: '/cotizaciones',
-    icon: DocumentTextIcon,
-  },
-  {
-    name: 'ventas',
-    label: 'Ventas',
-    to: '/ventas',
-    icon: ShoppingCartIcon,
-  },
-  {
-    name: 'pedidos',
-    label: 'Pedidos',
-    to: '/pedidos',
-    icon: ClipboardDocumentListIcon,
-  },
-  {
-    name: 'sexes',
-    label: 'Sexos',
-    to: '/sexes',
+    name: 'usuarios',
+    label: 'Usuarios',
     icon: UsersIcon,
+    items: [
+      {
+        name: 'users',
+        label: 'Gestión de Usuarios',
+        to: '/users',
+        icon: UsersIcon,
+      },
+    ],
   },
   {
-    name: 'telefonos',
-    label: 'Teléfonos',
-    to: '/telefonos',
-    icon: PhoneIcon,
+    name: 'catalogos',
+    label: 'Catálogos',
+    icon: TagIcon,
+    items: [
+      {
+        name: 'monedas',
+        label: 'Monedas',
+        to: '/monedas',
+        icon: CurrencyDollarIcon,
+      },
+      {
+        name: 'taxes',
+        label: 'Impuestos',
+        to: '/taxes',
+        icon: ReceiptPercentIcon,
+      },
+      {
+        name: 'sexes',
+        label: 'Sexos',
+        to: '/sexes',
+        icon: UsersIcon,
+      },
+      {
+        name: 'telefonos',
+        label: 'Teléfonos',
+        to: '/telefonos',
+        icon: PhoneIcon,
+      },
+      {
+        name: 'chatids',
+        label: 'Chat IDs',
+        to: '/chatids',
+        icon: ChatBubbleLeftRightIcon,
+      },
+    ],
   },
   {
-    name: 'chatids',
-    label: 'Chat IDs',
-    to: '/chatids',
-    icon: ChatBubbleLeftRightIcon,
+    name: 'administracion',
+    label: 'Administración',
+    icon: Cog6ToothIcon,
+    items: [
+      {
+        name: 'sistemas',
+        label: 'Sistemas',
+        to: '/sistemas',
+        icon: Cog6ToothIcon,
+      },
+      {
+        name: 'settings',
+        label: 'Configuraciones',
+        to: '/settings',
+        icon: AdjustmentsHorizontalIcon,
+      },
+      {
+        name: 'rutas',
+        label: 'Rutas API',
+        to: '/rutas',
+        icon: ArrowPathIcon,
+      },
+    ],
   },
   {
-    name: 'reports',
+    name: 'reportes',
     label: 'Reportes',
-    to: '/reports',
     icon: ChartBarIcon,
+    items: [
+      {
+        name: 'reports',
+        label: 'Reportes',
+        to: '/reports',
+        icon: ChartBarIcon,
+      },
+    ],
   },
 ]
 
@@ -175,4 +269,24 @@ const menuItems = [
 const isActive = (path) => {
   return route.path === path || route.path.startsWith(path + '/')
 }
+
+// Alternar grupo abierto/cerrado
+const toggleGroup = (groupName) => {
+  openGroups[groupName] = !openGroups[groupName]
+  // Guardar estado en localStorage
+  localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups))
+}
+
+// Cargar estado de grupos desde localStorage
+onMounted(() => {
+  const saved = localStorage.getItem('sidebarOpenGroups')
+  if (saved) {
+    try {
+      const parsedState = JSON.parse(saved)
+      Object.assign(openGroups, parsedState)
+    } catch (error) {
+      console.error('Error al cargar estado del sidebar:', error)
+    }
+  }
+})
 </script>
