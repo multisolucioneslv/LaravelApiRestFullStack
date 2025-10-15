@@ -93,12 +93,12 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useSexes } from '@/composables/useSexes'
+import { useGenders } from '@/composables/useGenders'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
-const { createSex, loading, goToIndex } = useSexes()
+const { createGender, loading, goToIndex } = useGenders()
 
 const form = ref({
   sexo: '',
@@ -107,7 +107,7 @@ const form = ref({
 
 const handleSubmit = async () => {
   try {
-    await createSex(form.value)
+    await createGender(form.value)
     goToIndex()
   } catch (err) {
     // Los errores se manejan en el composable con SweetAlert2

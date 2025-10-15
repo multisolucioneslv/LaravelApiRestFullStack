@@ -248,7 +248,7 @@ export function useVentas() {
    */
   const fetchMonedas = async () => {
     try {
-      const response = await apiService.get('/monedas', {
+      const response = await apiService.get('/currencies', {
         params: { per_page: 1000 }
       })
       monedas.value = response.data.data

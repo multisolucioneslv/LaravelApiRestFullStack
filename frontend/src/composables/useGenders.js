@@ -4,15 +4,15 @@ import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
 
 /**
- * Composable para gestionar el CRUD de monedas
+ * Composable para gestionar el CRUD de géneros
  * Incluye: listar, crear, editar, eliminar individual y por lotes
  */
-export function useMonedas() {
+export function useGenders() {
   const router = useRouter()
   const alert = useAlert()
 
   // Estado
-  const monedas = ref([])
+  const genders = ref([])
   const loading = ref(false)
   const error = ref(null)
 
@@ -26,9 +26,9 @@ export function useMonedas() {
   const search = ref('')
 
   /**
-   * Obtener lista de monedas con paginación y búsqueda
+   * Obtener lista de géneros con paginación y búsqueda
    */
-  const fetchMonedas = async (page = 1) => {
+  const fetchGenders = async (page = 1) => {
     loading.value = true
     error.value = null
 
@@ -42,15 +42,15 @@ export function useMonedas() {
         params.search = search.value
       }
 
-      const response = await apiService.get('/monedas', { params })
+      const response = await apiService.get('/genders', { params })
 
-      monedas.value = response.data.data
+      genders.value = response.data.data
       currentPage.value = response.data.meta.current_page
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al cargar monedas'
+      error.value = err.response?.data?.message || 'Error al cargar géneros'
       alert.error('Error', error.value)
     } finally {
       loading.value = false
@@ -58,17 +58,17 @@ export function useMonedas() {
   }
 
   /**
-   * Obtener una moneda específica por ID
+   * Obtener un género específico por ID
    */
-  const fetchMoneda = async (id) => {
+  const fetchGender = async (id) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await apiService.get(`/monedas/${id}`)
+      const response = await apiService.get(`/genders/${id}`)
       return response.data.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al cargar moneda'
+      error.value = err.response?.data?.message || 'Error al cargar género'
       alert.error('Error', error.value)
       throw err
     } finally {
@@ -77,19 +77,19 @@ export function useMonedas() {
   }
 
   /**
-   * Crear nueva moneda
+   * Crear nuevo género
    */
-  const createMoneda = async (monedaData) => {
+  const createGender = async (genderData) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await apiService.post('/monedas', monedaData)
+      const response = await apiService.post('/genders', genderData)
 
-      alert.success('¡Moneda creada!', response.data.message)
+      alert.success('¡Género creado!', response.data.message)
       return response.data.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al crear moneda'
+      error.value = err.response?.data?.message || 'Error al crear género'
 
       // Si hay errores de validación, mostrarlos
       if (err.response?.data?.errors) {
@@ -106,18 +106,18 @@ export function useMonedas() {
   }
 
   /**
-   * Actualizar moneda existente
+   * Actualizar género existente
    */
-  const updateMoneda = async (id, monedaData) => {
+  const updateGender = async (id, genderData) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await apiService.put(`/monedas/${id}`, monedaData)
-      alert.success('¡Moneda actualizada!', response.data.message)
+      const response = await apiService.put(`/genders/${id}`, genderData)
+      alert.success('¡Género actualizado!', response.data.message)
       return response.data.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al actualizar moneda'
+      error.value = err.response?.data?.message || 'Error al actualizar género'
 
       // Si hay errores de validación, mostrarlos
       if (err.response?.data?.errors) {
@@ -134,11 +134,11 @@ export function useMonedas() {
   }
 
   /**
-   * Eliminar una moneda
+   * Eliminar un género
    */
-  const deleteMoneda = async (id) => {
+  const deleteGender = async (id) => {
     const result = await alert.confirm(
-      '¿Eliminar moneda?',
+      '¿Eliminar género?',
       'Esta acción no se puede deshacer',
       'Sí, eliminar'
     )
@@ -149,16 +149,16 @@ export function useMonedas() {
     error.value = null
 
     try {
-      const response = await apiService.delete(`/monedas/${id}`)
+      const response = await apiService.delete(`/genders/${id}`)
 
-      alert.success('¡Eliminada!', response.data.message)
+      alert.success('¡Eliminado!', response.data.message)
 
-      // Recargar lista de monedas
-      await fetchMonedas(currentPage.value)
+      // Recargar lista de géneros
+      await fetchGenders(currentPage.value)
 
       return true
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al eliminar moneda'
+      error.value = err.response?.data?.message || 'Error al eliminar género'
       alert.error('Error', error.value)
       return false
     } finally {
@@ -167,11 +167,11 @@ export function useMonedas() {
   }
 
   /**
-   * Eliminar múltiples monedas por lotes
+   * Eliminar múltiples géneros por lotes
    */
-  const deleteMonedasBulk = async (monedaIds) => {
+  const deleteGendersBulk = async (genderIds) => {
     const result = await alert.confirm(
-      `¿Eliminar ${monedaIds.length} moneda(s)?`,
+      `¿Eliminar ${genderIds.length} género(s)?`,
       'Esta acción no se puede deshacer',
       'Sí, eliminar'
     )
@@ -182,18 +182,18 @@ export function useMonedas() {
     error.value = null
 
     try {
-      const response = await apiService.delete('/monedas/bulk/delete', {
-        data: { ids: monedaIds }
+      const response = await apiService.delete('/genders/bulk/delete', {
+        data: { ids: genderIds }
       })
 
-      alert.success('¡Eliminadas!', response.data.message)
+      alert.success('¡Eliminados!', response.data.message)
 
-      // Recargar lista de monedas
-      await fetchMonedas(currentPage.value)
+      // Recargar lista de géneros
+      await fetchGenders(currentPage.value)
 
       return true
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al eliminar monedas'
+      error.value = err.response?.data?.message || 'Error al eliminar géneros'
       alert.error('Error', error.value)
       return false
     } finally {
@@ -202,11 +202,11 @@ export function useMonedas() {
   }
 
   /**
-   * Buscar monedas
+   * Buscar géneros
    */
-  const searchMonedas = async (searchTerm) => {
+  const searchGenders = async (searchTerm) => {
     search.value = searchTerm
-    await fetchMonedas(1) // Reiniciar a la página 1
+    await fetchGenders(1) // Reiniciar a la página 1
   }
 
   /**
@@ -214,32 +214,32 @@ export function useMonedas() {
    */
   const changePage = async (page) => {
     if (page < 1 || page > lastPage.value) return
-    await fetchMonedas(page)
+    await fetchGenders(page)
   }
 
   /**
    * Navegación
    */
   const goToCreate = () => {
-    router.push({ name: 'monedas.create' })
+    router.push({ name: 'genders.create' })
   }
 
   const goToEdit = (id) => {
-    router.push({ name: 'monedas.edit', params: { id } })
+    router.push({ name: 'genders.edit', params: { id } })
   }
 
   const goToIndex = () => {
-    router.push({ name: 'monedas.index' })
+    router.push({ name: 'genders.index' })
   }
 
   // Computed
-  const hasMonedas = computed(() => monedas.value.length > 0)
+  const hasGenders = computed(() => genders.value.length > 0)
   const hasPrevPage = computed(() => currentPage.value > 1)
   const hasNextPage = computed(() => currentPage.value < lastPage.value)
 
   return {
     // Estado
-    monedas,
+    genders,
     loading,
     error,
 
@@ -253,13 +253,13 @@ export function useMonedas() {
     search,
 
     // Métodos
-    fetchMonedas,
-    fetchMoneda,
-    createMoneda,
-    updateMoneda,
-    deleteMoneda,
-    deleteMonedasBulk,
-    searchMonedas,
+    fetchGenders,
+    fetchGender,
+    createGender,
+    updateGender,
+    deleteGender,
+    deleteGendersBulk,
+    searchGenders,
     changePage,
 
     // Navegación
@@ -268,7 +268,7 @@ export function useMonedas() {
     goToIndex,
 
     // Computed
-    hasMonedas,
+    hasGenders,
     hasPrevPage,
     hasNextPage,
   }

@@ -4,15 +4,15 @@ import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
 
 /**
- * Composable para gestionar el CRUD de sexos
+ * Composable para gestionar el CRUD de monedas (currencies)
  * Incluye: listar, crear, editar, eliminar individual y por lotes
  */
-export function useSexes() {
+export function useCurrencies() {
   const router = useRouter()
   const alert = useAlert()
 
   // Estado
-  const sexes = ref([])
+  const currencies = ref([])
   const loading = ref(false)
   const error = ref(null)
 
@@ -26,9 +26,9 @@ export function useSexes() {
   const search = ref('')
 
   /**
-   * Obtener lista de sexos con paginación y búsqueda
+   * Obtener lista de monedas con paginación y búsqueda
    */
-  const fetchSexes = async (page = 1) => {
+  const fetchCurrencies = async (page = 1) => {
     loading.value = true
     error.value = null
 
@@ -42,15 +42,15 @@ export function useSexes() {
         params.search = search.value
       }
 
-      const response = await apiService.get('/sexes', { params })
+      const response = await apiService.get('/currencies', { params })
 
-      sexes.value = response.data.data
+      currencies.value = response.data.data
       currentPage.value = response.data.meta.current_page
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al cargar sexos'
+      error.value = err.response?.data?.message || 'Error al cargar monedas'
       alert.error('Error', error.value)
     } finally {
       loading.value = false
@@ -58,17 +58,17 @@ export function useSexes() {
   }
 
   /**
-   * Obtener un sexo específico por ID
+   * Obtener una moneda específica por ID
    */
-  const fetchSex = async (id) => {
+  const fetchCurrency = async (id) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await apiService.get(`/sexes/${id}`)
+      const response = await apiService.get(`/currencies/${id}`)
       return response.data.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al cargar sexo'
+      error.value = err.response?.data?.message || 'Error al cargar moneda'
       alert.error('Error', error.value)
       throw err
     } finally {
@@ -77,19 +77,19 @@ export function useSexes() {
   }
 
   /**
-   * Crear nuevo sexo
+   * Crear nueva moneda
    */
-  const createSex = async (sexData) => {
+  const createCurrency = async (currencyData) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await apiService.post('/sexes', sexData)
+      const response = await apiService.post('/currencies', currencyData)
 
-      alert.success('¡Sexo creado!', response.data.message)
+      alert.success('¡Moneda creada!', response.data.message)
       return response.data.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al crear sexo'
+      error.value = err.response?.data?.message || 'Error al crear moneda'
 
       // Si hay errores de validación, mostrarlos
       if (err.response?.data?.errors) {
@@ -106,18 +106,18 @@ export function useSexes() {
   }
 
   /**
-   * Actualizar sexo existente
+   * Actualizar moneda existente
    */
-  const updateSex = async (id, sexData) => {
+  const updateCurrency = async (id, currencyData) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await apiService.put(`/sexes/${id}`, sexData)
-      alert.success('¡Sexo actualizado!', response.data.message)
+      const response = await apiService.put(`/currencies/${id}`, currencyData)
+      alert.success('¡Moneda actualizada!', response.data.message)
       return response.data.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al actualizar sexo'
+      error.value = err.response?.data?.message || 'Error al actualizar moneda'
 
       // Si hay errores de validación, mostrarlos
       if (err.response?.data?.errors) {
@@ -134,11 +134,11 @@ export function useSexes() {
   }
 
   /**
-   * Eliminar un sexo
+   * Eliminar una moneda
    */
-  const deleteSex = async (id) => {
+  const deleteCurrency = async (id) => {
     const result = await alert.confirm(
-      '¿Eliminar sexo?',
+      '¿Eliminar moneda?',
       'Esta acción no se puede deshacer',
       'Sí, eliminar'
     )
@@ -149,16 +149,16 @@ export function useSexes() {
     error.value = null
 
     try {
-      const response = await apiService.delete(`/sexes/${id}`)
+      const response = await apiService.delete(`/currencies/${id}`)
 
-      alert.success('¡Eliminado!', response.data.message)
+      alert.success('¡Eliminada!', response.data.message)
 
-      // Recargar lista de sexos
-      await fetchSexes(currentPage.value)
+      // Recargar lista de monedas
+      await fetchCurrencies(currentPage.value)
 
       return true
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al eliminar sexo'
+      error.value = err.response?.data?.message || 'Error al eliminar moneda'
       alert.error('Error', error.value)
       return false
     } finally {
@@ -167,11 +167,11 @@ export function useSexes() {
   }
 
   /**
-   * Eliminar múltiples sexos por lotes
+   * Eliminar múltiples monedas por lotes
    */
-  const deleteSexesBulk = async (sexIds) => {
+  const deleteCurrenciesBulk = async (currencyIds) => {
     const result = await alert.confirm(
-      `¿Eliminar ${sexIds.length} sexo(s)?`,
+      `¿Eliminar ${currencyIds.length} moneda(s)?`,
       'Esta acción no se puede deshacer',
       'Sí, eliminar'
     )
@@ -182,18 +182,18 @@ export function useSexes() {
     error.value = null
 
     try {
-      const response = await apiService.delete('/sexes/bulk/delete', {
-        data: { ids: sexIds }
+      const response = await apiService.delete('/currencies/bulk/delete', {
+        data: { ids: currencyIds }
       })
 
-      alert.success('¡Eliminados!', response.data.message)
+      alert.success('¡Eliminadas!', response.data.message)
 
-      // Recargar lista de sexos
-      await fetchSexes(currentPage.value)
+      // Recargar lista de monedas
+      await fetchCurrencies(currentPage.value)
 
       return true
     } catch (err) {
-      error.value = err.response?.data?.message || 'Error al eliminar sexos'
+      error.value = err.response?.data?.message || 'Error al eliminar monedas'
       alert.error('Error', error.value)
       return false
     } finally {
@@ -202,11 +202,11 @@ export function useSexes() {
   }
 
   /**
-   * Buscar sexos
+   * Buscar monedas
    */
-  const searchSexes = async (searchTerm) => {
+  const searchCurrencies = async (searchTerm) => {
     search.value = searchTerm
-    await fetchSexes(1) // Reiniciar a la página 1
+    await fetchCurrencies(1) // Reiniciar a la página 1
   }
 
   /**
@@ -214,32 +214,32 @@ export function useSexes() {
    */
   const changePage = async (page) => {
     if (page < 1 || page > lastPage.value) return
-    await fetchSexes(page)
+    await fetchCurrencies(page)
   }
 
   /**
    * Navegación
    */
   const goToCreate = () => {
-    router.push({ name: 'sexes.create' })
+    router.push({ name: 'currencies.create' })
   }
 
   const goToEdit = (id) => {
-    router.push({ name: 'sexes.edit', params: { id } })
+    router.push({ name: 'currencies.edit', params: { id } })
   }
 
   const goToIndex = () => {
-    router.push({ name: 'sexes.index' })
+    router.push({ name: 'currencies.index' })
   }
 
   // Computed
-  const hasSexes = computed(() => sexes.value.length > 0)
+  const hasCurrencies = computed(() => currencies.value.length > 0)
   const hasPrevPage = computed(() => currentPage.value > 1)
   const hasNextPage = computed(() => currentPage.value < lastPage.value)
 
   return {
     // Estado
-    sexes,
+    currencies,
     loading,
     error,
 
@@ -253,13 +253,13 @@ export function useSexes() {
     search,
 
     // Métodos
-    fetchSexes,
-    fetchSex,
-    createSex,
-    updateSex,
-    deleteSex,
-    deleteSexesBulk,
-    searchSexes,
+    fetchCurrencies,
+    fetchCurrency,
+    createCurrency,
+    updateCurrency,
+    deleteCurrency,
+    deleteCurrenciesBulk,
+    searchCurrencies,
     changePage,
 
     // Navegación
@@ -268,7 +268,7 @@ export function useSexes() {
     goToIndex,
 
     // Computed
-    hasSexes,
+    hasCurrencies,
     hasPrevPage,
     hasNextPage,
   }

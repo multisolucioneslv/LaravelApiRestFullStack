@@ -21,7 +21,7 @@
       </div>
 
       <!-- Loading inicial -->
-      <div v-if="loadingSex" class="flex justify-center items-center h-64">
+      <div v-if="loadingGender" class="flex justify-center items-center h-64">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
 
@@ -99,15 +99,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSexes } from '@/composables/useSexes'
+import { useGenders } from '@/composables/useGenders'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
-const { fetchSex, updateSex, loading, goToIndex } = useSexes()
+const { fetchGender, updateGender, loading, goToIndex } = useGenders()
 
-const loadingSex = ref(true)
+const loadingGender = ref(true)
 
 const form = ref({
   sexo: '',
@@ -116,34 +116,34 @@ const form = ref({
 
 onMounted(async () => {
   try {
-    // Cargar datos del sexo
-    const sexId = route.params.id
-    const sex = await fetchSex(sexId)
+    // Cargar datos del género
+    const genderId = route.params.id
+    const gender = await fetchGender(genderId)
 
     // Llenar formulario
     form.value = {
-      sexo: sex.sexo,
-      inicial: sex.inicial,
+      sexo: gender.sexo,
+      inicial: gender.inicial,
     }
   } catch (err) {
     // El error se maneja en el composable
     goToIndex()
   } finally {
-    loadingSex.value = false
+    loadingGender.value = false
   }
 })
 
 const handleSubmit = async () => {
   try {
-    const sexId = route.params.id
+    const genderId = route.params.id
 
     // Preparar datos para enviar (JSON simple)
-    const sexData = {
+    const genderData = {
       sexo: form.value.sexo,
       inicial: form.value.inicial,
     }
 
-    await updateSex(sexId, sexData)
+    await updateGender(genderId, genderData)
     goToIndex()
   } catch (err) {
     // Los errores se manejan en el composable con SweetAlert2

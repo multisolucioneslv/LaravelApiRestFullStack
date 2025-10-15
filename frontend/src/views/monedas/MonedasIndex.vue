@@ -19,7 +19,7 @@
       <!-- DataTable -->
       <MonedasDataTable
         v-else
-        :monedas="monedas"
+        :monedas="currencies"
         :current-page="currentPage"
         :last-page="lastPage"
         :total="total"
@@ -39,35 +39,35 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useMonedas } from '@/composables/useMonedas'
+import { useCurrencies } from '@/composables/useCurrencies'
 import MonedasDataTable from '@/components/monedas/MonedasDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const {
-  monedas,
+  currencies,
   loading,
   currentPage,
   lastPage,
   total,
   hasPrevPage,
   hasNextPage,
-  fetchMonedas,
-  deleteMoneda,
-  deleteMonedasBulk,
-  searchMonedas,
+  fetchCurrencies,
+  deleteCurrency,
+  deleteCurrenciesBulk,
+  searchCurrencies,
   changePage,
   goToCreate,
   goToEdit,
-} = useMonedas()
+} = useCurrencies()
 
 // Cargar monedas al montar
 onMounted(() => {
-  fetchMonedas()
+  fetchCurrencies()
 })
 
 // Manejadores
 const handleSearch = (searchTerm) => {
-  searchMonedas(searchTerm)
+  searchCurrencies(searchTerm)
 }
 
 const handleEdit = (id) => {
@@ -75,14 +75,14 @@ const handleEdit = (id) => {
 }
 
 const handleDelete = async (id) => {
-  const deleted = await deleteMoneda(id)
+  const deleted = await deleteCurrency(id)
   if (deleted) {
     // La lista se recarga automáticamente en el composable
   }
 }
 
 const handleBulkDelete = async (ids) => {
-  const deleted = await deleteMonedasBulk(ids)
+  const deleted = await deleteCurrenciesBulk(ids)
   if (deleted) {
     // La lista se recarga automáticamente en el composable
   }

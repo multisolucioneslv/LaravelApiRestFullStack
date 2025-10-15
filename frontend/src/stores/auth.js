@@ -47,8 +47,11 @@ export const useAuthStore = defineStore('auth', () => {
         await fetchUser()
       } catch (err) {
         console.error('Token inválido, limpiando sesión:', err)
-        // Si el token es inválido, limpiar todo
-        logout()
+        // Si el token es inválido, limpiar todo SIN mostrar confirmación
+        token.value = null
+        user.value = null
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user')
       }
     }
   }
@@ -179,8 +182,8 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('user', JSON.stringify(response.data.user))
     } catch (err) {
       console.error('Error al obtener usuario:', err)
-      // Si falla, hacer logout
-      await logout()
+      // Si falla, lanzar error para que initAuth() lo maneje
+      throw err
     } finally {
       loading.value = false
     }

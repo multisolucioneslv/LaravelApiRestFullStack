@@ -137,18 +137,18 @@
                   />
                 </div>
 
-                <!-- Sexo -->
+                <!-- Género -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Sexo
+                    Género
                   </label>
                   <select
-                    v-model="form.sexo_id"
+                    v-model="form.gender_id"
                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                   >
                     <option :value="null">Seleccionar...</option>
-                    <option v-for="sex in sexes" :key="sex.id" :value="sex.id">
-                      {{ sex.sexo }}
+                    <option v-for="gender in genders" :key="gender.id" :value="gender.id">
+                      {{ gender.sexo }}
                     </option>
                   </select>
                 </div>
@@ -243,13 +243,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useProfile } from '@/composables/useProfile'
-import { useSexes } from '@/composables/useSexes'
+import { useGenders } from '@/composables/useGenders'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const { profile, loading, updating, fetchProfile, updateProfile, changePassword, deleteAvatar } = useProfile()
-const { sexes, fetchSexes } = useSexes()
+const { genders, fetchGenders } = useGenders()
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -260,7 +260,7 @@ const form = ref({
   email: '',
   telefono: '',
   chatid: '',
-  sexo_id: null,
+  gender_id: null,
   empresa_id: null,
   activo: true
 })
@@ -372,7 +372,7 @@ const handlePasswordChange = async () => {
 
 onMounted(async () => {
   await fetchProfile()
-  await fetchSexes()
+  await fetchGenders()
 
   // Llenar formulario con datos actuales
   if (profile.value) {
@@ -380,9 +380,9 @@ onMounted(async () => {
       usuario: profile.value.usuario,
       name: profile.value.name,
       email: profile.value.email,
-      telefono: profile.value.telefono?.telefono || profile.value.telefono_id || '',
-      chatid: profile.value.chatid?.idtelegram || profile.value.chatid_id || '',
-      sexo_id: profile.value.sex?.id || profile.value.sexo_id || null,
+      telefono: profile.value.telefono || '',
+      chatid: profile.value.chatid || '',
+      gender_id: profile.value.gender?.id || profile.value.gender_id || null,
       empresa_id: profile.value.empresa?.id || profile.value.empresa_id || null,
       activo: profile.value.activo
     }

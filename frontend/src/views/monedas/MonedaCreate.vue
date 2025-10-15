@@ -146,13 +146,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useMonedas } from '@/composables/useMonedas'
+import { useCurrencies } from '@/composables/useCurrencies'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
-const { createMoneda, loading, goToIndex } = useMonedas()
+const { createCurrency, loading, goToIndex } = useCurrencies()
 
 const form = ref({
   codigo: '',
@@ -164,7 +164,7 @@ const form = ref({
 
 const handleSubmit = async () => {
   try {
-    await createMoneda(form.value)
+    await createCurrency(form.value)
     goToIndex()
   } catch (err) {
     // Los errores se manejan en el composable con SweetAlert2

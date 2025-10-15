@@ -19,7 +19,7 @@
       <!-- DataTable -->
       <SexesDataTable
         v-else
-        :sexes="sexes"
+        :sexes="genders"
         :current-page="currentPage"
         :last-page="lastPage"
         :total="total"
@@ -39,35 +39,35 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useSexes } from '@/composables/useSexes'
+import { useGenders } from '@/composables/useGenders'
 import SexesDataTable from '@/components/sexes/SexesDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const {
-  sexes,
+  genders,
   loading,
   currentPage,
   lastPage,
   total,
   hasPrevPage,
   hasNextPage,
-  fetchSexes,
-  deleteSex,
-  deleteSexesBulk,
-  searchSexes,
+  fetchGenders,
+  deleteGender,
+  deleteGendersBulk,
+  searchGenders,
   changePage,
   goToCreate,
   goToEdit,
-} = useSexes()
+} = useGenders()
 
-// Cargar sexos al montar
+// Cargar géneros al montar
 onMounted(() => {
-  fetchSexes()
+  fetchGenders()
 })
 
 // Manejadores
 const handleSearch = (searchTerm) => {
-  searchSexes(searchTerm)
+  searchGenders(searchTerm)
 }
 
 const handleEdit = (id) => {
@@ -75,14 +75,14 @@ const handleEdit = (id) => {
 }
 
 const handleDelete = async (id) => {
-  const deleted = await deleteSex(id)
+  const deleted = await deleteGender(id)
   if (deleted) {
     // La lista se recarga automáticamente en el composable
   }
 }
 
 const handleBulkDelete = async (ids) => {
-  const deleted = await deleteSexesBulk(ids)
+  const deleted = await deleteGendersBulk(ids)
   if (deleted) {
     // La lista se recarga automáticamente en el composable
   }

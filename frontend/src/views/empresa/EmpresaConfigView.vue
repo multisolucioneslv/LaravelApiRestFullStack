@@ -87,12 +87,12 @@
                   Moneda
                 </label>
                 <select
-                  v-model="form.moneda_id"
+                  v-model="form.currency_id"
                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 >
                   <option :value="null">Seleccionar...</option>
-                  <option v-for="moneda in monedas" :key="moneda.id" :value="moneda.id">
-                    {{ moneda.codigo }} - {{ moneda.nombre }}
+                  <option v-for="currency in currencies" :key="currency.id" :value="currency.id">
+                    {{ currency.codigo }} - {{ currency.nombre }}
                   </option>
                 </select>
               </div>
@@ -312,10 +312,10 @@
 import { ref, computed, onMounted } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useEmpresaConfig } from '@/composables/useEmpresaConfig'
-import { useMonedas } from '@/composables/useMonedas'
+import { useCurrencies } from '@/composables/useCurrencies'
 
 const { empresa, loading, updating, fetchEmpresaConfig, updateEmpresaConfig, deleteLogo, deleteFavicon, deleteFondoLogin } = useEmpresaConfig()
-const { monedas, fetchMonedas } = useMonedas()
+const { currencies, fetchCurrencies } = useCurrencies()
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -325,7 +325,7 @@ const form = ref({
   email: '',
   direccion: '',
   zona_horaria: 'America/Los_Angeles',
-  moneda_id: null,
+  currency_id: null,
   horarios: [
     { dia: 'lunes', abierto: true, apertura: '08:00', cierre: '18:00' },
     { dia: 'martes', abierto: true, apertura: '08:00', cierre: '18:00' },
@@ -458,7 +458,7 @@ const handleSubmit = async () => {
 onMounted(async () => {
   await Promise.all([
     fetchEmpresaConfig(),
-    fetchMonedas()
+    fetchCurrencies()
   ])
 
   // Llenar formulario con datos actuales
@@ -468,7 +468,7 @@ onMounted(async () => {
       email: empresa.value.email || '',
       direccion: empresa.value.direccion || '',
       zona_horaria: empresa.value.zona_horaria || 'America/Los_Angeles',
-      moneda_id: empresa.value.moneda?.id || null,
+      currency_id: empresa.value.currency?.id || empresa.value.currency_id || null,
       horarios: empresa.value.horarios || form.value.horarios
     }
   }

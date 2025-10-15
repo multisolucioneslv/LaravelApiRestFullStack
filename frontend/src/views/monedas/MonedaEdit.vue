@@ -21,7 +21,7 @@
       </div>
 
       <!-- Loading inicial -->
-      <div v-if="loadingMoneda" class="flex justify-center items-center h-64">
+      <div v-if="loadingCurrency" class="flex justify-center items-center h-64">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
 
@@ -152,16 +152,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useMonedas } from '@/composables/useMonedas'
+import { useCurrencies } from '@/composables/useCurrencies'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
-const { fetchMoneda, updateMoneda, loading, goToIndex } = useMonedas()
+const { fetchCurrency, updateCurrency, loading, goToIndex } = useCurrencies()
 
-const loadingMoneda = ref(true)
+const loadingCurrency = ref(true)
 
 const form = ref({
   codigo: '',
@@ -174,31 +174,31 @@ const form = ref({
 onMounted(async () => {
   try {
     // Cargar datos de la moneda
-    const monedaId = route.params.id
-    const moneda = await fetchMoneda(monedaId)
+    const currencyId = route.params.id
+    const currency = await fetchCurrency(currencyId)
 
     // Llenar formulario
     form.value = {
-      codigo: moneda.codigo,
-      nombre: moneda.nombre,
-      simbolo: moneda.simbolo,
-      tasa_cambio: moneda.tasa_cambio,
-      activo: moneda.activo,
+      codigo: currency.codigo,
+      nombre: currency.nombre,
+      simbolo: currency.simbolo,
+      tasa_cambio: currency.tasa_cambio,
+      activo: currency.activo,
     }
   } catch (err) {
     // El error se maneja en el composable
     goToIndex()
   } finally {
-    loadingMoneda.value = false
+    loadingCurrency.value = false
   }
 })
 
 const handleSubmit = async () => {
   try {
-    const monedaId = route.params.id
+    const currencyId = route.params.id
 
     // Preparar datos para enviar
-    const monedaData = {
+    const currencyData = {
       codigo: form.value.codigo,
       nombre: form.value.nombre,
       simbolo: form.value.simbolo,
@@ -206,7 +206,7 @@ const handleSubmit = async () => {
       activo: form.value.activo,
     }
 
-    await updateMoneda(monedaId, monedaData)
+    await updateCurrency(currencyId, currencyData)
     goToIndex()
   } catch (err) {
     // Los errores se manejan en el composable con SweetAlert2
