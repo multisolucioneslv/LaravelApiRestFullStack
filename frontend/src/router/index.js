@@ -94,6 +94,35 @@ const routes = [
     }
   },
 
+  // Rutas de Roles y Permisos
+  {
+    path: '/roles',
+    name: 'roles.index',
+    component: () => import('@/views/roles/RolesIndex.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Roles y Permisos'
+    }
+  },
+  {
+    path: '/roles/create',
+    name: 'roles.create',
+    component: () => import('@/views/roles/RoleForm.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Crear Rol'
+    }
+  },
+  {
+    path: '/roles/:id/edit',
+    name: 'roles.edit',
+    component: () => import('@/views/roles/RoleForm.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Rol'
+    }
+  },
+
   // Rutas de Sistemas
   {
     path: '/sistemas',

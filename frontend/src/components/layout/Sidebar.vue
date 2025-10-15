@@ -89,6 +89,7 @@ import {
   ChevronDownIcon,
   TagIcon,
   BriefcaseIcon,
+  ShieldCheckIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -186,6 +187,12 @@ const menuGroups = [
         to: '/users',
         icon: UsersIcon,
       },
+      {
+        name: 'roles',
+        label: 'Roles y Permisos',
+        to: '/roles',
+        icon: ShieldCheckIcon,
+      },
     ],
   },
   {
@@ -270,16 +277,47 @@ const isActive = (path) => {
   return route.path === path || route.path.startsWith(path + '/')
 }
 
-// Alternar grupo abierto/cerrado
+// Alternar grupo abierto/cerrado (comportamiento accordion - solo uno abierto a la vez)
 const toggleGroup = (groupName) => {
-  openGroups[groupName] = !openGroups[groupName]
+  const wasOpen = openGroups[groupName]
+
+  // Cerrar todos los grupos
+  Object.keys(openGroups).forEach(key => {
+    openGroups[key] = false
+  })
+
+  // Si el grupo estaba cerrado, abrirlo
+  if (!wasOpen) {
+    openGroups[groupName] = true
+  }
+
   // Guardar estado en localStorage
   localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups))
+}
+
+// Detectar qué grupo contiene la ruta actual
+const detectActiveGroup = () => {
+  const currentPath = route.path
+
+  // Buscar el grupo que contiene un item con la ruta actual
+  for (const group of menuGroups) {
+    const hasActiveItem = group.items.some(item =>
+      currentPath === item.to || currentPath.startsWith(item.to + '/')
+    )
+
+    if (hasActiveItem) {
+      return group.name
+    }
+  }
+
+  return null
 }
 
 // Cargar estado de grupos desde localStorage
 onMounted(() => {
   const saved = localStorage.getItem('sidebarOpenGroups')
+
+  // Intentar cargar desde localStorage
   if (saved) {
     try {
       const parsedState = JSON.parse(saved)
@@ -287,6 +325,19 @@ onMounted(() => {
     } catch (error) {
       console.error('Error al cargar estado del sidebar:', error)
     }
+  }
+
+  // Detectar grupo activo y abrirlo (sobrescribe localStorage si es necesario)
+  const activeGroup = detectActiveGroup()
+  if (activeGroup) {
+    // Cerrar todos los grupos
+    Object.keys(openGroups).forEach(key => {
+      openGroups[key] = false
+    })
+    // Abrir el grupo activo
+    openGroups[activeGroup] = true
+    // Guardar en localStorage
+    localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups))
   }
 })
 </script>
