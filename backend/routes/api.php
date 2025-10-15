@@ -16,26 +16,26 @@ Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
     // Route::post('/register', [AuthController::class, 'register']);
 });
 
-// Rutas protegidas (requieren autenticación JWT)
-Route::middleware('auth:api')->group(function () {
+// Rutas protegidas (requieren autenticación JWT + validación de empresa)
+Route::middleware(['auth:api', 'empresa'])->group(function () {
     // Rutas de autenticación
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('throttle:10,1');
         Route::get('/me', [AuthController::class, 'me']);
     });
 
     // Módulo de Usuarios
     Route::prefix('users')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\UserController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Api\UserController::class, 'store']);
-        Route::get('/{id}', [App\Http\Controllers\Api\UserController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Api\UserController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy']);
-        Route::delete('/bulk/delete', [App\Http\Controllers\Api\UserController::class, 'destroyBulk']);
+        Route::get('/', [App\Http\Controllers\Api\UserController::class, 'index'])->middleware('permission:users.index');
+        Route::post('/', [App\Http\Controllers\Api\UserController::class, 'store'])->middleware('permission:users.store');
+        Route::get('/{id}', [App\Http\Controllers\Api\UserController::class, 'show'])->middleware('permission:users.show');
+        Route::put('/{id}', [App\Http\Controllers\Api\UserController::class, 'update'])->middleware('permission:users.update');
+        Route::delete('/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy'])->middleware('permission:users.destroy');
+        Route::delete('/bulk/delete', [App\Http\Controllers\Api\UserController::class, 'destroyBulk'])->middleware('permission:users.destroy');
         // Rutas específicas para perfil
-        Route::delete('/{id}/avatar', [App\Http\Controllers\Api\UserController::class, 'deleteAvatar']);
-        Route::put('/{id}/password', [App\Http\Controllers\Api\UserController::class, 'updatePassword']);
+        Route::delete('/{id}/avatar', [App\Http\Controllers\Api\UserController::class, 'deleteAvatar'])->middleware('permission:users.update');
+        Route::put('/{id}/password', [App\Http\Controllers\Api\UserController::class, 'updatePassword'])->middleware('permission:users.update');
     });
 
     // Módulo de Sistemas
@@ -189,7 +189,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // Configuración de Empresa (para Admin - solo SU empresa)
-    Route::prefix('empresa/configuracion')->group(function () {
+    Route::prefix('empresa/configuracion')->middleware('permission:empresas.update')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'show']);
         Route::post('/', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'update']);
         Route::delete('/logo', [App\Http\Controllers\Api\EmpresaConfiguracionController::class, 'deleteLogo']);
@@ -199,12 +199,12 @@ Route::middleware('auth:api')->group(function () {
 
     // Módulo de Roles y Permisos
     Route::prefix('roles')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\RoleController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Api\RoleController::class, 'store']);
-        Route::get('/permissions', [App\Http\Controllers\Api\RoleController::class, 'allPermissions']);
-        Route::get('/{id}', [App\Http\Controllers\Api\RoleController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Api\RoleController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Api\RoleController::class, 'destroy']);
+        Route::get('/', [App\Http\Controllers\Api\RoleController::class, 'index'])->middleware('permission:roles.index');
+        Route::post('/', [App\Http\Controllers\Api\RoleController::class, 'store'])->middleware('permission:roles.store');
+        Route::get('/permissions', [App\Http\Controllers\Api\RoleController::class, 'allPermissions'])->middleware('permission:roles.index');
+        Route::get('/{id}', [App\Http\Controllers\Api\RoleController::class, 'show'])->middleware('permission:roles.show');
+        Route::put('/{id}', [App\Http\Controllers\Api\RoleController::class, 'update'])->middleware('permission:roles.update');
+        Route::delete('/{id}', [App\Http\Controllers\Api\RoleController::class, 'destroy'])->middleware('permission:roles.destroy');
     });
 
     // Aquí irán más módulos del ERP

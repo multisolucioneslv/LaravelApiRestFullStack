@@ -64,9 +64,9 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'sexo_id' => $request->sexo_id,
-            'telefono_id' => $request->telefono_id,
-            'chatid_id' => $request->chatid_id,
+            'gender_id' => $request->gender_id,
+            'telefono' => $request->telefono,
+            'chatid' => $request->chatid,
             'empresa_id' => $request->empresa_id,
             'activo' => true,
         ]);
@@ -88,7 +88,7 @@ class AuthController extends Controller
         $user = auth('api')->user();
 
         // Cargar relaciones
-        $user->load(['sex', 'telefono', 'chatid', 'empresa', 'roles']);
+        $user->load(['gender', 'empresa', 'roles']);
 
         return response()->json([
             'success' => true,
