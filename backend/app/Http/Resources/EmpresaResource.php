@@ -18,7 +18,7 @@ class EmpresaResource extends JsonResource
             'id' => $this->id,
             'nombre' => $this->nombre,
             'telefono_id' => $this->telefono_id,
-            'moneda_id' => $this->moneda_id,
+            'currency_id' => $this->currency_id,
             'email' => $this->email,
             'direccion' => $this->direccion,
             'logo' => $this->logo ? asset('storage/' . $this->logo) : null,
@@ -28,17 +28,18 @@ class EmpresaResource extends JsonResource
             'activo' => (bool) $this->activo,
 
             // Relaciones
-            'telefono' => $this->whenLoaded('telefono', function () {
+            'phone' => $this->whenLoaded('phone', function () {
                 return [
-                    'id' => $this->telefono->id,
-                    'telefono' => $this->telefono->telefono,
+                    'id' => $this->phone->id,
+                    'telefono' => $this->phone->telefono,
                 ];
             }),
-            'moneda' => $this->whenLoaded('moneda', function () {
+            'currency' => $this->whenLoaded('currency', function () {
                 return [
-                    'id' => $this->moneda->id,
-                    'nombre' => $this->moneda->nombre,
-                    'simbolo' => $this->moneda->simbolo,
+                    'id' => $this->currency->id,
+                    'codigo' => $this->currency->codigo,
+                    'nombre' => $this->currency->nombre,
+                    'simbolo' => $this->currency->simbolo,
                 ];
             }),
 

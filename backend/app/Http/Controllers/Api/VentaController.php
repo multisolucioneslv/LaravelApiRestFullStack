@@ -27,7 +27,7 @@ class VentaController extends Controller
         $search = $request->input('search', '');
 
         $ventas = Venta::query()
-            ->with(['empresa', 'user', 'cotizacion', 'moneda', 'tax', 'detalles.inventario'])
+            ->with(['empresa', 'user', 'cotizacion', 'currency', 'tax', 'detalles.inventario'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('codigo', 'like', "%{$search}%")
@@ -83,7 +83,7 @@ class VentaController extends Controller
                 'empresa_id' => $request->empresa_id,
                 'user_id' => auth()->id(), // Usuario autenticado
                 'cotizacion_id' => $request->cotizacion_id,
-                'moneda_id' => $request->moneda_id,
+                'currency_id' => $request->currency_id,
                 'tax_id' => $request->tax_id,
                 'subtotal' => $totales['subtotal'],
                 'impuesto' => $totales['impuesto'],
@@ -110,7 +110,7 @@ class VentaController extends Controller
             DB::commit();
 
             // Cargar relaciones
-            $venta->load(['empresa', 'user', 'cotizacion', 'moneda', 'tax', 'detalles.inventario']);
+            $venta->load(['empresa', 'user', 'cotizacion', 'currency', 'tax', 'detalles.inventario']);
 
             return response()->json([
                 'success' => true,
@@ -134,7 +134,7 @@ class VentaController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $venta = Venta::with(['empresa', 'user', 'cotizacion', 'moneda', 'tax', 'detalles.inventario'])
+        $venta = Venta::with(['empresa', 'user', 'cotizacion', 'currency', 'tax', 'detalles.inventario'])
             ->findOrFail($id);
 
         return response()->json([
@@ -173,7 +173,7 @@ class VentaController extends Controller
                 'observaciones' => $request->observaciones,
                 'empresa_id' => $request->empresa_id,
                 'cotizacion_id' => $request->cotizacion_id,
-                'moneda_id' => $request->moneda_id,
+                'currency_id' => $request->currency_id,
                 'tax_id' => $request->tax_id,
                 'subtotal' => $totales['subtotal'],
                 'impuesto' => $totales['impuesto'],
@@ -203,7 +203,7 @@ class VentaController extends Controller
             DB::commit();
 
             // Cargar relaciones
-            $venta->load(['empresa', 'user', 'cotizacion', 'moneda', 'tax', 'detalles.inventario']);
+            $venta->load(['empresa', 'user', 'cotizacion', 'currency', 'tax', 'detalles.inventario']);
 
             return response()->json([
                 'success' => true,

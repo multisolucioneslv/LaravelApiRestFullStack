@@ -58,7 +58,7 @@ class Empresa extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function telefono()
+    public function phone()
     {
         return $this->belongsTo(Phone::class, 'telefono_id');
     }

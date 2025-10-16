@@ -36,7 +36,7 @@ class EmpresaConfiguracionController extends Controller
             }
 
             // Cargar la empresa con sus relaciones
-            $empresa = Empresa::with(['telefono', 'moneda', 'users'])
+            $empresa = Empresa::with(['phone', 'currency', 'users'])
                 ->findOrFail($user->empresa_id);
 
             return response()->json([
@@ -81,7 +81,7 @@ class EmpresaConfiguracionController extends Controller
                 'direccion' => $request->direccion,
                 'zona_horaria' => $request->zona_horaria,
                 'horarios' => $request->horarios, // JSON field
-                'moneda_id' => $request->moneda_id,
+                'currency_id' => $request->currency_id,
             ];
 
             // Manejo del logo
@@ -124,7 +124,7 @@ class EmpresaConfiguracionController extends Controller
             $empresa->update($data);
 
             // Recargar con relaciones
-            $empresa->load(['telefono', 'moneda', 'users']);
+            $empresa->load(['phone', 'currency', 'users']);
 
             return response()->json([
                 'success' => true,

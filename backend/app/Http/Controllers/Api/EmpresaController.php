@@ -25,7 +25,7 @@ class EmpresaController extends Controller
         $search = $request->input('search', '');
 
         $empresas = Empresa::query()
-            ->with(['telefono', 'moneda'])
+            ->with(['phone', 'currency'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nombre', 'like', "%{$search}%")
@@ -55,7 +55,7 @@ class EmpresaController extends Controller
         $data = [
             'nombre' => $request->nombre,
             'telefono_id' => $request->telefono_id,
-            'moneda_id' => $request->moneda_id,
+            'currency_id' => $request->currency_id,
             'email' => $request->email,
             'direccion' => $request->direccion,
             'zona_horaria' => $request->input('zona_horaria', 'America/Los_Angeles'),
@@ -94,7 +94,7 @@ class EmpresaController extends Controller
         }
 
         $empresa = Empresa::create($data);
-        $empresa->load(['telefono', 'moneda']);
+        $empresa->load(['phone', 'currency']);
 
         return response()->json([
             'success' => true,
@@ -108,7 +108,7 @@ class EmpresaController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $empresa = Empresa::with(['telefono', 'moneda'])
+        $empresa = Empresa::with(['phone', 'currency'])
             ->findOrFail($id);
 
         return response()->json([
@@ -127,7 +127,7 @@ class EmpresaController extends Controller
         $data = [
             'nombre' => $request->nombre,
             'telefono_id' => $request->telefono_id,
-            'moneda_id' => $request->moneda_id,
+            'currency_id' => $request->currency_id,
             'email' => $request->email,
             'direccion' => $request->direccion,
             'zona_horaria' => $request->zona_horaria,
@@ -180,7 +180,7 @@ class EmpresaController extends Controller
         }
 
         $empresa->update($data);
-        $empresa->load(['telefono', 'moneda']);
+        $empresa->load(['phone', 'currency']);
 
         return response()->json([
             'success' => true,

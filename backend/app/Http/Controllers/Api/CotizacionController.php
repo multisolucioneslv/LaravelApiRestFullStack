@@ -27,7 +27,7 @@ class CotizacionController extends Controller
         $search = $request->input('search', '');
 
         $cotizaciones = Cotizacion::query()
-            ->with(['empresa', 'user', 'moneda', 'tax', 'detalles.inventario'])
+            ->with(['empresa', 'user', 'currency', 'tax', 'detalles.inventario'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('codigo', 'like', "%{$search}%")
@@ -81,7 +81,7 @@ class CotizacionController extends Controller
                 'observaciones' => $request->observaciones,
                 'empresa_id' => $request->empresa_id,
                 'user_id' => auth()->id(), // Usuario autenticado
-                'moneda_id' => $request->moneda_id,
+                'currency_id' => $request->currency_id,
                 'tax_id' => $request->tax_id,
                 'subtotal' => $totales['subtotal'],
                 'impuesto' => $totales['impuesto'],
@@ -108,7 +108,7 @@ class CotizacionController extends Controller
             DB::commit();
 
             // Cargar relaciones
-            $cotizacion->load(['empresa', 'user', 'moneda', 'tax', 'detalles.inventario']);
+            $cotizacion->load(['empresa', 'user', 'currency', 'tax', 'detalles.inventario']);
 
             return response()->json([
                 'success' => true,
@@ -132,7 +132,7 @@ class CotizacionController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $cotizacion = Cotizacion::with(['empresa', 'user', 'moneda', 'tax', 'detalles.inventario'])
+        $cotizacion = Cotizacion::with(['empresa', 'user', 'currency', 'tax', 'detalles.inventario'])
             ->findOrFail($id);
 
         return response()->json([
@@ -170,7 +170,7 @@ class CotizacionController extends Controller
                 'estado' => $request->input('estado', $cotizacion->estado),
                 'observaciones' => $request->observaciones,
                 'empresa_id' => $request->empresa_id,
-                'moneda_id' => $request->moneda_id,
+                'currency_id' => $request->currency_id,
                 'tax_id' => $request->tax_id,
                 'subtotal' => $totales['subtotal'],
                 'impuesto' => $totales['impuesto'],
@@ -200,7 +200,7 @@ class CotizacionController extends Controller
             DB::commit();
 
             // Cargar relaciones
-            $cotizacion->load(['empresa', 'user', 'moneda', 'tax', 'detalles.inventario']);
+            $cotizacion->load(['empresa', 'user', 'currency', 'tax', 'detalles.inventario']);
 
             return response()->json([
                 'success' => true,
