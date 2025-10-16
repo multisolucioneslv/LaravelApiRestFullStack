@@ -84,47 +84,67 @@
               Información Adicional
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Sexo -->
+              <!-- Género -->
               <div>
-                <label for="sexo_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Sexo
+                <label for="gender_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  Género
                 </label>
                 <select
-                  id="sexo_id"
-                  v-model="form.sexo_id"
+                  id="gender_id"
+                  v-model="form.gender_id"
                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <option value="">Seleccione...</option>
-                  <option value="1">Masculino</option>
-                  <option value="2">Femenino</option>
-                  <option value="3">Otro</option>
+                  <option
+                    v-for="gender in genders"
+                    :key="gender.id"
+                    :value="gender.id"
+                  >
+                    {{ gender.sexo }}
+                  </option>
                 </select>
               </div>
 
               <!-- Teléfono -->
               <div>
-                <label for="telefono" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label for="phone_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                   Teléfono
                 </label>
-                <Input
-                  id="telefono"
-                  v-model="form.telefono"
-                  type="tel"
-                  placeholder="(000) 000-0000"
-                />
+                <select
+                  id="phone_id"
+                  v-model="form.phone_id"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Seleccione...</option>
+                  <option
+                    v-for="telefono in telefonos"
+                    :key="telefono.id"
+                    :value="telefono.id"
+                  >
+                    {{ telefono.telefono }}
+                  </option>
+                </select>
               </div>
 
               <!-- Chat ID (Telegram) -->
               <div>
-                <label for="chatid" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label for="chatid_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                   Chat ID (Telegram)
                 </label>
-                <Input
-                  id="chatid"
-                  v-model="form.chatid"
-                  type="text"
-                  placeholder="123456789"
-                />
+                <select
+                  id="chatid_id"
+                  v-model="form.chatid_id"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Seleccione...</option>
+                  <option
+                    v-for="chatid in chatids"
+                    :key="chatid.id"
+                    :value="chatid.id"
+                  >
+                    {{ chatid.idtelegram }}
+                  </option>
+                </select>
               </div>
 
               <!-- Empresa -->
@@ -194,6 +214,9 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useEmpresas } from '@/composables/useEmpresas'
+import { useGenders } from '@/composables/useGenders'
+import { useTelefonos } from '@/composables/useTelefonos'
+import { useChatids } from '@/composables/useChatids'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -202,6 +225,9 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 const route = useRoute()
 const { fetchUser, updateUser, loading, goToIndex } = useUsers()
 const { empresas, fetchEmpresas } = useEmpresas()
+const { genders, fetchGenders } = useGenders()
+const { telefonos, fetchTelefonos } = useTelefonos()
+const { chatids, fetchChatids } = useChatids()
 
 const loadingUser = ref(true)
 
@@ -209,30 +235,35 @@ const form = ref({
   usuario: '',
   name: '',
   email: '',
-  sexo_id: '',
-  telefono: '',
-  chatid: '',
+  gender_id: '',
+  phone_id: '',
+  chatid_id: '',
   empresa_id: '',
   activo: true,
 })
 
 onMounted(async () => {
   try {
-    // Cargar empresas
-    await fetchEmpresas()
+    // Cargar datos en paralelo
+    await Promise.all([
+      fetchEmpresas(),
+      fetchGenders(),
+      fetchTelefonos(),
+      fetchChatids()
+    ])
 
     // Cargar datos del usuario
     const userId = route.params.id
     const user = await fetchUser(userId)
 
-    // Llenar formulario
+    // Llenar formulario con los IDs correctos
     form.value = {
       usuario: user.usuario,
       name: user.name,
       email: user.email,
-      sexo_id: user.sexo_id || '',
-      telefono: user.telefono || '',
-      chatid: user.chatid || '',
+      gender_id: user.gender_id || '',
+      phone_id: user.phone_id || '',
+      chatid_id: user.chatid_id || '',
       empresa_id: user.empresa_id || '',
       activo: user.activo,
     }
@@ -257,14 +288,14 @@ const handleSubmit = async () => {
     }
 
     // Solo agregar campos opcionales si tienen valor
-    if (form.value.sexo_id) {
-      userData.sexo_id = form.value.sexo_id
+    if (form.value.gender_id) {
+      userData.gender_id = form.value.gender_id
     }
-    if (form.value.telefono) {
-      userData.telefono = form.value.telefono
+    if (form.value.phone_id) {
+      userData.phone_id = form.value.phone_id
     }
-    if (form.value.chatid) {
-      userData.chatid = form.value.chatid
+    if (form.value.chatid_id) {
+      userData.chatid_id = form.value.chatid_id
     }
     if (form.value.empresa_id) {
       userData.empresa_id = form.value.empresa_id
