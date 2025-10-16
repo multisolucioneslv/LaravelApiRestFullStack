@@ -25,6 +25,8 @@ class EmpresaResource extends JsonResource
             'favicon' => $this->favicon ? asset('storage/' . $this->favicon) : null,
             'fondo_login' => $this->fondo_login ? asset('storage/' . $this->fondo_login) : null,
             'zona_horaria' => $this->zona_horaria,
+            'horarios' => $this->horarios,
+            'show_loading_effect' => (bool) $this->show_loading_effect,
             'activo' => (bool) $this->activo,
 
             // Relaciones

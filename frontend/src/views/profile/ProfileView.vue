@@ -183,7 +183,8 @@ const avatarURL = computed(() => {
     const cacheBuster = profile.value?.updated_at
       ? new Date(profile.value.updated_at).getTime()
       : Date.now()
-    return `${apiURL}/storage/${profile.value.avatar}?v=${cacheBuster}`
+    // El backend ya devuelve la URL completa con asset()
+    return `${profile.value.avatar}?v=${cacheBuster}`
   }
   return null
 })
@@ -198,7 +199,8 @@ const getInitials = (name) => {
 }
 
 const getEmpresaLogo = (logo) => {
-  return `${apiURL}/storage/${logo}`
+  // El backend ya devuelve la URL completa con asset()
+  return logo
 }
 
 const formatDate = (dateString) => {

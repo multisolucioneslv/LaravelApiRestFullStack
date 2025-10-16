@@ -16,6 +16,26 @@ class UpdateEmpresaConfigRequest extends FormRequest
     }
 
     /**
+     * Preparar los datos antes de la validación
+     */
+    protected function prepareForValidation(): void
+    {
+        // Si horarios viene como JSON string, decodificarlo
+        if ($this->has('horarios') && is_string($this->horarios)) {
+            $this->merge([
+                'horarios' => json_decode($this->horarios, true)
+            ]);
+        }
+
+        // Convertir show_loading_effect a boolean si viene como string
+        if ($this->has('show_loading_effect') && is_string($this->show_loading_effect)) {
+            $this->merge([
+                'show_loading_effect' => filter_var($this->show_loading_effect, FILTER_VALIDATE_BOOLEAN)
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -27,7 +47,8 @@ class UpdateEmpresaConfigRequest extends FormRequest
             'email' => 'nullable|email|max:100',
             'direccion' => 'nullable|string',
             'zona_horaria' => 'required|string|max:50',
-            'moneda_id' => 'nullable|exists:monedas,id',
+            'currency_id' => 'nullable|exists:currencies,id',
+            'show_loading_effect' => 'nullable|boolean',
             'horarios' => 'nullable|array',
             'horarios.*.dia' => 'required_with:horarios|string|in:lunes,martes,miercoles,jueves,viernes,sabado,domingo',
             'horarios.*.abierto' => 'required_with:horarios|boolean',
@@ -65,7 +86,10 @@ class UpdateEmpresaConfigRequest extends FormRequest
             'zona_horaria.max' => 'La zona horaria no puede exceder los 50 caracteres',
 
             // Moneda
-            'moneda_id.exists' => 'La moneda seleccionada no existe',
+            'currency_id.exists' => 'La moneda seleccionada no existe',
+
+            // Efecto de loading
+            'show_loading_effect.boolean' => 'El efecto de carga debe ser verdadero o falso',
 
             // Horarios
             'horarios.array' => 'Los horarios deben ser un arreglo',
@@ -108,7 +132,8 @@ class UpdateEmpresaConfigRequest extends FormRequest
             'email' => 'correo electrónico',
             'direccion' => 'dirección',
             'zona_horaria' => 'zona horaria',
-            'moneda_id' => 'moneda',
+            'currency_id' => 'moneda',
+            'show_loading_effect' => 'efecto de carga',
             'horarios' => 'horarios de atención',
             'horarios.*.dia' => 'día',
             'horarios.*.abierto' => 'estado de abierto',

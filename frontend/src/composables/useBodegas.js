@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de bodegas
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useBodegas() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const bodegas = ref([])
@@ -28,9 +30,13 @@ export function useBodegas() {
   /**
    * Obtener lista de bodegas con paginación y búsqueda
    */
-  const fetchBodegas = async (page = 1) => {
+  const fetchBodegas = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando bodegas', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -49,7 +55,14 @@ export function useBodegas() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al cargar bodegas'
       alert.error('Error', error.value)
     } finally {
@@ -64,10 +77,22 @@ export function useBodegas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando bodega', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/bodegas/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al cargar bodega'
       alert.error('Error', error.value)
       throw err
@@ -83,12 +108,23 @@ export function useBodegas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando bodega', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/bodegas', bodegaData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Bodega creada!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al crear bodega'
 
       // Si hay errores de validación, mostrarlos
@@ -112,11 +148,23 @@ export function useBodegas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando bodega', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.put(`/bodegas/${id}`, bodegaData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Bodega actualizada!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al actualizar bodega'
 
       // Si hay errores de validación, mostrarlos
@@ -148,16 +196,27 @@ export function useBodegas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando bodega', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/bodegas/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Eliminada!', response.data.message)
 
       // Recargar lista de bodegas
-      await fetchBodegas(currentPage.value)
+      await fetchBodegas(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al eliminar bodega'
       alert.error('Error', error.value)
       return false
@@ -181,18 +240,29 @@ export function useBodegas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando bodegas', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/bodegas/bulk/delete', {
         ids: bodegaIds
       })
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminadas!', response.data.message)
 
       // Recargar lista de bodegas
-      await fetchBodegas(currentPage.value)
+      await fetchBodegas(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al eliminar bodegas'
       alert.error('Error', error.value)
       return false

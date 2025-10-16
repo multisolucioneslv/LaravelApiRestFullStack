@@ -22,8 +22,6 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar ? asset('storage/' . $this->avatar) : null,
             'activo' => (bool) $this->activo,
             'gender_id' => $this->gender_id,
-            'phone_id' => $this->phone_id,
-            'chatid_id' => $this->chatid_id,
             'cuenta' => $this->cuenta,
             'empresa_id' => $this->empresa_id,
 
@@ -35,17 +33,39 @@ class UserResource extends JsonResource
                     'inicial' => $this->gender->inicial,
                 ];
             }),
-            'phone' => $this->whenLoaded('phone', function () {
-                return [
-                    'id' => $this->phone->id,
-                    'telefono' => $this->phone->telefono,
-                ];
+            'phones' => $this->when(true, function () {
+                $allPhones = collect();
+
+                // Agregar teléfono principal si existe
+                if ($this->relationLoaded('phone') && $this->phone) {
+                    $allPhones->push([
+                        'id' => $this->phone->id,
+                        'telefono' => $this->phone->telefono,
+                        'is_primary' => true,
+                    ]);
+                }
+
+                // Agregar teléfonos adicionales
+                if ($this->relationLoaded('additionalPhones')) {
+                    foreach ($this->additionalPhones as $phone) {
+                        $allPhones->push([
+                            'id' => $phone->id,
+                            'telefono' => $phone->telefono,
+                            'is_primary' => false,
+                        ]);
+                    }
+                }
+
+                return $allPhones->values()->all();
             }),
-            'chatid' => $this->whenLoaded('chatid', function () {
-                return [
-                    'id' => $this->chatid->id,
-                    'idtelegram' => $this->chatid->idtelegram,
-                ];
+            'chatid' => $this->when(true, function () {
+                if ($this->relationLoaded('chatidPrimary') && $this->chatidPrimary) {
+                    return [
+                        'id' => $this->chatidPrimary->id,
+                        'idtelegram' => $this->chatidPrimary->idtelegram,
+                    ];
+                }
+                return null;
             }),
             'empresa' => $this->whenLoaded('empresa', function () {
                 return [

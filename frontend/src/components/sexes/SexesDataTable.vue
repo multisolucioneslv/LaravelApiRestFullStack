@@ -21,7 +21,7 @@
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="ml-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
               Columnas
             </Button>
           </DropdownMenuTrigger>
@@ -259,14 +259,14 @@ const columns = [
       const sex = row.original
       return h('div', { class: 'flex gap-2' }, [
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', sex.id),
-          title: 'Editar'
+          title: 'Editar género'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -278,15 +278,14 @@ const columns = [
           h('path', { d: 'm15 5 4 4' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
           onClick: () => emit('delete', sex.id),
-          class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-          title: 'Eliminar'
+          title: 'Eliminar género'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',

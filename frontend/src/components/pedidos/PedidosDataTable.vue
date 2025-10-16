@@ -21,7 +21,7 @@
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="ml-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
               Columnas
             </Button>
           </DropdownMenuTrigger>
@@ -228,22 +228,22 @@ const formatMoney = (amount) => {
 // Helper para obtener color del badge de tipo
 const getTipoBadgeClass = (tipo) => {
   const classes = {
-    compra: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    venta: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    servicio: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+    compra: 'bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+    venta: 'bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    servicio: 'bg-purple-200 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
   }
-  return classes[tipo] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+  return classes[tipo] || 'bg-gray-200 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
 }
 
 // Helper para obtener color del badge de estado
 const getEstadoBadgeClass = (estado) => {
   const classes = {
-    pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-    proceso: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    completado: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    cancelado: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+    pendiente: 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+    proceso: 'bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+    completado: 'bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    cancelado: 'bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-400',
   }
-  return classes[estado] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+  return classes[estado] || 'bg-gray-200 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
 }
 
 // Helper para capitalizar primera letra
@@ -340,14 +340,14 @@ const columns = [
       const pedido = row.original
       return h('div', { class: 'flex gap-2' }, [
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', pedido.id),
-          title: 'Editar'
+          title: 'Editar pedido'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -359,15 +359,14 @@ const columns = [
           h('path', { d: 'm15 5 4 4' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
           onClick: () => emit('delete', pedido.id),
-          class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-          title: 'Eliminar'
+          title: 'Eliminar pedido'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',

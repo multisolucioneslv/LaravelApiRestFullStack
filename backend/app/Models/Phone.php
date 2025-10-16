@@ -38,27 +38,16 @@ class Phone extends Model
     ];
 
     // ==========================================
-    // RELACIONES (One-to-Many)
+    // RELACIONES POLIMÓRFICAS
     // ==========================================
 
     /**
-     * Un teléfono puede pertenecer a muchos usuarios
+     * Obtiene el modelo padre (User, Cliente, Empresa, etc.)
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function users()
+    public function phonable()
     {
-        return $this->hasMany(User::class, 'phone_id');
-    }
-
-    /**
-     * Un teléfono puede pertenecer a muchas empresas
-     * NOTA: Se mantiene 'telefono_id' porque la tabla empresas aún no se ha renombrado
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function empresas()
-    {
-        return $this->hasMany(Empresa::class, 'telefono_id');
+        return $this->morphTo();
     }
 }

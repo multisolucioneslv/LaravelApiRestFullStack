@@ -1,45 +1,107 @@
 <template>
-  <aside class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen">
-    <div class="p-6">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Menú
-      </h2>
+  <aside
+    :class="[
+      'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen transition-all duration-300',
+      isCollapsed ? 'w-20' : 'w-64'
+    ]"
+  >
+    <!-- Header con Logo/Nombre de Empresa y botón de colapsar -->
+    <div class="border-b border-gray-200 dark:border-gray-700 p-4">
+      <div class="flex items-center justify-between">
+        <!-- SI HAY LOGO: mostrar SOLO logo -->
+        <div v-if="empresaLogo" class="flex items-center flex-1 min-w-0">
+          <img
+            :src="empresaLogo"
+            :alt="empresaNombre"
+            :class="[
+              'object-contain',
+              isCollapsed ? 'w-10 h-10' : 'h-10 max-w-full'
+            ]"
+          />
+        </div>
+
+        <!-- SI NO HAY LOGO: mostrar nombre completo o iniciales -->
+        <div v-else class="flex items-center flex-1 min-w-0">
+          <!-- Cuando está colapsado: mostrar iniciales -->
+          <div
+            v-if="isCollapsed"
+            class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-600 dark:bg-primary-500 text-white font-bold text-sm"
+          >
+            {{ empresaIniciales }}
+          </div>
+
+          <!-- Cuando está expandido: mostrar nombre completo -->
+          <h2
+            v-else
+            class="text-base font-semibold text-gray-900 dark:text-white truncate"
+          >
+            {{ empresaNombre }}
+          </h2>
+        </div>
+
+        <!-- Botón de colapsar/expandir -->
+        <button
+          @click="toggleSidebar"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+          :title="isCollapsed ? 'Expandir menú' : 'Colapsar menú'"
+        >
+          <Bars3Icon v-if="isCollapsed" class="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          <ChevronLeftIcon v-else class="w-5 h-5 text-gray-600 dark:text-gray-300" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido del menú -->
+    <div :class="isCollapsed ? 'p-2' : 'p-6'">
 
       <!-- Lista de navegación -->
       <nav class="space-y-1">
         <!-- Dashboard (sin dropdown) -->
         <router-link
           to="/dashboard"
-          class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200"
           :class="[
+            'flex items-center rounded-lg transition-colors duration-200',
+            isCollapsed ? 'justify-center p-3' : 'space-x-3 px-4 py-3',
             isActive('/dashboard')
               ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           ]"
+          :title="isCollapsed ? 'Dashboard' : ''"
         >
-          <HomeIcon class="w-5 h-5" />
-          <span class="font-medium">Dashboard</span>
+          <HomeIcon class="w-5 h-5 flex-shrink-0" />
+          <span v-if="!isCollapsed" class="font-medium">Dashboard</span>
         </router-link>
 
         <!-- Grupos con dropdown -->
         <div v-for="group in menuGroups" :key="group.name" class="space-y-1">
           <!-- Encabezado del grupo -->
           <button
+            v-if="!isCollapsed"
             @click="toggleGroup(group.name)"
             class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <div class="flex items-center space-x-3">
-              <component :is="group.icon" class="w-5 h-5" />
+              <component :is="group.icon" class="w-5 h-5 flex-shrink-0" />
               <span class="font-medium">{{ group.label }}</span>
             </div>
             <ChevronDownIcon
-              class="w-4 h-4 transition-transform duration-200"
+              class="w-4 h-4 transition-transform duration-200 flex-shrink-0"
               :class="{ 'transform rotate-180': openGroups[group.name] }"
             />
           </button>
 
-          <!-- Items del grupo (colapsable) -->
+          <!-- Cuando está colapsado, mostrar solo el ícono del grupo como indicador -->
           <div
+            v-else
+            :title="group.label"
+            class="flex items-center justify-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+          >
+            <component :is="group.icon" class="w-5 h-5" />
+          </div>
+
+          <!-- Items del grupo (colapsable) - ocultos cuando sidebar está colapsado -->
+          <div
+            v-if="!isCollapsed"
             v-show="openGroups[group.name]"
             class="ml-4 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-2"
           >
@@ -54,7 +116,7 @@
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
               ]"
             >
-              <component :is="item.icon" class="w-4 h-4" />
+              <component :is="item.icon" class="w-4 h-4 flex-shrink-0" />
               <span>{{ item.label }}</span>
             </router-link>
           </div>
@@ -65,8 +127,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useSidebar } from '@/composables/useSidebar'
 import {
   HomeIcon,
   UsersIcon,
@@ -87,12 +151,46 @@ import {
   WrenchScrewdriverIcon,
   AdjustmentsHorizontalIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
+  Bars3Icon,
   TagIcon,
   BriefcaseIcon,
   ShieldCheckIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
+const authStore = useAuthStore()
+const { isCollapsed, toggle: toggleSidebar } = useSidebar()
+
+// Datos de la empresa
+const empresaLogo = computed(() => {
+  const logo = authStore.user?.empresa?.logo
+  // Si el logo existe y no está vacío, devolverlo
+  if (logo && logo.trim() !== '') {
+    // Si el logo es una URL completa, usarla directamente
+    if (logo.startsWith('http')) {
+      return logo
+    }
+    // Si es una ruta relativa, construir la URL completa
+    return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}${logo}`
+  }
+  return null
+})
+
+const empresaNombre = computed(() => {
+  return authStore.user?.empresa?.nombre || 'Mi Empresa'
+})
+
+const empresaIniciales = computed(() => {
+  const nombre = empresaNombre.value
+  // Obtener las primeras 2 letras de las primeras 2 palabras
+  const palabras = nombre.split(' ')
+  if (palabras.length >= 2) {
+    return (palabras[0][0] + palabras[1][0]).toUpperCase()
+  }
+  // Si solo hay una palabra, tomar las primeras 2 letras
+  return nombre.substring(0, 2).toUpperCase()
+})
 
 // Estado de grupos abiertos/cerrados (persistente en localStorage)
 const openGroups = reactive({

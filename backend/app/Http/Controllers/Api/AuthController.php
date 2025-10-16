@@ -120,11 +120,47 @@ class AuthController extends Controller
         $user = auth('api')->user();
 
         // Cargar relaciones
-        $user->load(['gender', 'phone', 'chatid', 'empresa', 'roles']);
+        $user->load(['gender', 'phone', 'chatid', 'empresa.currency', 'empresa.phone', 'roles']);
 
         return response()->json([
             'success' => true,
-            'user' => $user
+            'user' => [
+                'id' => $user->id,
+                'usuario' => $user->usuario,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => $user->avatar,
+                'empresa' => $user->empresa ? [
+                    'id' => $user->empresa->id,
+                    'nombre' => $user->empresa->nombre,
+                    'email' => $user->empresa->email,
+                    'direccion' => $user->empresa->direccion,
+                    'logo' => $user->empresa->logo ? asset('storage/' . $user->empresa->logo) : null,
+                    'favicon' => $user->empresa->favicon ? asset('storage/' . $user->empresa->favicon) : null,
+                    'fondo_login' => $user->empresa->fondo_login ? asset('storage/' . $user->empresa->fondo_login) : null,
+                    'zona_horaria' => $user->empresa->zona_horaria,
+                    'horarios' => $user->empresa->horarios,
+                    'show_loading_effect' => (bool) $user->empresa->show_loading_effect,
+                    'activo' => (bool) $user->empresa->activo,
+                    'currency' => $user->empresa->currency ? [
+                        'id' => $user->empresa->currency->id,
+                        'codigo' => $user->empresa->currency->codigo,
+                        'nombre' => $user->empresa->currency->nombre,
+                        'simbolo' => $user->empresa->currency->simbolo,
+                    ] : null,
+                ] : null,
+                'gender' => $user->gender,
+                'phone' => $user->phone,
+                'chatid' => $user->chatid,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                        'guard_name' => $role->guard_name,
+                    ];
+                }),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ]
         ]);
     }
 
@@ -157,9 +193,12 @@ class AuthController extends Controller
      */
     protected function respondWithToken(string $token, User $user, int $statusCode = Response::HTTP_OK): JsonResponse
     {
-        // Cargar roles si no están cargados
+        // Cargar relaciones si no están cargadas
         if (!$user->relationLoaded('roles')) {
             $user->load('roles');
+        }
+        if (!$user->relationLoaded('empresa')) {
+            $user->load('empresa.currency', 'empresa.phone');
         }
 
         return response()->json([
@@ -173,6 +212,25 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar' => $user->avatar,
+                'empresa' => $user->empresa ? [
+                    'id' => $user->empresa->id,
+                    'nombre' => $user->empresa->nombre,
+                    'email' => $user->empresa->email,
+                    'direccion' => $user->empresa->direccion,
+                    'logo' => $user->empresa->logo ? asset('storage/' . $user->empresa->logo) : null,
+                    'favicon' => $user->empresa->favicon ? asset('storage/' . $user->empresa->favicon) : null,
+                    'fondo_login' => $user->empresa->fondo_login ? asset('storage/' . $user->empresa->fondo_login) : null,
+                    'zona_horaria' => $user->empresa->zona_horaria,
+                    'horarios' => $user->empresa->horarios,
+                    'show_loading_effect' => (bool) $user->empresa->show_loading_effect,
+                    'activo' => (bool) $user->empresa->activo,
+                    'currency' => $user->empresa->currency ? [
+                        'id' => $user->empresa->currency->id,
+                        'codigo' => $user->empresa->currency->codigo,
+                        'nombre' => $user->empresa->currency->nombre,
+                        'simbolo' => $user->empresa->currency->simbolo,
+                    ] : null,
+                ] : null,
                 'roles' => $user->roles->map(function ($role) {
                     return [
                         'id' => $role->id,

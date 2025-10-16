@@ -38,16 +38,16 @@ class Chatid extends Model
     ];
 
     // ==========================================
-    // RELACIONES (One-to-Many)
+    // RELACIONES POLIMÓRFICAS
     // ==========================================
 
     /**
-     * Un chatid puede pertenecer a muchos usuarios
+     * Obtiene el modelo padre (User, Cliente, Empresa, etc.)
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function users()
+    public function chatable()
     {
-        return $this->hasMany(User::class, 'chatid_id');
+        return $this->morphTo();
     }
 }

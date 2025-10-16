@@ -33,6 +33,7 @@
         @previous-page="handlePreviousPage"
         @next-page="handleNextPage"
         @open-avatar-modal="handleOpenAvatarModal"
+        @change-account-status="handleOpenAccountStatusModal"
       />
 
       <!-- Modal de Avatar -->
@@ -40,6 +41,15 @@
         v-model:open="avatarModalOpen"
         :user="selectedUser"
         @avatar-updated="handleAvatarUpdated"
+      />
+
+      <!-- Modal de Cambio de Estado de Cuenta -->
+      <AccountStatusModal
+        :is-open="accountStatusModalOpen"
+        :user="selectedUserForStatus"
+        :loading="loading"
+        @close="handleCloseAccountStatusModal"
+        @submit="handleAccountStatusSubmit"
       />
     </div>
   </AppLayout>
@@ -50,6 +60,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useUsers } from '@/composables/useUsers'
 import UsersDataTable from '@/components/users/UsersDataTable.vue'
 import AvatarEditModal from '@/components/users/AvatarEditModal.vue'
+import AccountStatusModal from '@/components/users/AccountStatusModal.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const {
@@ -63,6 +74,7 @@ const {
   fetchUsers,
   deleteUser,
   deleteUsersBulk,
+  updateAccountStatus,
   searchUsers,
   changePage,
   goToCreate,
@@ -140,6 +152,34 @@ const handleAvatarUpdated = async (updatedUser) => {
 
     // Forzar actualización en el siguiente tick
     await nextTick()
+  }
+}
+
+// Modal de Cambio de Estado de Cuenta
+const accountStatusModalOpen = ref(false)
+const selectedUserForStatus = ref(null)
+
+const handleOpenAccountStatusModal = (user) => {
+  selectedUserForStatus.value = user
+  accountStatusModalOpen.value = true
+}
+
+const handleCloseAccountStatusModal = () => {
+  accountStatusModalOpen.value = false
+  selectedUserForStatus.value = null
+}
+
+const handleAccountStatusSubmit = async (data) => {
+  try {
+    await updateAccountStatus(data.userId, {
+      cuenta: data.cuenta,
+      razon_suspendida: data.razon_suspendida,
+    })
+
+    // Cerrar modal
+    handleCloseAccountStatusModal()
+  } catch (error) {
+    // El error ya se maneja en el composable
   }
 }
 </script>

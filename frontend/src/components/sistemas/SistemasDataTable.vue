@@ -21,7 +21,7 @@
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="ml-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
               Columnas
             </Button>
           </DropdownMenuTrigger>
@@ -255,7 +255,7 @@ const columns = [
           })
         : h('div', {
             key: `no-logo-${sistema.id}`, // Key única para cuando no hay logo
-            class: 'w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 dark:from-purple-500 dark:to-purple-700 flex items-center justify-center text-white font-semibold text-sm'
+            class: 'w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 dark:from-purple-500 dark:to-purple-700 flex items-center justify-center text-white font-semibold text-sm'
           }, sistema.nombre?.charAt(0).toUpperCase() || '?')
 
       return h('button', {
@@ -274,8 +274,8 @@ const columns = [
       const activo = row.getValue('activo')
       return h('span', {
         class: activo
-          ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-          : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+          ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+          : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-400'
       }, activo ? 'Activo' : 'Inactivo')
     },
     enableHiding: true, // Toggleable
@@ -304,14 +304,14 @@ const columns = [
       const sistema = row.original
       return h('div', { class: 'flex gap-2' }, [
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', sistema.id),
-          title: 'Editar'
+          title: 'Editar sistema'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -323,15 +323,14 @@ const columns = [
           h('path', { d: 'm15 5 4 4' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
           onClick: () => emit('delete', sistema.id),
-          class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-          title: 'Eliminar'
+          title: 'Eliminar sistema'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',

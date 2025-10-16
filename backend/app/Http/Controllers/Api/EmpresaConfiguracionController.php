@@ -82,6 +82,7 @@ class EmpresaConfiguracionController extends Controller
                 'zona_horaria' => $request->zona_horaria,
                 'horarios' => $request->horarios, // JSON field
                 'currency_id' => $request->currency_id,
+                'show_loading_effect' => $request->input('show_loading_effect', true),
             ];
 
             // Manejo del logo
@@ -91,8 +92,15 @@ class EmpresaConfiguracionController extends Controller
                     Storage::disk('public')->delete($empresa->logo);
                 }
 
-                // Guardar nuevo logo
-                $logoPath = $request->file('logo')->store('logos', 'public');
+                // Generar nombre profesional para el archivo
+                $file = $request->file('logo');
+                $extension = $file->getClientOriginalExtension();
+                $empresaSlug = $this->sanitizeFilename($empresa->nombre);
+                $timestamp = str_replace('.', '', microtime(true));
+                $filename = "{$empresaSlug}_logo_{$timestamp}.{$extension}";
+
+                // Guardar con nombre personalizado
+                $logoPath = $file->storeAs('logos', $filename, 'public');
                 $data['logo'] = $logoPath;
             }
 
@@ -103,8 +111,15 @@ class EmpresaConfiguracionController extends Controller
                     Storage::disk('public')->delete($empresa->favicon);
                 }
 
-                // Guardar nuevo favicon
-                $faviconPath = $request->file('favicon')->store('favicons', 'public');
+                // Generar nombre profesional para el archivo
+                $file = $request->file('favicon');
+                $extension = $file->getClientOriginalExtension();
+                $empresaSlug = $this->sanitizeFilename($empresa->nombre);
+                $timestamp = str_replace('.', '', microtime(true));
+                $filename = "{$empresaSlug}_favicon_{$timestamp}.{$extension}";
+
+                // Guardar con nombre personalizado
+                $faviconPath = $file->storeAs('favicons', $filename, 'public');
                 $data['favicon'] = $faviconPath;
             }
 
@@ -115,8 +130,15 @@ class EmpresaConfiguracionController extends Controller
                     Storage::disk('public')->delete($empresa->fondo_login);
                 }
 
-                // Guardar nuevo fondo
-                $fondoPath = $request->file('fondo_login')->store('fondos', 'public');
+                // Generar nombre profesional para el archivo
+                $file = $request->file('fondo_login');
+                $extension = $file->getClientOriginalExtension();
+                $empresaSlug = $this->sanitizeFilename($empresa->nombre);
+                $timestamp = str_replace('.', '', microtime(true));
+                $filename = "{$empresaSlug}_fondo_login_{$timestamp}.{$extension}";
+
+                // Guardar con nombre personalizado
+                $fondoPath = $file->storeAs('fondos', $filename, 'public');
                 $data['fondo_login'] = $fondoPath;
             }
 
@@ -253,5 +275,46 @@ class EmpresaConfiguracionController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Sanitizar el nombre de archivo para hacerlo seguro y profesional
+     *
+     * @param string $filename
+     * @return string
+     */
+    private function sanitizeFilename(string $filename): string
+    {
+        // Convertir a minúsculas
+        $filename = mb_strtolower($filename, 'UTF-8');
+
+        // Reemplazar caracteres especiales con equivalentes ASCII
+        $replacements = [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'ñ' => 'n', 'ü' => 'u',
+            'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
+            'â' => 'a', 'ê' => 'e', 'î' => 'i', 'ô' => 'o', 'û' => 'u',
+            'ä' => 'a', 'ë' => 'e', 'ï' => 'i', 'ö' => 'o', 'ü' => 'u',
+        ];
+        $filename = strtr($filename, $replacements);
+
+        // Reemplazar espacios y caracteres no alfanuméricos con guiones bajos
+        $filename = preg_replace('/[^a-z0-9]+/', '_', $filename);
+
+        // Eliminar guiones bajos múltiples consecutivos
+        $filename = preg_replace('/_+/', '_', $filename);
+
+        // Eliminar guiones bajos al inicio y al final
+        $filename = trim($filename, '_');
+
+        // Limitar longitud a 50 caracteres
+        $filename = substr($filename, 0, 50);
+
+        // Si queda vacío después de sanitizar, usar el ID
+        if (empty($filename)) {
+            $filename = 'empresa_' . auth()->user()->empresa_id;
+        }
+
+        return $filename;
     }
 }

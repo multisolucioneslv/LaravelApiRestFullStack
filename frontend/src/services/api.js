@@ -43,9 +43,21 @@ api.interceptors.response.use(
   (error) => {
     // Si el token expiró o es inválido (401), redirigir al login
     if (error.response && error.response.status === 401) {
+      console.warn('🔒 [SECURITY] Error 401 detectado - Cerrando sesión y deteniendo polling')
+
       // Limpiar datos de autenticación
       localStorage.removeItem('auth_token')
       localStorage.removeItem('user')
+
+      // CRÍTICO: Detener TODOS los intervalos activos para prevenir ataques
+      // Esto detiene cualquier polling que esté ejecutándose
+      const highestId = window.setTimeout(() => {}, 0)
+      for (let i = 0; i < highestId; i++) {
+        window.clearInterval(i)
+        window.clearTimeout(i)
+      }
+
+      console.log('✅ [SECURITY] Todos los intervalos y timeouts detenidos')
 
       // Redirigir al login si no estamos ya ahí
       if (router.currentRoute.value.path !== '/login') {

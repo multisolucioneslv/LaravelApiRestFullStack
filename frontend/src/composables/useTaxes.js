@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de impuestos (taxes)
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useTaxes() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const taxes = ref([])
@@ -30,7 +32,9 @@ export function useTaxes() {
    * Obtener lista de impuestos con paginación y búsqueda
    */
   const fetchTaxes = async (page = 1) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -54,7 +58,9 @@ export function useTaxes() {
       error.value = err.response?.data?.message || 'Error al cargar impuestos'
       alert.error('Error', error.value)
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -62,7 +68,9 @@ export function useTaxes() {
    * Obtener un impuesto específico por ID
    */
   const fetchTax = async (id) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -73,7 +81,9 @@ export function useTaxes() {
       alert.error('Error', error.value)
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -81,6 +91,10 @@ export function useTaxes() {
    * Obtener lista de empresas para el select
    */
   const fetchEmpresas = async () => {
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
+
     try {
       const response = await apiService.get('/empresas', {
         params: {
@@ -91,6 +105,10 @@ export function useTaxes() {
     } catch (err) {
       error.value = err.response?.data?.message || 'Error al cargar empresas'
       alert.error('Error', error.value)
+    } finally {
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -98,7 +116,9 @@ export function useTaxes() {
    * Crear nuevo impuesto
    */
   const createTax = async (taxData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -119,7 +139,9 @@ export function useTaxes() {
 
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -127,7 +149,9 @@ export function useTaxes() {
    * Actualizar impuesto existente
    */
   const updateTax = async (id, taxData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -147,7 +171,9 @@ export function useTaxes() {
 
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -163,7 +189,9 @@ export function useTaxes() {
 
     if (!result.isConfirmed) return false
 
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -180,7 +208,9 @@ export function useTaxes() {
       alert.error('Error', error.value)
       return false
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -196,7 +226,9 @@ export function useTaxes() {
 
     if (!result.isConfirmed) return false
 
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -215,7 +247,9 @@ export function useTaxes() {
       alert.error('Error', error.value)
       return false
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 

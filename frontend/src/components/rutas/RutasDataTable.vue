@@ -21,7 +21,7 @@
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="ml-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
               Columnas
             </Button>
           </DropdownMenuTrigger>
@@ -250,11 +250,11 @@ const columns = [
     cell: ({ row }) => {
       const metodo = row.getValue('metodo')
       const colors = {
-        'GET': 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-        'POST': 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-        'PUT': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-        'DELETE': 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-        'PATCH': 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+        'GET': 'bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        'POST': 'bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+        'PUT': 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+        'DELETE': 'bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+        'PATCH': 'bg-purple-200 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
       }
       return h('span', {
         class: `inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${colors[metodo] || 'bg-gray-100 text-gray-800'}`
@@ -288,8 +288,8 @@ const columns = [
       const activo = row.getValue('activo')
       return h('span', {
         class: activo
-          ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-          : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+          ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+          : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-400'
       }, activo ? 'Activo' : 'Inactivo')
     },
     enableHiding: true,
@@ -301,14 +301,14 @@ const columns = [
       const ruta = row.original
       return h('div', { class: 'flex gap-2' }, [
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', ruta.id),
-          title: 'Editar'
+          title: 'Editar ruta'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -320,15 +320,14 @@ const columns = [
           h('path', { d: 'm15 5 4 4' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
           onClick: () => emit('delete', ruta.id),
-          class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-          title: 'Eliminar'
+          title: 'Eliminar ruta'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',

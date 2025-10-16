@@ -34,6 +34,7 @@ class Empresa extends Model
         'zona_horaria',
         'horarios',
         'activo',
+        'show_loading_effect',
     ];
 
     /**
@@ -43,6 +44,7 @@ class Empresa extends Model
      */
     protected $casts = [
         'activo' => 'boolean',
+        'show_loading_effect' => 'boolean',
         'horarios' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

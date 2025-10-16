@@ -2,11 +2,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { useAuthStore } from '@/stores/auth'
 
 const API_URL = import.meta.env.VITE_API_URL
 
 export function usePedidos() {
   const router = useRouter()
+  const authStore = useAuthStore()
   const pedidos = ref([])
   const pedido = ref(null)
   const loading = ref(false)
@@ -14,7 +16,9 @@ export function usePedidos() {
 
   // Obtener lista de pedidos con paginación
   const fetchPedidos = async (page = 1, search = '') => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     try {
       const response = await axios.get(`${API_URL}/pedidos`, {
         params: { page, search, per_page: 15 }
@@ -30,13 +34,17 @@ export function usePedidos() {
       })
       return null
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
   // Obtener un pedido específico
   const fetchPedido = async (id) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     try {
       const response = await axios.get(`${API_URL}/pedidos/${id}`)
       pedido.value = response.data.data
@@ -50,13 +58,17 @@ export function usePedidos() {
       })
       return null
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
   // Crear nuevo pedido
   const createPedido = async (pedidoData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     try {
       const response = await axios.post(`${API_URL}/pedidos`, pedidoData)
       Swal.fire({
@@ -75,13 +87,17 @@ export function usePedidos() {
       })
       return null
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
   // Actualizar pedido
   const updatePedido = async (id, pedidoData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     try {
       const response = await axios.put(`${API_URL}/pedidos/${id}`, pedidoData)
       Swal.fire({
@@ -100,7 +116,9 @@ export function usePedidos() {
       })
       return null
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -118,7 +136,9 @@ export function usePedidos() {
     })
 
     if (result.isConfirmed) {
-      loading.value = true
+      if (authStore.showLoadingEffect) {
+        loading.value = true
+      }
       try {
         await axios.delete(`${API_URL}/pedidos/${id}`)
         Swal.fire({
@@ -136,7 +156,9 @@ export function usePedidos() {
         })
         return false
       } finally {
-        loading.value = false
+        if (authStore.showLoadingEffect) {
+          loading.value = false
+        }
       }
     }
     return false
@@ -156,7 +178,9 @@ export function usePedidos() {
     })
 
     if (result.isConfirmed) {
-      loading.value = true
+      if (authStore.showLoadingEffect) {
+        loading.value = true
+      }
       try {
         await axios.post(`${API_URL}/pedidos/bulk/delete`, { ids })
         Swal.fire({
@@ -174,7 +198,9 @@ export function usePedidos() {
         })
         return false
       } finally {
-        loading.value = false
+        if (authStore.showLoadingEffect) {
+          loading.value = false
+        }
       }
     }
     return false

@@ -98,6 +98,38 @@
               </div>
             </div>
 
+            <!-- Efecto de Loading -->
+            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Mostrar efecto de carga
+                  </label>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Activa o desactiva la animación de carga al realizar operaciones
+                  </p>
+                </div>
+                <div class="ml-4">
+                  <!-- Toggle Switch -->
+                  <button
+                    type="button"
+                    @click="form.show_loading_effect = !form.show_loading_effect"
+                    :class="[
+                      'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                      form.show_loading_effect ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                    ]"
+                  >
+                    <span
+                      :class="[
+                        'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                        form.show_loading_effect ? 'translate-x-6' : 'translate-x-1'
+                      ]"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Botón Guardar -->
             <div class="flex justify-end pt-4">
               <button
@@ -326,6 +358,7 @@ const form = ref({
   direccion: '',
   zona_horaria: 'America/Los_Angeles',
   currency_id: null,
+  show_loading_effect: true,
   horarios: [
     { dia: 'lunes', abierto: true, apertura: '08:00', cierre: '18:00' },
     { dia: 'martes', abierto: true, apertura: '08:00', cierre: '18:00' },
@@ -348,21 +381,24 @@ const fondoPreview = ref(null)
 // URLs de imágenes existentes
 const logoURL = computed(() => {
   if (empresa.value?.logo) {
-    return `${apiURL}/storage/${empresa.value.logo}?v=${Date.now()}`
+    // El backend ya devuelve la URL completa con asset()
+    return `${empresa.value.logo}?v=${Date.now()}`
   }
   return null
 })
 
 const faviconURL = computed(() => {
   if (empresa.value?.favicon) {
-    return `${apiURL}/storage/${empresa.value.favicon}?v=${Date.now()}`
+    // El backend ya devuelve la URL completa con asset()
+    return `${empresa.value.favicon}?v=${Date.now()}`
   }
   return null
 })
 
 const fondoURL = computed(() => {
   if (empresa.value?.fondo_login) {
-    return `${apiURL}/storage/${empresa.value.fondo_login}?v=${Date.now()}`
+    // El backend ya devuelve la URL completa con asset()
+    return `${empresa.value.fondo_login}?v=${Date.now()}`
   }
   return null
 })
@@ -469,6 +505,7 @@ onMounted(async () => {
       direccion: empresa.value.direccion || '',
       zona_horaria: empresa.value.zona_horaria || 'America/Los_Angeles',
       currency_id: empresa.value.currency?.id || empresa.value.currency_id || null,
+      show_loading_effect: empresa.value.show_loading_effect ?? true,
       horarios: empresa.value.horarios || form.value.horarios
     }
   }

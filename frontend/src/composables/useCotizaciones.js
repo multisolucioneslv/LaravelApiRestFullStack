@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de cotizaciones
@@ -11,6 +12,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useCotizaciones() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const cotizaciones = ref([])
@@ -35,9 +37,14 @@ export function useCotizaciones() {
   /**
    * Obtener lista de cotizaciones con paginación y búsqueda
    */
-  const fetchCotizaciones = async (page = 1) => {
+  const fetchCotizaciones = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    // Mostrar loading solo si showLoading es true y la empresa tiene habilitado el efecto
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando lista de cotizaciones', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -56,7 +63,17 @@ export function useCotizaciones() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      // Cerrar loading
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      // Cerrar loading antes de mostrar error
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar cotizaciones'
       alert.error('Error', error.value)
     } finally {
@@ -71,10 +88,26 @@ export function useCotizaciones() {
     loading.value = true
     error.value = null
 
+    // Mostrar loading
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando datos de la cotización', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/cotizaciones/${id}`)
+
+      // Cerrar loading
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      // Cerrar loading antes de mostrar error
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar cotización'
       alert.error('Error', error.value)
       throw err
@@ -90,12 +123,27 @@ export function useCotizaciones() {
     loading.value = true
     error.value = null
 
+    // Mostrar loading
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando cotización', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/cotizaciones', cotizacionData)
+
+      // Cerrar loading
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Cotización creada!', response.data.message)
       return response.data.data
     } catch (err) {
+      // Cerrar loading antes de mostrar error
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al crear cotización'
 
       // Si hay errores de validación, mostrarlos
@@ -119,11 +167,27 @@ export function useCotizaciones() {
     loading.value = true
     error.value = null
 
+    // Mostrar loading
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando cotización', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.put(`/cotizaciones/${id}`, cotizacionData)
+
+      // Cerrar loading
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Cotización actualizada!', response.data.message)
       return response.data.data
     } catch (err) {
+      // Cerrar loading antes de mostrar error
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al actualizar cotización'
 
       // Si hay errores de validación, mostrarlos
@@ -155,16 +219,31 @@ export function useCotizaciones() {
     loading.value = true
     error.value = null
 
+    // Mostrar loading durante la eliminación
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando cotización', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/cotizaciones/${id}`)
 
+      // Cerrar loading
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminado!', response.data.message)
 
-      // Recargar lista de cotizaciones
-      await fetchCotizaciones(currentPage.value)
+      // Recargar lista de cotizaciones (sin mostrar loading adicional)
+      await fetchCotizaciones(currentPage.value, false)
 
       return true
     } catch (err) {
+      // Cerrar loading antes de mostrar error
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar cotización'
       alert.error('Error', error.value)
       return false
@@ -188,18 +267,33 @@ export function useCotizaciones() {
     loading.value = true
     error.value = null
 
+    // Mostrar loading durante la eliminación
+    if (authStore.showLoadingEffect) {
+      alert.loading(`Eliminando ${cotizacionIds.length} cotización(es)`, 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/cotizaciones/bulk/delete', {
         ids: cotizacionIds
       })
 
+      // Cerrar loading
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminados!', response.data.message)
 
-      // Recargar lista de cotizaciones
-      await fetchCotizaciones(currentPage.value)
+      // Recargar lista de cotizaciones (sin mostrar loading adicional)
+      await fetchCotizaciones(currentPage.value, false)
 
       return true
     } catch (err) {
+      // Cerrar loading antes de mostrar error
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar cotizaciones'
       alert.error('Error', error.value)
       return false
@@ -213,7 +307,7 @@ export function useCotizaciones() {
    */
   const searchCotizaciones = async (searchTerm) => {
     search.value = searchTerm
-    await fetchCotizaciones(1) // Reiniciar a la página 1
+    await fetchCotizaciones(1, true) // Reiniciar a la página 1 y mostrar loading
   }
 
   /**

@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de galerías
@@ -11,6 +12,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useGalerias() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const galerias = ref([])
@@ -30,7 +32,9 @@ export function useGalerias() {
    * Obtener lista de galerías con paginación y búsqueda
    */
   const fetchGalerias = async (page = 1) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -54,7 +58,9 @@ export function useGalerias() {
       error.value = err.response?.data?.message || 'Error al cargar galerías'
       alert.error('Error', error.value)
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -62,7 +68,9 @@ export function useGalerias() {
    * Obtener una galería específica por ID
    */
   const fetchGaleria = async (id) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -73,7 +81,9 @@ export function useGalerias() {
       alert.error('Error', error.value)
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -81,7 +91,9 @@ export function useGalerias() {
    * Crear nueva galería con múltiples imágenes
    */
   const createGaleria = async (galeriaData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -107,7 +119,9 @@ export function useGalerias() {
 
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -115,7 +129,9 @@ export function useGalerias() {
    * Actualizar galería existente
    */
   const updateGaleria = async (id, galeriaData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -141,7 +157,9 @@ export function useGalerias() {
 
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -157,7 +175,9 @@ export function useGalerias() {
 
     if (!result.isConfirmed) return false
 
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -174,7 +194,9 @@ export function useGalerias() {
       alert.error('Error', error.value)
       return false
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -190,7 +212,9 @@ export function useGalerias() {
 
     if (!result.isConfirmed) return false
 
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -209,7 +233,9 @@ export function useGalerias() {
       alert.error('Error', error.value)
       return false
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 

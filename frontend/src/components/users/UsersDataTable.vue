@@ -21,7 +21,7 @@
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="ml-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
               Columnas
             </Button>
           </DropdownMenuTrigger>
@@ -183,7 +183,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['search', 'edit', 'delete', 'bulkDelete', 'create', 'previousPage', 'nextPage', 'openAvatarModal'])
+const emit = defineEmits(['search', 'edit', 'delete', 'bulkDelete', 'create', 'previousPage', 'nextPage', 'openAvatarModal', 'changeAccountStatus'])
 
 const rowSelection = ref({})
 const searchQuery = ref('')
@@ -251,12 +251,25 @@ const columns = [
     enableHiding: true, // Toggleable
   },
   {
-    accessorKey: 'phone',
+    accessorKey: 'phones',
     id: 'telefono',
     header: 'Teléfono',
     cell: ({ row }) => {
-      const phone = row.original.phone
-      return h('div', {}, phone?.telefono || '-')
+      const phones = row.original.phones
+      if (!phones || phones.length === 0) return h('div', {}, '-')
+
+      // Mostrar el teléfono principal (is_primary: true) o el primero
+      const primaryPhone = phones.find(p => p.is_primary) || phones[0]
+      const additionalCount = phones.length - 1
+
+      const phoneText = primaryPhone.telefono
+      const badge = additionalCount > 0
+        ? h('span', {
+            class: 'ml-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+          }, `+${additionalCount}`)
+        : null
+
+      return h('div', { class: 'flex items-center' }, [phoneText, badge])
     },
     enableHiding: true, // Toggleable
   },
@@ -297,7 +310,7 @@ const columns = [
           })
         : h('div', {
             key: `no-avatar-${user.id}`, // Key única para cuando no hay avatar
-            class: 'w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700 flex items-center justify-center text-white font-semibold text-sm'
+            class: 'w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-500 dark:to-blue-700 flex items-center justify-center text-white font-semibold text-sm'
           }, user.name?.charAt(0).toUpperCase() || '?')
 
       return h('button', {
@@ -323,8 +336,8 @@ const columns = [
       const activo = row.getValue('activo')
       return h('span', {
         class: activo
-          ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-          : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+          ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+          : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-400'
       }, activo ? 'Activo' : 'Inactivo')
     },
     enableHiding: false,
@@ -336,14 +349,14 @@ const columns = [
       const user = row.original
       return h('div', { class: 'flex gap-2' }, [
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', user.id),
-          title: 'Editar'
+          title: 'Editar usuario'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -355,15 +368,34 @@ const columns = [
           h('path', { d: 'm15 5 4 4' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
-          onClick: () => emit('delete', user.id),
-          class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-          title: 'Eliminar'
+          class: 'bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors shadow-sm',
+          onClick: () => emit('changeAccountStatus', user),
+          title: 'Cambiar estado de cuenta'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
+          viewBox: '0 0 24 24',
+          fill: 'none',
+          stroke: 'currentColor',
+          'stroke-width': '2',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round'
+        }, [
+          h('circle', { cx: '12', cy: '12', r: '10' }),
+          h('path', { d: 'M12 16v-4' }),
+          h('path', { d: 'M12 8h.01' })
+        ])),
+        h(Button, {
+          size: 'sm',
+          class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
+          onClick: () => emit('delete', user.id),
+          title: 'Eliminar usuario'
+        }, () => h('svg', {
+          xmlns: 'http://www.w3.org/2000/svg',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',

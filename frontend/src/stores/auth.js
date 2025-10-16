@@ -29,6 +29,12 @@ export const useAuthStore = defineStore('auth', () => {
     return 'Usuario'
   })
   const userRoles = computed(() => user.value?.roles || [])
+  const showLoadingEffect = computed(() => {
+    // Por defecto true si no hay usuario o empresa
+    if (!user.value?.empresa) return true
+    // Devolver la configuración de la empresa (default: true)
+    return user.value.empresa.show_loading_effect ?? true
+  })
 
   /**
    * Inicializar el estado desde localStorage
@@ -136,6 +142,18 @@ export const useAuthStore = defineStore('auth', () => {
    * Logout del usuario
    */
   const logout = async () => {
+    // Mostrar loading por 2 segundos antes del modal
+    alert.loading('Cerrando sesión...', 'Preparando confirmación')
+
+    // Esperar 2 segundos para que el dropdown se cierre completamente
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    // Cerrar el loading
+    alert.close()
+
+    // Pequeño delay adicional antes de mostrar el modal
+    await new Promise(resolve => setTimeout(resolve, 100))
+
     const result = await alert.confirm(
       '¿Cerrar sesión?',
       '¿Estás seguro de que deseas cerrar sesión?',
@@ -229,6 +247,7 @@ export const useAuthStore = defineStore('auth', () => {
     userEmail,
     userRole,
     userRoles,
+    showLoadingEffect,
     // Acciones
     initAuth, // Exportar para llamar desde main.js
     login,

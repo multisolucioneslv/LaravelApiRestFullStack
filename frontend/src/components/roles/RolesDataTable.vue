@@ -248,14 +248,14 @@ const columns = [
 
       return h('div', { class: 'flex gap-2' }, [
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', role.id),
-          title: 'Editar'
+          title: 'Editar rol'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -268,15 +268,14 @@ const columns = [
         ])),
         ...(isSystemRole ? [] : [
           h(Button, {
-            variant: 'ghost',
             size: 'sm',
+            class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
             onClick: () => emit('delete', role.id),
-            class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-            title: 'Eliminar'
+            title: 'Eliminar rol'
           }, () => h('svg', {
             xmlns: 'http://www.w3.org/2000/svg',
-            width: '16',
-            height: '16',
+            width: '18',
+            height: '18',
             viewBox: '0 0 24 24',
             fill: 'none',
             stroke: 'currentColor',

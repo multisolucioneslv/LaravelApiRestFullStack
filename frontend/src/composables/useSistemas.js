@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de sistemas
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useSistemas() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const sistemas = ref([])
@@ -29,7 +31,9 @@ export function useSistemas() {
    * Obtener lista de sistemas con paginación y búsqueda
    */
   const fetchSistemas = async (page = 1) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -53,7 +57,9 @@ export function useSistemas() {
       error.value = err.response?.data?.message || 'Error al cargar sistemas'
       alert.error('Error', error.value)
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -61,7 +67,9 @@ export function useSistemas() {
    * Obtener un sistema específico por ID
    */
   const fetchSistema = async (id) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -72,7 +80,9 @@ export function useSistemas() {
       alert.error('Error', error.value)
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -80,7 +90,9 @@ export function useSistemas() {
    * Crear nuevo sistema
    */
   const createSistema = async (sistemaData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -106,7 +118,9 @@ export function useSistemas() {
 
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -114,7 +128,9 @@ export function useSistemas() {
    * Actualizar sistema existente
    */
   const updateSistema = async (id, sistemaData) => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -148,7 +164,9 @@ export function useSistemas() {
 
       throw err
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -164,7 +182,9 @@ export function useSistemas() {
 
     if (!result.isConfirmed) return false
 
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -181,7 +201,9 @@ export function useSistemas() {
       alert.error('Error', error.value)
       return false
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -197,7 +219,9 @@ export function useSistemas() {
 
     if (!result.isConfirmed) return false
 
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -216,7 +240,9 @@ export function useSistemas() {
       alert.error('Error', error.value)
       return false
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 

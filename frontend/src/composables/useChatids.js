@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de Chat IDs
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useChatids() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const chatids = ref([])
@@ -28,9 +30,13 @@ export function useChatids() {
   /**
    * Obtener lista de chat IDs con paginación y búsqueda
    */
-  const fetchChatids = async (page = 1) => {
+  const fetchChatids = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando lista de chat IDs', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -49,7 +55,15 @@ export function useChatids() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar chat IDs'
       alert.error('Error', error.value)
     } finally {
@@ -64,10 +78,23 @@ export function useChatids() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando datos del chat ID', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/chatids/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar chat ID'
       alert.error('Error', error.value)
       throw err
@@ -83,13 +110,25 @@ export function useChatids() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando chat ID', 'Por favor espere...')
+    }
+
     try {
       // Enviar como JSON (NO FormData)
       const response = await apiService.post('/chatids', chatidData)
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Chat ID creado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al crear chat ID'
 
       // Si hay errores de validación, mostrarlos
@@ -113,12 +152,25 @@ export function useChatids() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando chat ID', 'Por favor espere...')
+    }
+
     try {
       // Enviar como JSON usando PUT
       const response = await apiService.put(`/chatids/${id}`, chatidData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Chat ID actualizado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al actualizar chat ID'
 
       // Si hay errores de validación, mostrarlos
@@ -150,16 +202,28 @@ export function useChatids() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando chat ID', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/chatids/${id}`)
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminado!', response.data.message)
 
-      // Recargar lista de chat IDs
-      await fetchChatids(currentPage.value)
+      // Recargar lista de chat IDs (sin mostrar loading adicional)
+      await fetchChatids(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar chat ID'
       alert.error('Error', error.value)
       return false
@@ -183,18 +247,30 @@ export function useChatids() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading(`Eliminando ${chatidIds.length} chat ID(s)`, 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete('/chatids/bulk/delete', {
         data: { ids: chatidIds }
       })
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminados!', response.data.message)
 
-      // Recargar lista de chat IDs
-      await fetchChatids(currentPage.value)
+      // Recargar lista de chat IDs (sin mostrar loading adicional)
+      await fetchChatids(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar chat IDs'
       alert.error('Error', error.value)
       return false

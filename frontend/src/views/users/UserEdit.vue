@@ -105,46 +105,22 @@
                 </select>
               </div>
 
-              <!-- Teléfono -->
-              <div>
-                <label for="phone_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Teléfono
-                </label>
-                <select
-                  id="phone_id"
-                  v-model="form.phone_id"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="">Seleccione...</option>
-                  <option
-                    v-for="telefono in telefonos"
-                    :key="telefono.id"
-                    :value="telefono.id"
-                  >
-                    {{ telefono.telefono }}
-                  </option>
-                </select>
+              <!-- Teléfonos (múltiples) -->
+              <div class="md:col-span-2">
+                <PhoneInput v-model="form.phones" />
               </div>
 
               <!-- Chat ID (Telegram) -->
               <div>
-                <label for="chatid_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label for="chatid" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                   Chat ID (Telegram)
                 </label>
-                <select
-                  id="chatid_id"
-                  v-model="form.chatid_id"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="">Seleccione...</option>
-                  <option
-                    v-for="chatid in chatids"
-                    :key="chatid.id"
-                    :value="chatid.id"
-                  >
-                    {{ chatid.idtelegram }}
-                  </option>
-                </select>
+                <Input
+                  id="chatid"
+                  v-model="form.chatid"
+                  type="text"
+                  placeholder="Ingrese el Chat ID de Telegram"
+                />
               </div>
 
               <!-- Empresa -->
@@ -215,19 +191,16 @@ import { useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useEmpresas } from '@/composables/useEmpresas'
 import { useGenders } from '@/composables/useGenders'
-import { useTelefonos } from '@/composables/useTelefonos'
-import { useChatids } from '@/composables/useChatids'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import PhoneInput from '@/components/forms/PhoneInput.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
 const { fetchUser, updateUser, loading, goToIndex } = useUsers()
 const { empresas, fetchEmpresas } = useEmpresas()
 const { genders, fetchGenders } = useGenders()
-const { telefonos, fetchTelefonos } = useTelefonos()
-const { chatids, fetchChatids } = useChatids()
 
 const loadingUser = ref(true)
 
@@ -236,37 +209,41 @@ const form = ref({
   name: '',
   email: '',
   gender_id: '',
-  phone_id: '',
-  chatid_id: '',
+  phones: [{ telefono: '' }],
+  chatid: '',
   empresa_id: '',
   activo: true,
 })
 
 onMounted(async () => {
   try {
-    // Cargar datos en paralelo
+    // Cargar empresas, géneros y usuario en paralelo
+    const userId = route.params.id
     await Promise.all([
       fetchEmpresas(),
       fetchGenders(),
-      fetchTelefonos(),
-      fetchChatids()
+      fetchUser(userId)
     ])
 
-    // Cargar datos del usuario
-    const userId = route.params.id
+    // Obtener datos del usuario (ya está en caché del composable)
     const user = await fetchUser(userId)
 
-    // Llenar formulario con los IDs correctos
+    // Llenar formulario con los datos del usuario
     form.value = {
       usuario: user.usuario,
       name: user.name,
       email: user.email,
       gender_id: user.gender_id || '',
-      phone_id: user.phone_id || '',
-      chatid_id: user.chatid_id || '',
+      phones: user.phones && user.phones.length > 0
+        ? user.phones.map(phone => ({ telefono: phone.telefono }))
+        : [{ telefono: '' }],
+      chatid: user.chatid?.idtelegram || '',
       empresa_id: user.empresa_id || '',
       activo: user.activo,
     }
+
+    console.log('Usuario cargado:', user)
+    console.log('Teléfonos cargados:', form.value.phones)
   } catch (err) {
     // El error se maneja en el composable
     goToIndex()
@@ -291,12 +268,18 @@ const handleSubmit = async () => {
     if (form.value.gender_id) {
       userData.gender_id = form.value.gender_id
     }
-    if (form.value.phone_id) {
-      userData.phone_id = form.value.phone_id
+
+    // Agregar teléfonos (filtrar vacíos)
+    const validPhones = form.value.phones.filter(phone => phone.telefono && phone.telefono.trim() !== '')
+    if (validPhones.length > 0) {
+      userData.phones = validPhones
     }
-    if (form.value.chatid_id) {
-      userData.chatid_id = form.value.chatid_id
+
+    // Agregar chat ID si tiene valor
+    if (form.value.chatid && form.value.chatid.trim() !== '') {
+      userData.chatid = form.value.chatid
     }
+
     if (form.value.empresa_id) {
       userData.empresa_id = form.value.empresa_id
     }

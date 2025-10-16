@@ -25,8 +25,8 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'gender_id',
-        'phone_id',     // FK a tabla phones
-        'chatid_id',    // FK a tabla chatids
+        'phone_id',
+        'chatid_id',
         'avatar',
         'cuenta',
         'razon_suspendida',
@@ -96,7 +96,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Un usuario pertenece a un teléfono
+     * Teléfono principal del usuario (relación directa)
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -106,13 +106,33 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Un usuario pertenece a un chatid
+     * Teléfonos adicionales del usuario (relación polimórfica)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function additionalPhones()
+    {
+        return $this->morphMany(Phone::class, 'phonable');
+    }
+
+    /**
+     * Chat ID principal del usuario (relación directa)
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function chatid()
+    public function chatidPrimary()
     {
         return $this->belongsTo(Chatid::class, 'chatid_id');
+    }
+
+    /**
+     * Chat IDs adicionales del usuario (relación polimórfica)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function chatids()
+    {
+        return $this->morphMany(Chatid::class, 'chatable');
     }
 
     /**

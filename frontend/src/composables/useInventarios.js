@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de inventarios
@@ -10,27 +11,32 @@ import { useAlert } from '@/composables/useAlert'
 export function useInventarios() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const inventarios = ref([])
   const loading = ref(false)
   const error = ref(null)
 
-  // Paginación
+  // Paginaciï¿½n
   const currentPage = ref(1)
   const lastPage = ref(1)
   const perPage = ref(15)
   const total = ref(0)
 
-  // Búsqueda
+  // Bï¿½squeda
   const search = ref('')
 
   /**
-   * Obtener lista de inventarios con paginación y búsqueda
+   * Obtener lista de inventarios con paginaciï¿½n y bï¿½squeda
    */
   const fetchInventarios = async (page = 1) => {
     loading.value = true
     error.value = null
+
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando inventarios...')
+    }
 
     try {
       const params = {
@@ -49,7 +55,14 @@ export function useInventarios() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al cargar inventarios'
       alert.error('Error', error.value)
     } finally {
@@ -58,16 +71,27 @@ export function useInventarios() {
   }
 
   /**
-   * Obtener un inventario específico por ID
+   * Obtener un inventario especï¿½fico por ID
    */
   const fetchInventario = async (id) => {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando inventario...')
+    }
+
     try {
       const response = await apiService.get(`/inventarios/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al cargar inventario'
       alert.error('Error', error.value)
       throw err
@@ -83,18 +107,28 @@ export function useInventarios() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando inventario...')
+    }
+
     try {
       const response = await apiService.post('/inventarios', inventarioData)
 
-      alert.success('¡Inventario creado!', response.data.message)
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+      alert.success('ï¿½Inventario creado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al crear inventario'
 
-      // Si hay errores de validación, mostrarlos
+      // Si hay errores de validaciï¿½n, mostrarlos
       if (err.response?.data?.errors) {
         const errors = Object.values(err.response.data.errors).flat().join('\n')
-        alert.error('Errores de validación', errors)
+        alert.error('Errores de validaciï¿½n', errors)
       } else {
         alert.error('Error', error.value)
       }
@@ -112,17 +146,28 @@ export function useInventarios() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando inventario...')
+    }
+
     try {
       const response = await apiService.put(`/inventarios/${id}`, inventarioData)
-      alert.success('¡Inventario actualizado!', response.data.message)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+      alert.success('ï¿½Inventario actualizado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al actualizar inventario'
 
-      // Si hay errores de validación, mostrarlos
+      // Si hay errores de validaciï¿½n, mostrarlos
       if (err.response?.data?.errors) {
         const errors = Object.values(err.response.data.errors).flat().join('\n')
-        alert.error('Errores de validación', errors)
+        alert.error('Errores de validaciï¿½n', errors)
       } else {
         alert.error('Error', error.value)
       }
@@ -138,9 +183,9 @@ export function useInventarios() {
    */
   const deleteInventario = async (id) => {
     const result = await alert.confirm(
-      '¿Eliminar inventario?',
-      'Esta acción no se puede deshacer',
-      'Sí, eliminar'
+      'ï¿½Eliminar inventario?',
+      'Esta acciï¿½n no se puede deshacer',
+      'Sï¿½, eliminar'
     )
 
     if (!result.isConfirmed) return false
@@ -148,16 +193,26 @@ export function useInventarios() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando inventario...')
+    }
+
     try {
       const response = await apiService.delete(`/inventarios/${id}`)
 
-      alert.success('¡Eliminado!', response.data.message)
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+      alert.success('ï¿½Eliminado!', response.data.message)
 
       // Recargar lista de inventarios
       await fetchInventarios(currentPage.value)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al eliminar inventario'
       alert.error('Error', error.value)
       return false
@@ -167,13 +222,13 @@ export function useInventarios() {
   }
 
   /**
-   * Eliminar múltiples inventarios por lotes
+   * Eliminar mï¿½ltiples inventarios por lotes
    */
   const deleteInventariosBulk = async (inventarioIds) => {
     const result = await alert.confirm(
-      `¿Eliminar ${inventarioIds.length} inventario(s)?`,
-      'Esta acción no se puede deshacer',
-      'Sí, eliminar'
+      `ï¿½Eliminar ${inventarioIds.length} inventario(s)?`,
+      'Esta acciï¿½n no se puede deshacer',
+      'Sï¿½, eliminar'
     )
 
     if (!result.isConfirmed) return false
@@ -181,18 +236,28 @@ export function useInventarios() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando inventarios...')
+    }
+
     try {
       const response = await apiService.post('/inventarios/bulk/delete', {
         ids: inventarioIds
       })
 
-      alert.success('¡Eliminados!', response.data.message)
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+      alert.success('ï¿½Eliminados!', response.data.message)
 
       // Recargar lista de inventarios
       await fetchInventarios(currentPage.value)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al eliminar inventarios'
       alert.error('Error', error.value)
       return false
@@ -206,11 +271,11 @@ export function useInventarios() {
    */
   const searchInventarios = async (searchTerm) => {
     search.value = searchTerm
-    await fetchInventarios(1) // Reiniciar a la página 1
+    await fetchInventarios(1) // Reiniciar a la pï¿½gina 1
   }
 
   /**
-   * Cambiar de página
+   * Cambiar de pï¿½gina
    */
   const changePage = async (page) => {
     if (page < 1 || page > lastPage.value) return
@@ -218,7 +283,7 @@ export function useInventarios() {
   }
 
   /**
-   * Navegación
+   * Navegaciï¿½n
    */
   const goToCreate = () => {
     router.push({ name: 'inventarios.create' })
@@ -243,16 +308,16 @@ export function useInventarios() {
     loading,
     error,
 
-    // Paginación
+    // Paginaciï¿½n
     currentPage,
     lastPage,
     perPage,
     total,
 
-    // Búsqueda
+    // Bï¿½squeda
     search,
 
-    // Métodos
+    // Mï¿½todos
     fetchInventarios,
     fetchInventario,
     createInventario,
@@ -262,7 +327,7 @@ export function useInventarios() {
     searchInventarios,
     changePage,
 
-    // Navegación
+    // Navegaciï¿½n
     goToCreate,
     goToEdit,
     goToIndex,

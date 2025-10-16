@@ -21,7 +21,7 @@
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="ml-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 3h18v18H3z"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
               Columnas
             </Button>
           </DropdownMenuTrigger>
@@ -205,11 +205,11 @@ const getColumnLabel = (columnId) => {
 // Función para obtener el color del badge según estado
 const getEstadoBadgeClass = (estado) => {
   const classes = {
-    completada: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    cancelada: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+    completada: 'bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    cancelada: 'bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    pendiente: 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
   }
-  return classes[estado] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+  return classes[estado] || 'bg-gray-200 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
 }
 
 const getEstadoLabel = (estado) => {
@@ -224,12 +224,12 @@ const getEstadoLabel = (estado) => {
 // Función para obtener el color del badge según tipo de pago
 const getTipoPagoBadgeClass = (tipoPago) => {
   const classes = {
-    efectivo: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    tarjeta: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    transferencia: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
-    credito: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
+    efectivo: 'bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+    tarjeta: 'bg-purple-200 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+    transferencia: 'bg-indigo-200 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
+    credito: 'bg-orange-200 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
   }
-  return classes[tipoPago] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+  return classes[tipoPago] || 'bg-gray-200 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
 }
 
 const getTipoPagoLabel = (tipoPago) => {
@@ -346,11 +346,11 @@ const columns = [
           variant: 'ghost',
           size: 'sm',
           onClick: () => emit('show', venta.id),
-          title: 'Ver'
+          title: 'Ver venta'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -362,14 +362,14 @@ const columns = [
           h('circle', { cx: '12', cy: '12', r: '3' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-sm',
           onClick: () => emit('edit', venta.id),
-          title: 'Editar'
+          title: 'Editar venta'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',
@@ -381,15 +381,14 @@ const columns = [
           h('path', { d: 'm15 5 4 4' })
         ])),
         h(Button, {
-          variant: 'ghost',
           size: 'sm',
+          class: 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-colors shadow-sm',
           onClick: () => emit('delete', venta.id),
-          class: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
-          title: 'Eliminar'
+          title: 'Eliminar venta'
         }, () => h('svg', {
           xmlns: 'http://www.w3.org/2000/svg',
-          width: '16',
-          height: '16',
+          width: '18',
+          height: '18',
           viewBox: '0 0 24 24',
           fill: 'none',
           stroke: 'currentColor',

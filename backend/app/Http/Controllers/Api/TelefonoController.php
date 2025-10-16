@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Telefono\StoreTelefonoRequest;
 use App\Http\Requests\Telefono\UpdateTelefonoRequest;
 use App\Http\Resources\TelefonoResource;
-use App\Models\Telefono;
+use App\Models\Phone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +23,7 @@ class TelefonoController extends Controller
         $perPage = $request->input('per_page', 15);
         $search = $request->input('search', '');
 
-        $telefonos = Telefono::query()
+        $telefonos = Phone::query()
             ->when($search, function ($query, $search) {
                 $query->where('telefono', 'like', "%{$search}%");
             })
@@ -47,7 +47,7 @@ class TelefonoController extends Controller
      */
     public function store(StoreTelefonoRequest $request): JsonResponse
     {
-        $telefono = Telefono::create([
+        $telefono = Phone::create([
             'telefono' => $request->telefono,
         ]);
 
@@ -63,7 +63,7 @@ class TelefonoController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $telefono = Telefono::findOrFail($id);
+        $telefono = Phone::findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -76,7 +76,7 @@ class TelefonoController extends Controller
      */
     public function update(UpdateTelefonoRequest $request, int $id): JsonResponse
     {
-        $telefono = Telefono::findOrFail($id);
+        $telefono = Phone::findOrFail($id);
 
         $telefono->update([
             'telefono' => $request->telefono,
@@ -94,7 +94,7 @@ class TelefonoController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $telefono = Telefono::findOrFail($id);
+        $telefono = Phone::findOrFail($id);
         $telefono->delete();
 
         return response()->json([
@@ -110,11 +110,11 @@ class TelefonoController extends Controller
     {
         $request->validate([
             'ids' => 'required|array|min:1',
-            'ids.*' => 'required|integer|exists:telefonos,id',
+            'ids.*' => 'required|integer|exists:phones,id',
         ]);
 
         $ids = $request->input('ids');
-        $deleted = Telefono::whereIn('id', $ids)->delete();
+        $deleted = Phone::whereIn('id', $ids)->delete();
 
         return response()->json([
             'success' => true,

@@ -15,7 +15,9 @@ export function useProfile() {
    * Obtener datos del perfil del usuario autenticado
    */
   const fetchProfile = async () => {
-    loading.value = true
+    if (authStore.showLoadingEffect) {
+      loading.value = true
+    }
     try {
       const response = await apiService.me()
       profile.value = response.data.user
@@ -25,7 +27,9 @@ export function useProfile() {
       alert.error('Error', 'No se pudo cargar el perfil del usuario')
       throw error
     } finally {
-      loading.value = false
+      if (authStore.showLoadingEffect) {
+        loading.value = false
+      }
     }
   }
 
@@ -33,7 +37,9 @@ export function useProfile() {
    * Actualizar perfil del usuario
    */
   const updateProfile = async (formData) => {
-    updating.value = true
+    if (authStore.showLoadingEffect) {
+      updating.value = true
+    }
     try {
       const userId = authStore.user.id
 
@@ -84,7 +90,9 @@ export function useProfile() {
       alert.error('Error', message)
       throw error
     } finally {
-      updating.value = false
+      if (authStore.showLoadingEffect) {
+        updating.value = false
+      }
     }
   }
 
@@ -92,7 +100,9 @@ export function useProfile() {
    * Cambiar contraseña del usuario
    */
   const changePassword = async (passwordData) => {
-    updating.value = true
+    if (authStore.showLoadingEffect) {
+      updating.value = true
+    }
     try {
       const userId = authStore.user.id
 
@@ -109,7 +119,9 @@ export function useProfile() {
       alert.error('Error', message)
       throw error
     } finally {
-      updating.value = false
+      if (authStore.showLoadingEffect) {
+        updating.value = false
+      }
     }
   }
 
@@ -125,7 +137,9 @@ export function useProfile() {
 
     if (!result.isConfirmed) return
 
-    updating.value = true
+    if (authStore.showLoadingEffect) {
+      updating.value = true
+    }
     try {
       const userId = authStore.user.id
 
@@ -141,7 +155,9 @@ export function useProfile() {
       alert.error('Error', message)
       throw error
     } finally {
-      updating.value = false
+      if (authStore.showLoadingEffect) {
+        updating.value = false
+      }
     }
   }
 

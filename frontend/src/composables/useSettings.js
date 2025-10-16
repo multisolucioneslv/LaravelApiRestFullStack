@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de configuraciones (settings)
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useSettings() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const settings = ref([])
@@ -28,9 +30,13 @@ export function useSettings() {
   /**
    * Obtener lista de configuraciones con paginación y búsqueda
    */
-  const fetchSettings = async (page = 1) => {
+  const fetchSettings = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando configuraciones', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -49,7 +55,14 @@ export function useSettings() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al cargar configuraciones'
       alert.error('Error', error.value)
     } finally {
@@ -64,10 +77,22 @@ export function useSettings() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando configuración', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/settings/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al cargar configuración'
       alert.error('Error', error.value)
       throw err
@@ -83,12 +108,23 @@ export function useSettings() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando configuración', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/settings', settingData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Configuración creada!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al crear configuración'
 
       // Si hay errores de validación, mostrarlos
@@ -112,11 +148,23 @@ export function useSettings() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando configuración', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.put(`/settings/${id}`, settingData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Configuración actualizada!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al actualizar configuración'
 
       // Si hay errores de validación, mostrarlos
@@ -148,16 +196,27 @@ export function useSettings() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando configuración', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/settings/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Eliminada!', response.data.message)
 
       // Recargar lista de configuraciones
-      await fetchSettings(currentPage.value)
+      await fetchSettings(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al eliminar configuración'
       alert.error('Error', error.value)
       return false
@@ -181,18 +240,29 @@ export function useSettings() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando configuraciones', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/settings/bulk/delete', {
         ids: settingIds
       })
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminadas!', response.data.message)
 
       // Recargar lista de configuraciones
-      await fetchSettings(currentPage.value)
+      await fetchSettings(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
       error.value = err.response?.data?.message || 'Error al eliminar configuraciones'
       alert.error('Error', error.value)
       return false

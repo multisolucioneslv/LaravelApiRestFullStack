@@ -38,6 +38,8 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Api\UserController::class, 'update'])->middleware('permission:users.update');
         Route::delete('/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy'])->middleware('permission:users.destroy');
         Route::delete('/bulk/delete', [App\Http\Controllers\Api\UserController::class, 'destroyBulk'])->middleware('permission:users.destroy');
+        // Cambiar estado de cuenta del usuario
+        Route::put('/{id}/account-status', [App\Http\Controllers\Api\UserController::class, 'updateAccountStatus'])->middleware('permission:users.update');
         // Rutas específicas para perfil propio (sin requerir permisos - el controller valida que sea el propio usuario)
         Route::delete('/{id}/avatar', [App\Http\Controllers\Api\UserController::class, 'deleteAvatar']);
         Route::put('/{id}/password', [App\Http\Controllers\Api\UserController::class, 'updatePassword']);
@@ -240,6 +242,23 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::get('/{id}', [App\Http\Controllers\Api\RoleController::class, 'show'])->middleware('permission:roles.show');
         Route::put('/{id}', [App\Http\Controllers\Api\RoleController::class, 'update'])->middleware('permission:roles.update');
         Route::delete('/{id}', [App\Http\Controllers\Api\RoleController::class, 'destroy'])->middleware('permission:roles.destroy');
+    });
+
+    // Módulo de Chat en tiempo real
+    Route::prefix('chat')->group(function () {
+        Route::get('/conversations', [App\Http\Controllers\Api\ChatController::class, 'getConversations']);
+        Route::get('/conversations/{userId}', [App\Http\Controllers\Api\ChatController::class, 'getOrCreateConversation']);
+        Route::post('/conversations/{conversationId}/messages', [App\Http\Controllers\Api\ChatController::class, 'sendMessage']);
+        Route::post('/conversations/{conversationId}/mark-read', [App\Http\Controllers\Api\ChatController::class, 'markAsRead']);
+        Route::get('/unread-count', [App\Http\Controllers\Api\ChatController::class, 'getUnreadCount']);
+    });
+
+    // Módulo de Usuarios en línea
+    Route::prefix('online-users')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\OnlineUserController::class, 'getOnlineUsers']);
+        Route::post('/mark-online', [App\Http\Controllers\Api\OnlineUserController::class, 'markOnline']);
+        Route::post('/update-activity', [App\Http\Controllers\Api\OnlineUserController::class, 'updateActivity']);
+        Route::post('/mark-offline', [App\Http\Controllers\Api\OnlineUserController::class, 'markOffline']);
     });
 
     // Aquí irán más módulos del ERP

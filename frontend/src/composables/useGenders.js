@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de géneros
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useGenders() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const genders = ref([])
@@ -28,9 +30,13 @@ export function useGenders() {
   /**
    * Obtener lista de géneros con paginación y búsqueda
    */
-  const fetchGenders = async (page = 1) => {
+  const fetchGenders = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando lista de géneros', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -49,7 +55,15 @@ export function useGenders() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar géneros'
       alert.error('Error', error.value)
     } finally {
@@ -64,10 +78,23 @@ export function useGenders() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando datos del género', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/genders/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar género'
       alert.error('Error', error.value)
       throw err
@@ -83,12 +110,24 @@ export function useGenders() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando género', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/genders', genderData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Género creado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al crear género'
 
       // Si hay errores de validación, mostrarlos
@@ -112,11 +151,24 @@ export function useGenders() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando género', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.put(`/genders/${id}`, genderData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Género actualizado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al actualizar género'
 
       // Si hay errores de validación, mostrarlos
@@ -148,16 +200,28 @@ export function useGenders() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando género', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/genders/${id}`)
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminado!', response.data.message)
 
-      // Recargar lista de géneros
-      await fetchGenders(currentPage.value)
+      // Recargar lista de géneros (sin mostrar loading adicional)
+      await fetchGenders(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar género'
       alert.error('Error', error.value)
       return false
@@ -181,18 +245,30 @@ export function useGenders() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading(`Eliminando ${genderIds.length} género(s)`, 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete('/genders/bulk/delete', {
         data: { ids: genderIds }
       })
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminados!', response.data.message)
 
-      // Recargar lista de géneros
-      await fetchGenders(currentPage.value)
+      // Recargar lista de géneros (sin mostrar loading adicional)
+      await fetchGenders(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar géneros'
       alert.error('Error', error.value)
       return false

@@ -10,6 +10,22 @@
 
       <!-- Acciones del usuario -->
       <div class="flex items-center space-x-4">
+        <!-- Botón de Chat con badge -->
+        <button
+          @click="emit('toggle-chat')"
+          class="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          title="Chat y usuarios en línea"
+        >
+          <ChatBubbleLeftRightIcon class="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          <!-- Badge con contador -->
+          <span
+            v-if="onlineCount > 0"
+            class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+          >
+            {{ onlineCount }}
+          </span>
+        </button>
+
         <!-- Toggle de Dark Mode -->
         <DarkModeToggle />
 
@@ -83,16 +99,18 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowRightOnRectangleIcon,
   UserIcon,
   EnvelopeIcon,
   ClipboardDocumentListIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
+import { useOnlineUsers } from '@/composables/useOnlineUsers'
 import DarkModeToggle from './DarkModeToggle.vue'
 import {
   DropdownMenu,
@@ -102,8 +120,34 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+// Emit para abrir el chat
+const emit = defineEmits(['toggle-chat'])
+
 const authStore = useAuthStore()
 const router = useRouter()
+
+// Composable para usuarios en línea (NO se inicializa automáticamente)
+const onlineUsers = useOnlineUsers()
+const { count: onlineCount, initialize, stopPolling, stopHeartbeat } = onlineUsers
+
+// Inicializar solo cuando el usuario esté autenticado
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    initialize()
+  }
+})
+
+// Detener polling cuando el usuario cierra sesión
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    // Detener todo cuando se cierra sesión
+    stopPolling()
+    stopHeartbeat()
+  } else {
+    // Inicializar cuando se autentica
+    initialize()
+  }
+})
 
 // URL del avatar del usuario
 const userAvatar = computed(() => {

@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de teléfonos
@@ -10,6 +11,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useTelefonos() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const telefonos = ref([])
@@ -28,9 +30,13 @@ export function useTelefonos() {
   /**
    * Obtener lista de teléfonos con paginación y búsqueda
    */
-  const fetchTelefonos = async (page = 1) => {
+  const fetchTelefonos = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando lista de teléfonos', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -49,7 +55,15 @@ export function useTelefonos() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar teléfonos'
       alert.error('Error', error.value)
     } finally {
@@ -64,10 +78,23 @@ export function useTelefonos() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando datos del teléfono', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/telefonos/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar teléfono'
       alert.error('Error', error.value)
       throw err
@@ -83,12 +110,24 @@ export function useTelefonos() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando teléfono', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/telefonos', telefonoData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Teléfono creado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al crear teléfono'
 
       // Si hay errores de validación, mostrarlos
@@ -112,11 +151,24 @@ export function useTelefonos() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando teléfono', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.put(`/telefonos/${id}`, telefonoData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Teléfono actualizado!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al actualizar teléfono'
 
       // Si hay errores de validación, mostrarlos
@@ -148,16 +200,28 @@ export function useTelefonos() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando teléfono', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/telefonos/${id}`)
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminado!', response.data.message)
 
-      // Recargar lista de teléfonos
-      await fetchTelefonos(currentPage.value)
+      // Recargar lista de teléfonos (sin mostrar loading adicional)
+      await fetchTelefonos(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar teléfono'
       alert.error('Error', error.value)
       return false
@@ -181,18 +245,30 @@ export function useTelefonos() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading(`Eliminando ${telefonoIds.length} teléfono(s)`, 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete('/telefonos/bulk/delete', {
         data: { ids: telefonoIds }
       })
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminados!', response.data.message)
 
-      // Recargar lista de teléfonos
-      await fetchTelefonos(currentPage.value)
+      // Recargar lista de teléfonos (sin mostrar loading adicional)
+      await fetchTelefonos(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar teléfonos'
       alert.error('Error', error.value)
       return false

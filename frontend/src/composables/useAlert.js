@@ -86,6 +86,49 @@ export function useAlert() {
       confirmButtonText,
       cancelButtonText: 'Cancelar',
       reverseButtons: true,
+      focusConfirm: false,
+      // Configuraciones para evitar bloqueos
+      allowOutsideClick: true,
+      allowEscapeKey: true,
+      buttonsStyling: true,
+      backdrop: true, // Mantener backdrop pero sin bloquear
+      showClass: {
+        popup: '',  // Sin animación de entrada
+        backdrop: '' // Sin animación de backdrop
+      },
+      hideClass: {
+        popup: '',  // Sin animación de salida
+        backdrop: ''
+      },
+      // Callback cuando el modal se renderiza completamente
+      didRender: (popup) => {
+        // Forzar estilos en los botones
+        const confirmBtn = popup.querySelector('.swal2-confirm')
+        const cancelBtn = popup.querySelector('.swal2-cancel')
+        const backdrop = document.querySelector('.swal2-container')
+
+        if (confirmBtn) {
+          confirmBtn.style.cursor = 'pointer'
+          confirmBtn.style.pointerEvents = 'auto'
+          confirmBtn.focus()
+        }
+
+        if (cancelBtn) {
+          cancelBtn.style.cursor = 'pointer'
+          cancelBtn.style.pointerEvents = 'auto'
+        }
+
+        // Asegurar que el backdrop no bloquee clicks en los botones
+        if (backdrop) {
+          backdrop.style.pointerEvents = 'auto'
+        }
+
+        // Forzar que el popup esté por encima de todo
+        if (popup) {
+          popup.style.pointerEvents = 'auto'
+          popup.style.zIndex = '10000'
+        }
+      }
     })
   }
 

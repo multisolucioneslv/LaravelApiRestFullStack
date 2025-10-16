@@ -1,6 +1,15 @@
 <template>
   <div class="w-full max-w-md mx-auto">
     <div class="card">
+      <!-- Logo de la Empresa -->
+      <div v-if="logo" class="flex justify-center mb-6">
+        <img
+          :src="logo"
+          :alt="empresaNombre"
+          class="h-20 w-auto object-contain"
+        />
+      </div>
+
       <!-- Encabezado -->
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -178,6 +187,18 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+
+// Props
+const props = defineProps({
+  logo: {
+    type: String,
+    default: null
+  },
+  empresaNombre: {
+    type: String,
+    default: 'Sistema'
+  }
+})
 
 const authStore = useAuthStore()
 
