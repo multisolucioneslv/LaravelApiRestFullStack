@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiService } from '@/services/api'
 import { useAlert } from '@/composables/useAlert'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Composable para gestionar el CRUD de ventas
@@ -11,6 +12,7 @@ import { useAlert } from '@/composables/useAlert'
 export function useVentas() {
   const router = useRouter()
   const alert = useAlert()
+  const authStore = useAuthStore()
 
   // Estado
   const ventas = ref([])
@@ -36,9 +38,13 @@ export function useVentas() {
   /**
    * Obtener lista de ventas con paginación y búsqueda
    */
-  const fetchVentas = async (page = 1) => {
+  const fetchVentas = async (page = 1, showLoading = true) => {
     loading.value = true
     error.value = null
+
+    if (showLoading && authStore.showLoadingEffect) {
+      alert.loading('Cargando lista de ventas', 'Por favor espere...')
+    }
 
     try {
       const params = {
@@ -57,7 +63,15 @@ export function useVentas() {
       lastPage.value = response.data.meta.last_page
       perPage.value = response.data.meta.per_page
       total.value = response.data.meta.total
+
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
     } catch (err) {
+      if (showLoading && authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar ventas'
       alert.error('Error', error.value)
     } finally {
@@ -72,10 +86,23 @@ export function useVentas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Cargando datos de la venta', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.get(`/ventas/${id}`)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al cargar venta'
       alert.error('Error', error.value)
       throw err
@@ -91,12 +118,24 @@ export function useVentas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Creando venta', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/ventas', ventaData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
 
       alert.success('¡Venta creada!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al crear venta'
 
       // Si hay errores de validación, mostrarlos
@@ -120,11 +159,24 @@ export function useVentas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Actualizando venta', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.put(`/ventas/${id}`, ventaData)
+
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Venta actualizada!', response.data.message)
       return response.data.data
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al actualizar venta'
 
       // Si hay errores de validación, mostrarlos
@@ -156,16 +208,28 @@ export function useVentas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading('Eliminando venta', 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.delete(`/ventas/${id}`)
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminado!', response.data.message)
 
-      // Recargar lista de ventas
-      await fetchVentas(currentPage.value)
+      // Recargar lista de ventas (sin mostrar loading adicional)
+      await fetchVentas(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar venta'
       alert.error('Error', error.value)
       return false
@@ -189,18 +253,30 @@ export function useVentas() {
     loading.value = true
     error.value = null
 
+    if (authStore.showLoadingEffect) {
+      alert.loading(`Eliminando ${ventaIds.length} venta(s)`, 'Por favor espere...')
+    }
+
     try {
       const response = await apiService.post('/ventas/bulk/delete', {
         ids: ventaIds
       })
 
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       alert.success('¡Eliminados!', response.data.message)
 
-      // Recargar lista de ventas
-      await fetchVentas(currentPage.value)
+      // Recargar lista de ventas (sin mostrar loading adicional)
+      await fetchVentas(currentPage.value, false)
 
       return true
     } catch (err) {
+      if (authStore.showLoadingEffect) {
+        alert.close()
+      }
+
       error.value = err.response?.data?.message || 'Error al eliminar ventas'
       alert.error('Error', error.value)
       return false
