@@ -308,6 +308,19 @@ export function useTelefonos() {
     router.push({ name: 'telefonos.index' })
   }
 
+  /**
+   * Función de limpieza para resetear el estado
+   * Se llama cuando el componente se desmonta o cuando se cierra sesión
+   */
+  const cleanupTelefonos = () => {
+    telefonos.value = []
+    search.value = ''
+    error.value = null
+    currentPage.value = 1
+    lastPage.value = 1
+    total.value = 0
+  }
+
   // Computed
   const hasTelefonos = computed(() => telefonos.value.length > 0)
   const hasPrevPage = computed(() => currentPage.value > 1)
@@ -337,6 +350,7 @@ export function useTelefonos() {
     deleteTelefonosBulk,
     searchTelefonos,
     changePage,
+    cleanupTelefonos,
 
     // Navegación
     goToCreate,
