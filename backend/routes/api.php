@@ -148,6 +148,16 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::post('/bulk/delete', [App\Http\Controllers\Api\CotizacionController::class, 'destroyBulk']);
     });
 
+    // Módulo de Detalle de Cotizaciones
+    Route::prefix('detalle-cotizaciones')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\DetalleCotizacionController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\DetalleCotizacionController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\DetalleCotizacionController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\DetalleCotizacionController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\DetalleCotizacionController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\DetalleCotizacionController::class, 'destroyBulk']);
+    });
+
     // Módulo de Ventas
     Route::prefix('ventas')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\VentaController::class, 'index']);

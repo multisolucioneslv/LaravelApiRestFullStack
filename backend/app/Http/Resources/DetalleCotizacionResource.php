@@ -23,12 +23,24 @@ class DetalleCotizacionResource extends JsonResource
             'descuento' => (float) $this->descuento,
             'subtotal' => (float) $this->subtotal,
 
+            // Relación con cotización (solo datos básicos)
+            'cotizacion' => $this->whenLoaded('cotizacion', function () {
+                return [
+                    'id' => $this->cotizacion->id,
+                    'codigo' => $this->cotizacion->codigo,
+                    'fecha' => $this->cotizacion->fecha,
+                    'estado' => $this->cotizacion->estado,
+                ];
+            }),
+
             // Relación con inventario
             'inventario' => $this->whenLoaded('inventario', function () {
                 return [
                     'id' => $this->inventario->id,
                     'nombre' => $this->inventario->nombre,
                     'codigo' => $this->inventario->codigo,
+                    'descripcion' => $this->inventario->descripcion,
+                    'precio_compra' => (float) $this->inventario->precio_compra,
                     'precio_venta' => (float) $this->inventario->precio_venta,
                     'cantidad' => (int) $this->inventario->cantidad,
                 ];

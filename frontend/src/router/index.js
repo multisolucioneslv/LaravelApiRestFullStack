@@ -462,6 +462,35 @@ const routes = [
     }
   },
 
+  // Rutas de Detalles de Cotizaciones
+  {
+    path: '/detalle-cotizaciones',
+    name: 'detalle-cotizaciones.index',
+    component: () => import('@/views/detalle-cotizaciones/DetalleCotizacionesIndex.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Detalles de Cotizaciones'
+    }
+  },
+  {
+    path: '/detalle-cotizaciones/crear',
+    name: 'detalle-cotizaciones.create',
+    component: () => import('@/views/detalle-cotizaciones/DetalleCotizacionCreate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Crear Detalle de Cotización'
+    }
+  },
+  {
+    path: '/detalle-cotizaciones/:id/editar',
+    name: 'detalle-cotizaciones.edit',
+    component: () => import('@/views/detalle-cotizaciones/DetalleCotizacionEdit.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Detalle de Cotización'
+    }
+  },
+
   // Rutas de Ventas
   {
     path: '/ventas',
