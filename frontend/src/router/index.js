@@ -674,6 +674,17 @@ const routes = [
     }
   },
 
+  // Ruta de Documentación
+  {
+    path: '/docs',
+    name: 'docs',
+    component: () => import('@/views/docs/DocsView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Documentación'
+    }
+  },
+
   // Ruta 404 - Not Found
   {
     path: '/:pathMatch(.*)*',

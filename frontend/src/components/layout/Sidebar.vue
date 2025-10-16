@@ -72,6 +72,22 @@
           <span v-if="!isCollapsed" class="font-medium">Dashboard</span>
         </router-link>
 
+        <!-- Documentación (sin dropdown) -->
+        <router-link
+          to="/docs"
+          :class="[
+            'flex items-center rounded-lg transition-colors duration-200',
+            isCollapsed ? 'justify-center p-3' : 'space-x-3 px-4 py-3',
+            isActive('/docs')
+              ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+          ]"
+          :title="isCollapsed ? 'Documentación' : ''"
+        >
+          <BookOpenIcon class="w-5 h-5 flex-shrink-0" />
+          <span v-if="!isCollapsed" class="font-medium">Documentación</span>
+        </router-link>
+
         <!-- Grupos con dropdown -->
         <div v-for="group in menuGroups" :key="group.name" class="space-y-1">
           <!-- Encabezado del grupo -->
@@ -156,6 +172,7 @@ import {
   TagIcon,
   BriefcaseIcon,
   ShieldCheckIcon,
+  BookOpenIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
