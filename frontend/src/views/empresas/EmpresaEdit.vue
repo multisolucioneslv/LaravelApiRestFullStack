@@ -61,30 +61,46 @@
                 />
               </div>
 
-              <!-- Teléfono ID (opcional) -->
+              <!-- Teléfono -->
               <div>
                 <label for="telefono_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Teléfono ID
+                  Teléfono
                 </label>
-                <Input
+                <select
                   id="telefono_id"
                   v-model="form.telefono_id"
-                  type="number"
-                  placeholder="ID del teléfono"
-                />
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Seleccione...</option>
+                  <option
+                    v-for="telefono in telefonos"
+                    :key="telefono.id"
+                    :value="telefono.id"
+                  >
+                    {{ telefono.telefono }}
+                  </option>
+                </select>
               </div>
 
-              <!-- Moneda ID (opcional) -->
+              <!-- Moneda -->
               <div>
                 <label for="moneda_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Moneda ID
+                  Moneda
                 </label>
-                <Input
+                <select
                   id="moneda_id"
                   v-model="form.moneda_id"
-                  type="number"
-                  placeholder="ID de la moneda"
-                />
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Seleccione...</option>
+                  <option
+                    v-for="moneda in monedas"
+                    :key="moneda.id"
+                    :value="moneda.id"
+                  >
+                    {{ moneda.nombre }} ({{ moneda.simbolo }})
+                  </option>
+                </select>
               </div>
 
               <!-- Dirección -->
@@ -198,6 +214,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEmpresas } from '@/composables/useEmpresas'
+import { useTelefonos } from '@/composables/useTelefonos'
+import { useMonedas } from '@/composables/useMonedas'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -206,6 +224,8 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
 const { fetchEmpresa, updateEmpresa, loading, goToIndex } = useEmpresas()
+const { telefonos, fetchTelefonos } = useTelefonos()
+const { monedas, fetchMonedas } = useMonedas()
 
 const loadingEmpresa = ref(true)
 const empresaId = ref(route.params.id)
@@ -242,6 +262,12 @@ const form = ref({
 // Cargar datos de la empresa
 onMounted(async () => {
   try {
+    // Cargar datos en paralelo
+    await Promise.all([
+      fetchTelefonos(),
+      fetchMonedas()
+    ])
+
     const empresa = await fetchEmpresa(empresaId.value)
 
     // Llenar formulario con datos existentes
