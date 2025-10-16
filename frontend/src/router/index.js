@@ -587,6 +587,35 @@ const routes = [
     }
   },
 
+  // Rutas de Detalles de Pedidos
+  {
+    path: '/detalle-pedidos',
+    name: 'detalle-pedidos.index',
+    component: () => import('@/views/detalle-pedidos/DetallePedidosIndex.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Detalles de Pedidos'
+    }
+  },
+  {
+    path: '/detalle-pedidos/crear',
+    name: 'detalle-pedidos.create',
+    component: () => import('@/views/detalle-pedidos/DetallePedidoCreate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Crear Detalle de Pedido'
+    }
+  },
+  {
+    path: '/detalle-pedidos/:id/editar',
+    name: 'detalle-pedidos.edit',
+    component: () => import('@/views/detalle-pedidos/DetallePedidoEdit.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Detalle de Pedido'
+    }
+  },
+
   // Rutas de Configuraciones (Settings)
   {
     path: '/settings',
