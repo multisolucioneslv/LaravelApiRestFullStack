@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PublicConfigController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +10,10 @@ Route::get('/', function () {
         'message'=>"Imgrese sus credenciales de acceso"
     ]);
 });
+
+// Rutas públicas (sin autenticación)
+Route::get('/public/login-config', [PublicConfigController::class, 'getLoginConfig']);
+
 // Rutas públicas de autenticación (con rate limiting)
 Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -186,6 +191,16 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Api\PedidoController::class, 'update']);
         Route::delete('/{id}', [App\Http\Controllers\Api\PedidoController::class, 'destroy']);
         Route::post('/bulk/delete', [App\Http\Controllers\Api\PedidoController::class, 'destroyBulk']);
+    });
+
+    // Módulo de Detalle de Pedidos
+    Route::prefix('detalle-pedidos')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\DetallePedidoController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\DetallePedidoController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\DetallePedidoController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\DetallePedidoController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\DetallePedidoController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\DetallePedidoController::class, 'destroyBulk']);
     });
 
     // Módulo de Rutas API del Sistema
