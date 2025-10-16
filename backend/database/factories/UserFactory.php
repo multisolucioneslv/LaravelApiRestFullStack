@@ -31,8 +31,8 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'gender_id' => fake()->numberBetween(1, 3),
-            'telefono' => fake()->phoneNumber(),
-            'chatid' => fake()->numerify('##########'),
+            'phone_id' => 1, // FK al primer teléfono
+            'chatid_id' => 1, // FK al primer chatid
             'cuenta' => 'activada', // Default para tests: cuenta activada
             'razon_suspendida' => null,
             'activo' => true,

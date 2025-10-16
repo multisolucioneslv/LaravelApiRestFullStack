@@ -13,7 +13,7 @@ class ChatidSeeder extends Seeder
     public function run(): void
     {
         $chatids = [
-            ['chatid' => '5332512577'], // Chatid del usuario jscothserver
+            ['idtelegram' => '5332512577'], // Chatid del usuario jscothserver
         ];
 
         foreach ($chatids as $chatid) {

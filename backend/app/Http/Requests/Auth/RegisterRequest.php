@@ -30,8 +30,8 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:100|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
-            'sexo_id' => 'nullable|exists:sexes,id',
-            'telefono_id' => 'nullable|exists:telefonos,id',
+            'gender_id' => 'nullable|exists:genders,id',
+            'phone_id' => 'nullable|exists:phones,id',
             'chatid_id' => 'nullable|exists:chatids,id',
             'empresa_id' => 'nullable|exists:empresas,id',
         ];
@@ -53,8 +53,8 @@ class RegisterRequest extends FormRequest
             'email.unique' => 'Este email ya está registrado.',
             'password.required' => 'El campo contraseña es requerido.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
-            'sexo_id.exists' => 'El sexo seleccionado no es válido.',
-            'telefono_id.exists' => 'El teléfono seleccionado no es válido.',
+            'gender_id.exists' => 'El género seleccionado no es válido.',
+            'phone_id.exists' => 'El teléfono seleccionado no es válido.',
             'chatid_id.exists' => 'El chat ID seleccionado no es válido.',
             'empresa_id.exists' => 'La empresa seleccionada no es válida.',
         ];

@@ -21,8 +21,8 @@ class SuperAdminSeeder extends Seeder
             'email' => 'jscothserver@gmail.com',
             'password' => Hash::make('72900968'),
             'gender_id' => 1, // Masculino (debe existir en tabla genders)
-            'telefono' => '(702)337-9581',  // Campo string directo
-            'chatid' => '5332512577',       // Campo string directo
+            'phone_id' => 1,  // FK al teléfono (702)337-9581 (debe existir en tabla phones)
+            'chatid_id' => 1, // FK al chatid 5332512577 (debe existir en tabla chatids)
             'empresa_id' => 1, // Yapame (debe existir en tabla empresas)
             'avatar' => null,
             'cuenta' => 'activada', // SuperAdmin siempre tiene cuenta activada

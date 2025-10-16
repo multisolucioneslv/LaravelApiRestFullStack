@@ -33,8 +33,9 @@ abstract class TestCase extends BaseTestCase
         \App\Models\Gender::create(['id' => 2, 'sexo' => 'Femenino', 'inicial' => 'F']);
         \App\Models\Gender::create(['id' => 3, 'sexo' => 'Otro', 'inicial' => 'O']);
 
-        // Crear teléfono y moneda base
+        // Crear teléfono, chatid y moneda base
         $telefono = \App\Models\Phone::create(['telefono' => '(702)337-9581']);
+        $chatid = \App\Models\Chatid::create(['idtelegram' => '5332512577']);
         $currency = \App\Models\Currency::create([
             'codigo' => 'USD',
             'nombre' => 'Dólar Estadounidense',
