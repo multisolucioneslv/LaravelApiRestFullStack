@@ -194,7 +194,7 @@ const columnLabels = {
   usuario: 'Usuario',
   name: 'Nombre',
   email: 'Email',
-  sexo: 'Sexo',
+  gender: 'Género',
   telefono: 'Teléfono',
   chatid: 'Chat ID',
   empresa: 'Empresa',
@@ -241,27 +241,33 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: 'sexo',
-    id: 'sexo',
-    header: 'Sexo',
+    accessorKey: 'gender',
+    id: 'gender',
+    header: 'Género',
     cell: ({ row }) => {
-      const sex = row.original.sex
-      return h('div', {}, sex?.name || '-')
+      const gender = row.original.gender
+      return h('div', {}, gender?.sexo || '-')
     },
     enableHiding: true, // Toggleable
   },
   {
-    accessorKey: 'telefono',
+    accessorKey: 'phone',
     id: 'telefono',
     header: 'Teléfono',
-    cell: ({ row }) => h('div', {}, row.getValue('telefono') || '-'),
+    cell: ({ row }) => {
+      const phone = row.original.phone
+      return h('div', {}, phone?.telefono || '-')
+    },
     enableHiding: true, // Toggleable
   },
   {
     accessorKey: 'chatid',
     id: 'chatid',
     header: 'Chat ID',
-    cell: ({ row }) => h('div', {}, row.getValue('chatid') || '-'),
+    cell: ({ row }) => {
+      const chatid = row.original.chatid
+      return h('div', {}, chatid?.idtelegram || '-')
+    },
     enableHiding: true, // Toggleable
   },
   {

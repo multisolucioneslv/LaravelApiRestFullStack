@@ -28,7 +28,7 @@ class UserController extends Controller
 
         $users = User::query()
             ->forCurrentUser() // Multi-tenancy: Admin solo ve usuarios de su empresa
-            ->with(['roles', 'gender', 'empresa'])
+            ->with(['roles', 'gender', 'phone', 'chatid', 'empresa'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('usuario', 'like', "%{$search}%")
@@ -64,8 +64,8 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'gender_id' => $request->gender_id,
-            'telefono' => $request->telefono,
-            'chatid' => $request->chatid,
+            'phone_id' => $request->phone_id,
+            'chatid_id' => $request->chatid_id,
             // Multi-tenancy: Admin solo puede crear usuarios para su empresa
             'empresa_id' => $user->getEmpresaIdForCreate($request->empresa_id),
             'activo' => $request->input('activo', true),
@@ -89,7 +89,7 @@ class UserController extends Controller
             $user->syncRoles($request->roles);
         }
 
-        $user->load(['roles', 'gender', 'empresa']);
+        $user->load(['roles', 'gender', 'phone', 'chatid', 'empresa']);
 
         return response()->json([
             'success' => true,
@@ -103,7 +103,7 @@ class UserController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $user = User::with(['roles', 'gender', 'empresa'])
+        $user = User::with(['roles', 'gender', 'phone', 'chatid', 'empresa'])
             ->findOrFail($id);
 
         // Multi-tenancy: Validar acceso a la empresa
@@ -130,8 +130,8 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'gender_id' => $request->gender_id,
-            'telefono' => $request->telefono,
-            'chatid' => $request->chatid,
+            'phone_id' => $request->phone_id,
+            'chatid_id' => $request->chatid_id,
             // Multi-tenancy: Admin no puede cambiar empresa_id del usuario
             'empresa_id' => $user->getEmpresaIdForCreate($request->empresa_id),
             'activo' => $request->activo,
@@ -165,7 +165,7 @@ class UserController extends Controller
             $user->syncRoles($request->roles);
         }
 
-        $user->load(['roles', 'gender', 'empresa']);
+        $user->load(['roles', 'gender', 'phone', 'chatid', 'empresa']);
 
         return response()->json([
             'success' => true,
