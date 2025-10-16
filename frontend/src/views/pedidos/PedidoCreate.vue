@@ -168,11 +168,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { usePedidos } from '@/composables/usePedidos'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const authStore = useAuthStore()
 
 const { createPedido, loading, goToIndex, empresas, fetchEmpresas } = usePedidos()
 
@@ -195,9 +198,53 @@ const form = ref({
   observaciones: '',
 })
 
-// Cargar empresas al montar
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar empresas SOLO si hay sesión activa
 onMounted(async () => {
-  await fetchEmpresas()
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] PedidoCreate: Inicializando con sesión activa')
+    await fetchEmpresas()
+  } else {
+    console.warn('[SECURITY] PedidoCreate: No se puede cargar sin sesión')
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] PedidoCreate: Limpiando datos al desmontar componente')
+  empresas.value = []
+  form.value = {
+    fecha: getTodayDate(),
+    fecha_entrega: '',
+    empresa_id: '',
+    tipo: '',
+    estado: 'pendiente',
+    total: '',
+    observaciones: '',
+  }
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, async (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] PedidoCreate: Sesión cerrada, limpiando datos')
+    empresas.value = []
+    form.value = {
+      fecha: getTodayDate(),
+      fecha_entrega: '',
+      empresa_id: '',
+      tipo: '',
+      estado: 'pendiente',
+      total: '',
+      observaciones: '',
+    }
+  } else {
+    console.log('[SECURITY] PedidoCreate: Sesión iniciada, cargando datos')
+    await fetchEmpresas()
+  }
 })
 
 const handleSubmit = async () => {

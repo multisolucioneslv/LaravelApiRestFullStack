@@ -30,6 +30,8 @@ class User extends Authenticatable implements JWTSubject
         'avatar',
         'cuenta',
         'razon_suspendida',
+        'estado_previo_cascada',
+        'razon_previa_cascada',
         'activo',
         'empresa_id',
     ];

@@ -39,10 +39,13 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { useVentas } from '@/composables/useVentas'
+import { useAuthStore } from '@/stores/auth'
 import VentasDataTable from '@/components/ventas/VentasDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const authStore = useAuthStore()
 
 const {
   ventas,
@@ -60,11 +63,39 @@ const {
   goToCreate,
   goToEdit,
   goToShow,
+  initialize,
+  cleanup,
 } = useVentas()
 
-// Cargar ventas al montar
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar ventas SOLO si hay sesión activa
 onMounted(() => {
-  fetchVentas()
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] VentasIndex: Inicializando con sesión activa')
+    initialize()
+  } else {
+    console.warn('[SECURITY] VentasIndex: No se puede cargar sin sesión')
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] VentasIndex: Limpiando datos al desmontar componente')
+  cleanup()
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] VentasIndex: Sesión cerrada, limpiando datos')
+    cleanup()
+  } else {
+    console.log('[SECURITY] VentasIndex: Sesión iniciada, cargando datos')
+    initialize()
+  }
 })
 
 // Manejadores

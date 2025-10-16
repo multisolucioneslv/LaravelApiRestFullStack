@@ -322,9 +322,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useVentas } from '@/composables/useVentas'
+import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -348,6 +349,8 @@ import {
 } from '@/components/ui/table'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 const ventaId = route.params.id
 
 const {
@@ -514,13 +517,52 @@ const handleSubmit = async () => {
 
 // Cargar catálogos y datos al montar
 onMounted(async () => {
-  await Promise.all([
-    fetchEmpresas(),
-    fetchMonedas(),
-    fetchTaxes(),
-    fetchInventarios(),
-  ])
-  await cargarVenta()
+  // Verificar autenticación
+  if (!authStore.isAuthenticated) {
+    router.push({ name: 'login' })
+    return
+  }
+
+  try {
+    // Cargar datos
+    await Promise.all([
+      fetchEmpresas(),
+      fetchMonedas(),
+      fetchTaxes(),
+      fetchInventarios(),
+    ])
+    await cargarVenta()
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    loadingData.value = false
+  }
+})
+
+// Limpiar catálogos al desmontar
+onUnmounted(() => {
+  // Limpiar arrays reactivos
+  empresas.value = []
+  monedas.value = []
+  taxes.value = []
+  inventarios.value = []
+
+  // Limpiar formulario
+  form.detalles = []
+})
+
+// Monitorear estado de autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    // Limpiar datos sensibles
+    form.detalles = []
+    empresas.value = []
+    monedas.value = []
+    taxes.value = []
+    inventarios.value = []
+
+    // Redirigir a login
+    router.push({ name: 'login' })
+  }
 })
 </script>
 

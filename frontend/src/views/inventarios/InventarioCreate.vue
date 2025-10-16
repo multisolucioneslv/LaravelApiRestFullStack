@@ -23,10 +23,10 @@
       <!-- Formulario -->
       <form @submit.prevent="handleSubmit" class="card">
         <div class="space-y-8">
-          <!-- Sección: Información Básica -->
+          <!-- Secciï¿½n: Informaciï¿½n Bï¿½sica -->
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              Información Básica
+              Informaciï¿½n Bï¿½sica
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Nombre -->
@@ -43,40 +43,40 @@
                 />
               </div>
 
-              <!-- Código -->
+              <!-- Cï¿½digo -->
               <div>
                 <label for="codigo" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Código *
+                  Cï¿½digo *
                 </label>
                 <Input
                   id="codigo"
                   v-model="form.codigo"
                   type="text"
                   required
-                  placeholder="SKU o código del producto"
+                  placeholder="SKU o cï¿½digo del producto"
                 />
               </div>
 
-              <!-- Descripción -->
+              <!-- Descripciï¿½n -->
               <div class="md:col-span-2">
                 <label for="descripcion" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Descripción
+                  Descripciï¿½n
                 </label>
                 <textarea
                   id="descripcion"
                   v-model="form.descripcion"
                   rows="3"
                   class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Descripción detallada del producto (opcional)"
+                  placeholder="Descripciï¿½n detallada del producto (opcional)"
                 ></textarea>
               </div>
             </div>
           </div>
 
-          <!-- Sección: Ubicación -->
+          <!-- Secciï¿½n: Ubicaciï¿½n -->
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              Ubicación
+              Ubicaciï¿½n
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <!-- Bodega -->
@@ -123,10 +123,10 @@
                 </select>
               </div>
 
-              <!-- Galería -->
+              <!-- Galerï¿½a -->
               <div>
                 <label for="galeria_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Galería
+                  Galerï¿½a
                 </label>
                 <select
                   id="galeria_id"
@@ -146,7 +146,7 @@
             </div>
           </div>
 
-          <!-- Sección: Stock -->
+          <!-- Secciï¿½n: Stock -->
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               Control de Stock
@@ -166,10 +166,10 @@
                 />
               </div>
 
-              <!-- Mínimo -->
+              <!-- Mï¿½nimo -->
               <div>
                 <label for="minimo" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Stock Mínimo
+                  Stock Mï¿½nimo
                 </label>
                 <Input
                   id="minimo"
@@ -180,10 +180,10 @@
                 />
               </div>
 
-              <!-- Máximo -->
+              <!-- Mï¿½ximo -->
               <div>
                 <label for="maximo" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Stock Máximo
+                  Stock Mï¿½ximo
                 </label>
                 <Input
                   id="maximo"
@@ -196,7 +196,7 @@
             </div>
           </div>
 
-          <!-- Sección: Precios -->
+          <!-- Secciï¿½n: Precios -->
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               Precios
@@ -234,10 +234,10 @@
             </div>
           </div>
 
-          <!-- Sección: Configuración -->
+          <!-- Secciï¿½n: Configuraciï¿½n -->
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              Configuración
+              Configuraciï¿½n
             </h3>
             <div class="flex items-center space-x-3">
               <Checkbox
@@ -274,7 +274,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { useInventarios } from '@/composables/useInventarios'
 import { useEmpresas } from '@/composables/useEmpresas'
 import { useBodegas } from '@/composables/useBodegas'
@@ -284,18 +285,38 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
+const authStore = useAuthStore()
+
 const { createInventario, loading, goToIndex } = useInventarios()
 const { empresas, fetchEmpresas } = useEmpresas()
 const { bodegas, fetchBodegas } = useBodegas()
 const { galerias, fetchGalerias } = useGalerias()
 
-// Cargar catálogos al montar el componente
+// Cargar catï¿½logos al montar el componente SOLO si hay sesiï¿½n activa
 onMounted(async () => {
-  await Promise.all([
-    fetchEmpresas(),
-    fetchBodegas(),
-    fetchGalerias(),
-  ])
+  if (authStore.isAuthenticated) {
+    await Promise.all([
+      fetchEmpresas(),
+      fetchBodegas(),
+      fetchGalerias(),
+    ])
+  }
+})
+
+// Limpiar cuando se desmonta el componente
+onUnmounted(() => {
+  empresas.value = []
+  bodegas.value = []
+  galerias.value = []
+})
+
+// Detener carga si se cierra sesiï¿½n mientras estï¿½ en la vista
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    empresas.value = []
+    bodegas.value = []
+    galerias.value = []
+  }
 })
 
 const form = ref({

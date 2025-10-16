@@ -305,10 +305,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useCotizaciones } from '@/composables/useCotizaciones'
+import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const router = useRouter()
+const authStore = useAuthStore()
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -487,8 +491,16 @@ const handleSubmit = async () => {
   }
 }
 
-// Cargar catálogos y datos al montar
+// Verificación de sesión y carga de datos
+let sessionCheckInterval = null
+
 onMounted(async () => {
+  // Verificar sesión antes de cargar datos
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+
   await Promise.all([
     fetchEmpresas(),
     fetchMonedas(),
@@ -496,7 +508,31 @@ onMounted(async () => {
     fetchInventarios(),
   ])
   await cargarCotizacion()
+
+  // Configurar verificación periódica de sesión (cada 30 segundos)
+  sessionCheckInterval = setInterval(() => {
+    if (!authStore.isAuthenticated) {
+      router.push('/login')
+    }
+  }, 30000)
 })
+
+// Limpiar intervalo al desmontar
+onUnmounted(() => {
+  if (sessionCheckInterval) {
+    clearInterval(sessionCheckInterval)
+  }
+})
+
+// Watch para cambios en autenticación
+watch(
+  () => authStore.isAuthenticated,
+  (newValue) => {
+    if (!newValue) {
+      router.push('/login')
+    }
+  }
+)
 </script>
 
 <style scoped>

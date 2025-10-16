@@ -39,10 +39,15 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCotizaciones } from '@/composables/useCotizaciones'
+import { useAuthStore } from '@/stores/auth'
 import CotizacionesDataTable from '@/components/cotizaciones/CotizacionesDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const {
   cotizaciones,
@@ -62,10 +67,42 @@ const {
   goToShow,
 } = useCotizaciones()
 
-// Cargar cotizaciones al montar
+// Verificación de sesión y carga de datos
+let sessionCheckInterval = null
+
 onMounted(() => {
+  // Verificar sesión antes de cargar datos
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+
   fetchCotizaciones()
+
+  // Configurar verificación periódica de sesión (cada 30 segundos)
+  sessionCheckInterval = setInterval(() => {
+    if (!authStore.isAuthenticated) {
+      router.push('/login')
+    }
+  }, 30000)
 })
+
+// Limpiar intervalo al desmontar
+onUnmounted(() => {
+  if (sessionCheckInterval) {
+    clearInterval(sessionCheckInterval)
+  }
+})
+
+// Watch para cambios en autenticación
+watch(
+  () => authStore.isAuthenticated,
+  (newValue) => {
+    if (!newValue) {
+      router.push('/login')
+    }
+  }
+)
 
 // Manejadores
 const handleSearch = (searchTerm) => {

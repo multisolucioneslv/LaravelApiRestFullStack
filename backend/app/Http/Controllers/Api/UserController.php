@@ -499,13 +499,27 @@ class UserController extends Controller
         $razonDefault = "La cuenta de la empresa \"{$empresaNombre}\" ha sido suspendida/cancelada, por lo tanto ya no podrás iniciar sesión hasta que la empresa sea reactivada nuevamente.";
 
         // Buscar todos los usuarios de la misma empresa (excepto el Administrador)
-        return User::where('empresa_id', $admin->empresa_id)
+        $usersToSuspend = User::where('empresa_id', $admin->empresa_id)
             ->where('id', '!=', $admin->id)
             ->where('cuenta', '!=', $status) // Solo actualizar los que no están ya en ese estado
-            ->update([
-                'cuenta' => $status,
-                'razon_suspendida' => $razonDefault,
-            ]);
+            ->get();
+
+        $affectedCount = 0;
+
+        foreach ($usersToSuspend as $user) {
+            // Guardar el estado previo antes de cambiar (snapshot)
+            $user->estado_previo_cascada = $user->cuenta;
+            $user->razon_previa_cascada = $user->razon_suspendida;
+
+            // Cambiar a suspendido/cancelado con razón por default
+            $user->cuenta = $status;
+            $user->razon_suspendida = $razonDefault;
+
+            $user->save();
+            $affectedCount++;
+        }
+
+        return $affectedCount;
     }
 
     /**
@@ -523,14 +537,29 @@ class UserController extends Controller
         $razonDefault = "La cuenta de la empresa \"{$empresaNombre}\" ha sido suspendida/cancelada, por lo tanto ya no podrás iniciar sesión hasta que la empresa sea reactivada nuevamente.";
 
         // Buscar todos los usuarios de la misma empresa que tengan esta razón específica
-        // (esto asegura que solo reactivamos usuarios suspendidos por la empresa, no por otras razones)
-        return User::where('empresa_id', $admin->empresa_id)
+        // (esto asegura que solo reactivamos usuarios suspendidos por cascada de empresa)
+        $usersToReactivate = User::where('empresa_id', $admin->empresa_id)
             ->where('id', '!=', $admin->id)
             ->where('razon_suspendida', $razonDefault)
-            ->update([
-                'cuenta' => 'activada',
-                'razon_suspendida' => null,
-            ]);
+            ->whereNotNull('estado_previo_cascada') // Solo los que tienen estado previo guardado
+            ->get();
+
+        $affectedCount = 0;
+
+        foreach ($usersToReactivate as $user) {
+            // Restaurar el estado previo (snapshot)
+            $user->cuenta = $user->estado_previo_cascada;
+            $user->razon_suspendida = $user->razon_previa_cascada;
+
+            // Limpiar campos temporales
+            $user->estado_previo_cascada = null;
+            $user->razon_previa_cascada = null;
+
+            $user->save();
+            $affectedCount++;
+        }
+
+        return $affectedCount;
     }
 
     /**

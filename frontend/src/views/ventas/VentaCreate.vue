@@ -314,8 +314,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useVentas } from '@/composables/useVentas'
+import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -337,6 +338,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+const authStore = useAuthStore()
 
 const {
   loading,
@@ -458,8 +461,8 @@ const handleSubmit = async () => {
   }
 }
 
-// Cargar catálogos al montar
-onMounted(async () => {
+// Función para cargar catálogos
+const cargarCatalogos = async () => {
   await Promise.all([
     fetchEmpresas(),
     fetchMonedas(),
@@ -467,6 +470,38 @@ onMounted(async () => {
     fetchInventarios(),
     fetchCotizaciones(),
   ])
+}
+
+// Función para limpiar catálogos
+const limpiarCatalogos = () => {
+  empresas.value = []
+  monedas.value = []
+  taxes.value = []
+  inventarios.value = []
+  cotizaciones.value = []
+}
+
+// Cargar catálogos al montar (solo si hay sesión)
+onMounted(async () => {
+  if (authStore.isAuthenticated) {
+    await cargarCatalogos()
+  }
+})
+
+// Limpiar catálogos al desmontar
+onUnmounted(() => {
+  limpiarCatalogos()
+})
+
+// Monitorear cambios en la autenticación
+watch(() => authStore.isAuthenticated, async (isAuth) => {
+  if (!isAuth) {
+    // Si se cierra sesión, limpiar catálogos
+    limpiarCatalogos()
+  } else {
+    // Si inicia sesión, cargar catálogos
+    await cargarCatalogos()
+  }
 })
 </script>
 

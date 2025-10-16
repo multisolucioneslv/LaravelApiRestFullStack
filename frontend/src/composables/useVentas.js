@@ -399,6 +399,52 @@ export function useVentas() {
   const hasPrevPage = computed(() => currentPage.value > 1)
   const hasNextPage = computed(() => currentPage.value < lastPage.value)
 
+  // ==========================================
+  // SEGURIDAD: CARGA LAZY
+  // ==========================================
+
+  /**
+   * Inicialización segura del composable
+   * Solo se llama cuando el usuario está en la vista de ventas
+   * y tiene sesión activa
+   */
+  const initialize = async () => {
+    // Verificar token ANTES de inicializar
+    const token = localStorage.getItem('auth_token')
+    if (!token) {
+      console.warn('[SECURITY] No se puede inicializar useVentas: sin token')
+      return
+    }
+
+    // Verificar que el usuario está autenticado
+    if (!authStore.isAuthenticated) {
+      console.warn('[SECURITY] No se puede inicializar useVentas: usuario no autenticado')
+      return
+    }
+
+    console.log('[SECURITY] Inicializando useVentas con sesión activa')
+
+    // Cargar datos iniciales
+    await fetchVentas()
+  }
+
+  /**
+   * Limpieza de datos cuando se sale de la vista
+   */
+  const cleanup = () => {
+    console.log('[SECURITY] Limpiando datos de useVentas')
+    ventas.value = []
+    empresas.value = []
+    monedas.value = []
+    taxes.value = []
+    inventarios.value = []
+    cotizaciones.value = []
+    search.value = ''
+    currentPage.value = 1
+    lastPage.value = 1
+    total.value = 0
+  }
+
   return {
     // Estado
     ventas,
@@ -448,5 +494,9 @@ export function useVentas() {
     hasVentas,
     hasPrevPage,
     hasNextPage,
+
+    // Seguridad: Carga Lazy
+    initialize,
+    cleanup,
   }
 }

@@ -187,14 +187,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePedidos } from '@/composables/usePedidos'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
+const authStore = useAuthStore()
+
 const { fetchPedido, updatePedido, loading, goToIndex, empresas, fetchEmpresas } = usePedidos()
 
 const loadingData = ref(true)
@@ -210,8 +213,18 @@ const form = ref({
   observaciones: '',
 })
 
-// Cargar datos al montar
-onMounted(async () => {
+// Función para formatear fechas
+const formatDateForInput = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// Función para cargar datos del pedido
+const loadPedidoData = async () => {
   loadingData.value = true
 
   // Cargar empresas
@@ -222,16 +235,6 @@ onMounted(async () => {
   const pedidoData = await fetchPedido(pedidoId)
 
   if (pedidoData) {
-    // Formatear fechas para inputs tipo date
-    const formatDateForInput = (dateString) => {
-      if (!dateString) return ''
-      const date = new Date(dateString)
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
-
     form.value = {
       codigo: pedidoData.codigo || '',
       fecha: formatDateForInput(pedidoData.fecha),
@@ -245,6 +248,57 @@ onMounted(async () => {
   }
 
   loadingData.value = false
+}
+
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar datos SOLO si hay sesión activa
+onMounted(async () => {
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] PedidoEdit: Inicializando con sesión activa')
+    await loadPedidoData()
+  } else {
+    console.warn('[SECURITY] PedidoEdit: No se puede cargar sin sesión')
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] PedidoEdit: Limpiando datos al desmontar componente')
+  empresas.value = []
+  form.value = {
+    codigo: '',
+    fecha: '',
+    fecha_entrega: '',
+    empresa_id: '',
+    tipo: '',
+    estado: 'pendiente',
+    total: '',
+    observaciones: '',
+  }
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, async (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] PedidoEdit: Sesión cerrada, limpiando datos')
+    empresas.value = []
+    form.value = {
+      codigo: '',
+      fecha: '',
+      fecha_entrega: '',
+      empresa_id: '',
+      tipo: '',
+      estado: 'pendiente',
+      total: '',
+      observaciones: '',
+    }
+  } else {
+    console.log('[SECURITY] PedidoEdit: Sesión iniciada, cargando datos')
+    await loadPedidoData()
+  }
 })
 
 const handleSubmit = async () => {

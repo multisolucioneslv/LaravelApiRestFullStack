@@ -332,6 +332,25 @@ export function useEmpresas() {
     router.push({ name: 'empresas.index' })
   }
 
+  /**
+   * Inicializar datos (para carga lazy)
+   */
+  const initialize = async () => {
+    await fetchEmpresas()
+  }
+
+  /**
+   * Limpiar datos (para seguridad al desmontar)
+   */
+  const cleanup = () => {
+    empresas.value = []
+    currentPage.value = 1
+    lastPage.value = 1
+    total.value = 0
+    search.value = ''
+    error.value = null
+  }
+
   // Computed
   const hasEmpresas = computed(() => empresas.value.length > 0)
   const hasPrevPage = computed(() => currentPage.value > 1)
@@ -366,6 +385,10 @@ export function useEmpresas() {
     goToCreate,
     goToEdit,
     goToIndex,
+
+    // Seguridad
+    initialize,
+    cleanup,
 
     // Computed
     hasEmpresas,

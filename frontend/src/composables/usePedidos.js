@@ -1,10 +1,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '@/services/api'
 import Swal from 'sweetalert2'
 import { useAuthStore } from '@/stores/auth'
-
-const API_URL = import.meta.env.VITE_API_URL
 
 export function usePedidos() {
   const router = useRouter()
@@ -20,7 +18,7 @@ export function usePedidos() {
       loading.value = true
     }
     try {
-      const response = await axios.get(`${API_URL}/pedidos`, {
+      const response = await api.get('/pedidos', {
         params: { page, search, per_page: 15 }
       })
       pedidos.value = response.data.data
@@ -46,7 +44,7 @@ export function usePedidos() {
       loading.value = true
     }
     try {
-      const response = await axios.get(`${API_URL}/pedidos/${id}`)
+      const response = await api.get(`/pedidos/${id}`)
       pedido.value = response.data.data
       return response.data.data
     } catch (error) {
@@ -70,7 +68,7 @@ export function usePedidos() {
       loading.value = true
     }
     try {
-      const response = await axios.post(`${API_URL}/pedidos`, pedidoData)
+      const response = await api.post('/pedidos', pedidoData)
       Swal.fire({
         icon: 'success',
         title: '¡Éxito!',
@@ -99,7 +97,7 @@ export function usePedidos() {
       loading.value = true
     }
     try {
-      const response = await axios.put(`${API_URL}/pedidos/${id}`, pedidoData)
+      const response = await api.put(`/pedidos/${id}`, pedidoData)
       Swal.fire({
         icon: 'success',
         title: '¡Éxito!',
@@ -140,7 +138,7 @@ export function usePedidos() {
         loading.value = true
       }
       try {
-        await axios.delete(`${API_URL}/pedidos/${id}`)
+        await api.delete(`/pedidos/${id}`)
         Swal.fire({
           icon: 'success',
           title: '¡Eliminado!',
@@ -182,7 +180,7 @@ export function usePedidos() {
         loading.value = true
       }
       try {
-        await axios.post(`${API_URL}/pedidos/bulk/delete`, { ids })
+        await api.post('/pedidos/bulk/delete', { ids })
         Swal.fire({
           icon: 'success',
           title: '¡Eliminados!',
@@ -209,7 +207,7 @@ export function usePedidos() {
   // Obtener lista de empresas
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/empresas`, {
+      const response = await api.get('/empresas', {
         params: { per_page: 1000 }
       })
       empresas.value = response.data.data

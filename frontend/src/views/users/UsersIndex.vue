@@ -56,12 +56,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useUsers } from '@/composables/useUsers'
+import { useAuthStore } from '@/stores/auth'
 import UsersDataTable from '@/components/users/UsersDataTable.vue'
 import AvatarEditModal from '@/components/users/AvatarEditModal.vue'
 import AccountStatusModal from '@/components/users/AccountStatusModal.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const authStore = useAuthStore()
 
 const {
   users,
@@ -81,9 +84,34 @@ const {
   goToEdit,
 } = useUsers()
 
-// Cargar usuarios al montar
+// ✅ Carga lazy segura: Solo cargar cuando hay sesión activa
 onMounted(() => {
-  fetchUsers()
+  // Verificar token JWT antes de cargar datos
+  const token = localStorage.getItem('auth_token')
+
+  if (authStore.isAuthenticated && token) {
+    fetchUsers()
+  } else {
+    console.warn('🔒 [SECURITY] No se cargaron usuarios: sesión no activa')
+  }
+})
+
+// ✅ Limpiar recursos al salir de la vista
+onUnmounted(() => {
+  console.log('🧹 [CLEANUP] Vista de usuarios desmontada')
+  // No hay polling que detener en este composable
+})
+
+// ✅ Reaccionar a cambios en autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    console.warn('🔒 [SECURITY] Sesión cerrada - limpiando datos de usuarios')
+    // Limpiar datos si se cierra sesión
+    users.value = []
+  } else if (users.value.length === 0) {
+    // Recargar datos si se vuelve a autenticar y no hay datos
+    fetchUsers()
+  }
 })
 
 // Manejadores

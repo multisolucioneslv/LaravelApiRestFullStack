@@ -62,10 +62,22 @@ export function useOnlineUsers() {
    * Marcar usuario como fuera de línea
    */
   const markOffline = async () => {
+    // Verificar si hay token antes de intentar marcar offline
+    const token = localStorage.getItem('auth_token')
+    if (!token) {
+      console.log('⚠️ No hay token - Usuario ya desconectado')
+      return
+    }
+
     try {
       await api.post('/online-users/mark-offline')
       console.log('Usuario marcado como fuera de línea')
     } catch (error) {
+      // Si es un 401, es porque ya se cerró sesión - no es un error real
+      if (error.response?.status === 401) {
+        console.log('⚠️ Token ya inválido - Usuario ya desconectado')
+        return
+      }
       console.error('Error al marcar usuario fuera de línea:', error)
     }
   }

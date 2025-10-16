@@ -203,26 +203,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useEmpresas } from '@/composables/useEmpresas'
 import { useTelefonos } from '@/composables/useTelefonos'
 import { useMonedas } from '@/composables/useMonedas'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import FileUploadSection from '@/components/common/FileUploadSection.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
-const { createEmpresa, loading, goToIndex } = useEmpresas()
-const { telefonos, fetchTelefonos } = useTelefonos()
-const { monedas, fetchMonedas } = useMonedas()
+const authStore = useAuthStore()
 
-// Cargar datos al montar
+const { createEmpresa, loading, goToIndex } = useEmpresas()
+const { telefonos, fetchTelefonos, cleanupTelefonos } = useTelefonos()
+const { monedas, fetchMonedas, cleanupMonedas } = useMonedas()
+
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar datos SOLO si hay sesión activa
 onMounted(async () => {
-  await Promise.all([
-    fetchTelefonos(),
-    fetchMonedas()
-  ])
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] EmpresaCreate: Inicializando con sesión activa')
+    await Promise.all([
+      fetchTelefonos(),
+      fetchMonedas()
+    ])
+  } else {
+    console.warn('[SECURITY] EmpresaCreate: No se puede cargar sin sesión')
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] EmpresaCreate: Limpiando datos al desmontar componente')
+  if (typeof cleanupTelefonos === 'function') cleanupTelefonos()
+  if (typeof cleanupMonedas === 'function') cleanupMonedas()
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, async (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] EmpresaCreate: Sesión cerrada, limpiando datos')
+    if (typeof cleanupTelefonos === 'function') cleanupTelefonos()
+    if (typeof cleanupMonedas === 'function') cleanupMonedas()
+  } else {
+    console.log('[SECURITY] EmpresaCreate: Sesión iniciada, cargando datos')
+    await Promise.all([
+      fetchTelefonos(),
+      fetchMonedas()
+    ])
+  }
 })
 
 // Estados para archivos

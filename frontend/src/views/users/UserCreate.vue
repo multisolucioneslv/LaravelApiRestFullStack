@@ -308,17 +308,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useUsers } from '@/composables/useUsers'
 import { useEmpresas } from '@/composables/useEmpresas'
 import { useGenders } from '@/composables/useGenders'
 import { useTelefonos } from '@/composables/useTelefonos'
 import { useChatids } from '@/composables/useChatids'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
+const authStore = useAuthStore()
 const { createUser, loading, goToIndex } = useUsers()
 const { empresas, fetchEmpresas } = useEmpresas()
 const { genders, fetchGenders } = useGenders()
@@ -332,8 +334,17 @@ const avatarFileName = ref('')
 const avatarError = ref('')
 const avatarInput = ref(null)
 
-// Cargar datos al montar el componente
+// ✅ Carga lazy segura: Solo cargar cuando hay sesión activa
 onMounted(async () => {
+  // Verificar token JWT antes de cargar datos
+  const token = localStorage.getItem('auth_token')
+
+  if (!authStore.isAuthenticated || !token) {
+    console.warn('🔒 [SECURITY] No se pueden cargar datos: sesión no activa')
+    goToIndex()
+    return
+  }
+
   // Cargar datos en paralelo
   await Promise.all([
     fetchEmpresas(),
@@ -341,6 +352,19 @@ onMounted(async () => {
     fetchTelefonos(),
     fetchChatids()
   ])
+})
+
+// ✅ Limpiar recursos al salir de la vista
+onUnmounted(() => {
+  console.log('🧹 [CLEANUP] Vista de creación de usuario desmontada')
+})
+
+// ✅ Reaccionar a cambios en autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    console.warn('🔒 [SECURITY] Sesión cerrada - redirigiendo')
+    goToIndex()
+  }
 })
 
 const form = ref({

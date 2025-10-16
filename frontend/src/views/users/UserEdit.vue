@@ -186,11 +186,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useEmpresas } from '@/composables/useEmpresas'
 import { useGenders } from '@/composables/useGenders'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -198,6 +199,7 @@ import PhoneInput from '@/components/forms/PhoneInput.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
+const authStore = useAuthStore()
 const { fetchUser, updateUser, loading, goToIndex } = useUsers()
 const { empresas, fetchEmpresas } = useEmpresas()
 const { genders, fetchGenders } = useGenders()
@@ -215,7 +217,17 @@ const form = ref({
   activo: true,
 })
 
+// ✅ Carga lazy segura: Solo cargar cuando hay sesión activa
 onMounted(async () => {
+  // Verificar token JWT antes de cargar datos
+  const token = localStorage.getItem('auth_token')
+
+  if (!authStore.isAuthenticated || !token) {
+    console.warn('🔒 [SECURITY] No se pueden cargar datos: sesión no activa')
+    goToIndex()
+    return
+  }
+
   try {
     // Cargar empresas, géneros y usuario en paralelo
     const userId = route.params.id
@@ -249,6 +261,19 @@ onMounted(async () => {
     goToIndex()
   } finally {
     loadingUser.value = false
+  }
+})
+
+// ✅ Limpiar recursos al salir de la vista
+onUnmounted(() => {
+  console.log('🧹 [CLEANUP] Vista de edición de usuario desmontada')
+})
+
+// ✅ Reaccionar a cambios en autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    console.warn('🔒 [SECURITY] Sesión cerrada - redirigiendo')
+    goToIndex()
   }
 })
 

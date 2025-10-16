@@ -4,7 +4,7 @@
       <!-- Encabezado -->
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Gestión de Inventarios
+          Gestiï¿½n de Inventarios
         </h1>
         <p class="text-gray-600 dark:text-gray-400 mt-2">
           Administra el inventario de productos
@@ -38,10 +38,13 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { useInventarios } from '@/composables/useInventarios'
 import InventariosDataTable from '@/components/inventarios/InventariosDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const authStore = useAuthStore()
 
 const {
   inventarios,
@@ -60,9 +63,24 @@ const {
   goToEdit,
 } = useInventarios()
 
-// Cargar inventarios al montar
+// Cargar inventarios al montar SOLO si hay sesiÃ³n activa
 onMounted(() => {
-  fetchInventarios()
+  if (authStore.isAuthenticated) {
+    fetchInventarios()
+  }
+})
+
+// Limpiar cuando se desmonta el componente
+onUnmounted(() => {
+  // Los composables no tienen polling, pero podemos limpiar la data
+  inventarios.value = []
+})
+
+// Detener carga si se cierra sesiÃ³n mientras estÃ¡ en la vista
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    inventarios.value = []
+  }
 })
 
 // Manejadores
@@ -77,14 +95,14 @@ const handleEdit = (id) => {
 const handleDelete = async (id) => {
   const deleted = await deleteInventario(id)
   if (deleted) {
-    // La lista se recarga automáticamente en el composable
+    // La lista se recarga automï¿½ticamente en el composable
   }
 }
 
 const handleBulkDelete = async (ids) => {
   const deleted = await deleteInventariosBulk(ids)
   if (deleted) {
-    // La lista se recarga automáticamente en el composable
+    // La lista se recarga automï¿½ticamente en el composable
   }
 }
 

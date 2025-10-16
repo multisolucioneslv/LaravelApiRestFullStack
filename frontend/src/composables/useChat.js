@@ -1,7 +1,10 @@
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import api from '@/services/api';
+import { useAuthStore } from '@/stores/auth';
 
 export function useChat() {
+  const authStore = useAuthStore();
+
   // Estado reactivo
   const conversations = ref([]);
   const currentConversation = ref(null);
@@ -219,6 +222,55 @@ export function useChat() {
     });
   });
 
+  // ==========================================
+  // SEGURIDAD: CARGA LAZY
+  // ==========================================
+
+  /**
+   * Inicialización segura del composable
+   * Solo se llama cuando el usuario está en la vista de chat
+   * y tiene sesión activa
+   */
+  const initialize = async () => {
+    // Verificar token ANTES de inicializar
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      console.warn('[SECURITY] No se puede inicializar useChat: sin token');
+      return;
+    }
+
+    // Verificar que el usuario está autenticado
+    if (!authStore.isAuthenticated) {
+      console.warn('[SECURITY] No se puede inicializar useChat: usuario no autenticado');
+      return;
+    }
+
+    console.log('[SECURITY] Inicializando useChat con sesión activa');
+
+    // Cargar datos iniciales
+    await fetchConversations();
+
+    // Iniciar polling para actualizaciones en tiempo real
+    startPolling();
+  };
+
+  /**
+   * Limpieza de datos cuando se sale de la vista
+   * IMPORTANTE: También detiene el polling para liberar recursos
+   */
+  const cleanup = () => {
+    console.log('[SECURITY] Limpiando datos de useChat');
+
+    // Detener polling primero
+    stopPolling();
+
+    // Limpiar todos los datos
+    conversations.value = [];
+    currentConversation.value = null;
+    messages.value = [];
+    unreadCount.value = 0;
+  };
+
   // Retornar todo el estado y funciones
   return {
     // Estado
@@ -239,6 +291,10 @@ export function useChat() {
     markAsRead,
     fetchUnreadCount,
     startPolling,
-    stopPolling
+    stopPolling,
+
+    // Seguridad: Carga Lazy
+    initialize,
+    cleanup,
   };
 }

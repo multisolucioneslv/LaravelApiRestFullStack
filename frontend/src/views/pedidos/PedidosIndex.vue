@@ -38,10 +38,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { usePedidos } from '@/composables/usePedidos'
+import { useAuthStore } from '@/stores/auth'
 import PedidosDataTable from '@/components/pedidos/PedidosDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const authStore = useAuthStore()
 
 const {
   pedidos,
@@ -61,9 +64,47 @@ const hasPrevPage = ref(false)
 const hasNextPage = ref(false)
 const searchTerm = ref('')
 
-// Cargar pedidos al montar
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar pedidos SOLO si hay sesión activa
 onMounted(() => {
-  loadPedidos()
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] PedidosIndex: Inicializando con sesión activa')
+    loadPedidos()
+  } else {
+    console.warn('[SECURITY] PedidosIndex: No se puede cargar sin sesión')
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] PedidosIndex: Limpiando datos al desmontar componente')
+  pedidos.value = []
+  currentPage.value = 1
+  lastPage.value = 1
+  total.value = 0
+  hasPrevPage.value = false
+  hasNextPage.value = false
+  searchTerm.value = ''
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] PedidosIndex: Sesión cerrada, limpiando datos')
+    pedidos.value = []
+    currentPage.value = 1
+    lastPage.value = 1
+    total.value = 0
+    hasPrevPage.value = false
+    hasNextPage.value = false
+    searchTerm.value = ''
+  } else {
+    console.log('[SECURITY] PedidosIndex: Sesión iniciada, cargando datos')
+    loadPedidos()
+  }
 })
 
 // Cargar pedidos con paginación

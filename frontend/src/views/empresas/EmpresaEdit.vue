@@ -211,21 +211,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEmpresas } from '@/composables/useEmpresas'
 import { useTelefonos } from '@/composables/useTelefonos'
 import { useMonedas } from '@/composables/useMonedas'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import FileUploadSection from '@/components/common/FileUploadSection.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
+const authStore = useAuthStore()
+
 const route = useRoute()
 const { fetchEmpresa, updateEmpresa, loading, goToIndex } = useEmpresas()
-const { telefonos, fetchTelefonos } = useTelefonos()
-const { monedas, fetchMonedas } = useMonedas()
+const { telefonos, fetchTelefonos, cleanupTelefonos } = useTelefonos()
+const { monedas, fetchMonedas, cleanupMonedas } = useMonedas()
 
 const loadingEmpresa = ref(true)
 const empresaId = ref(route.params.id)
@@ -259,35 +262,83 @@ const form = ref({
   activo: true,
 })
 
-// Cargar datos de la empresa
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar datos de la empresa SOLO si hay sesión activa
 onMounted(async () => {
-  try {
-    // Cargar datos en paralelo
-    await Promise.all([
-      fetchTelefonos(),
-      fetchMonedas()
-    ])
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] EmpresaEdit: Inicializando con sesión activa')
+    try {
+      // Cargar datos en paralelo
+      await Promise.all([
+        fetchTelefonos(),
+        fetchMonedas()
+      ])
 
-    const empresa = await fetchEmpresa(empresaId.value)
+      const empresa = await fetchEmpresa(empresaId.value)
 
-    // Llenar formulario con datos existentes
-    form.value.nombre = empresa.nombre
-    form.value.email = empresa.email || ''
-    form.value.telefono_id = empresa.telefono_id || ''
-    form.value.moneda_id = empresa.moneda_id || ''
-    form.value.direccion = empresa.direccion || ''
-    form.value.zona_horaria = empresa.zona_horaria || ''
-    form.value.activo = empresa.activo
+      // Llenar formulario con datos existentes
+      form.value.nombre = empresa.nombre
+      form.value.email = empresa.email || ''
+      form.value.telefono_id = empresa.telefono_id || ''
+      form.value.moneda_id = empresa.moneda_id || ''
+      form.value.direccion = empresa.direccion || ''
+      form.value.zona_horaria = empresa.zona_horaria || ''
+      form.value.activo = empresa.activo
 
-    // Guardar URLs de archivos actuales
-    currentLogo.value = empresa.logo
-    currentFavicon.value = empresa.favicon
-    currentFondo.value = empresa.fondo_login
+      // Guardar URLs de archivos actuales
+      currentLogo.value = empresa.logo
+      currentFavicon.value = empresa.favicon
+      currentFondo.value = empresa.fondo_login
 
-  } catch (err) {
-    console.error('Error al cargar empresa:', err)
-  } finally {
+    } catch (err) {
+      console.error('Error al cargar empresa:', err)
+    } finally {
+      loadingEmpresa.value = false
+    }
+  } else {
+    console.warn('[SECURITY] EmpresaEdit: No se puede cargar sin sesión')
     loadingEmpresa.value = false
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] EmpresaEdit: Limpiando datos al desmontar componente')
+  if (typeof cleanupTelefonos === 'function') cleanupTelefonos()
+  if (typeof cleanupMonedas === 'function') cleanupMonedas()
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, async (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] EmpresaEdit: Sesión cerrada, limpiando datos')
+    if (typeof cleanupTelefonos === 'function') cleanupTelefonos()
+    if (typeof cleanupMonedas === 'function') cleanupMonedas()
+  } else {
+    console.log('[SECURITY] EmpresaEdit: Sesión iniciada, recargando datos')
+    try {
+      await Promise.all([
+        fetchTelefonos(),
+        fetchMonedas()
+      ])
+      const empresa = await fetchEmpresa(empresaId.value)
+      // Actualizar formulario...
+      form.value.nombre = empresa.nombre
+      form.value.email = empresa.email || ''
+      form.value.telefono_id = empresa.telefono_id || ''
+      form.value.moneda_id = empresa.moneda_id || ''
+      form.value.direccion = empresa.direccion || ''
+      form.value.zona_horaria = empresa.zona_horaria || ''
+      form.value.activo = empresa.activo
+      currentLogo.value = empresa.logo
+      currentFavicon.value = empresa.favicon
+      currentFondo.value = empresa.fondo_login
+    } catch (err) {
+      console.error('Error al recargar empresa:', err)
+    }
   }
 })
 

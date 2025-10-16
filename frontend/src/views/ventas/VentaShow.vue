@@ -176,9 +176,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useVentas } from '@/composables/useVentas'
+import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -193,6 +194,8 @@ import {
 } from '@/components/ui/table'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 const ventaId = route.params.id
 
 const {
@@ -271,8 +274,26 @@ const cargarVenta = async () => {
   }
 }
 
-// Cargar al montar
+// Verificar autenticación y cargar datos
 onMounted(() => {
+  // Verificar autenticación antes de cargar datos
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+
   cargarVenta()
+})
+
+// Limpiar datos al desmontar componente
+onUnmounted(() => {
+  venta.value = null
+})
+
+// Monitorear cambios en el estado de autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    router.push('/login')
+  }
 })
 </script>

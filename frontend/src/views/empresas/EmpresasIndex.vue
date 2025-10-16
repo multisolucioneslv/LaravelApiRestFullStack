@@ -38,10 +38,13 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { useEmpresas } from '@/composables/useEmpresas'
+import { useAuthStore } from '@/stores/auth'
 import EmpresasDataTable from '@/components/empresas/EmpresasDataTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+
+const authStore = useAuthStore()
 
 const {
   empresas,
@@ -58,11 +61,39 @@ const {
   changePage,
   goToCreate,
   goToEdit,
+  initialize,
+  cleanup,
 } = useEmpresas()
 
-// Cargar empresas al montar
+// ==========================================
+// SEGURIDAD: CARGA LAZY
+// ==========================================
+
+// Cargar empresas SOLO si hay sesión activa
 onMounted(() => {
-  fetchEmpresas()
+  if (authStore.isAuthenticated) {
+    console.log('[SECURITY] EmpresasIndex: Inicializando con sesión activa')
+    initialize()
+  } else {
+    console.warn('[SECURITY] EmpresasIndex: No se puede cargar sin sesión')
+  }
+})
+
+// Limpiar datos cuando se sale de la vista
+onUnmounted(() => {
+  console.log('[SECURITY] EmpresasIndex: Limpiando datos al desmontar componente')
+  cleanup()
+})
+
+// Vigilar cambios en autenticación
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (!isAuth) {
+    console.warn('[SECURITY] EmpresasIndex: Sesión cerrada, limpiando datos')
+    cleanup()
+  } else {
+    console.log('[SECURITY] EmpresasIndex: Sesión iniciada, cargando datos')
+    initialize()
+  }
 })
 
 // Manejadores
