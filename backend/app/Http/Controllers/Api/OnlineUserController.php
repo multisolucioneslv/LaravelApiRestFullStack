@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\OnlineUser;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OnlineUserController extends Controller
@@ -11,11 +12,12 @@ class OnlineUserController extends Controller
     /**
      * Obtener usuarios en línea (de la misma empresa)
      */
-    public function getOnlineUsers()
+    public function getOnlineUsers(): JsonResponse
     {
         $currentUser = auth()->user();
 
         $onlineUsers = OnlineUser::with('user')
+            ->where('empresa_id', $currentUser->empresa_id) // FILTRO POR EMPRESA
             ->active() // Scope que filtra últimos 5 minutos
             ->where('user_id', '!=', $currentUser->id) // Excluir al usuario actual
             ->get()
@@ -39,7 +41,7 @@ class OnlineUserController extends Controller
     /**
      * Marcar usuario como en línea
      */
-    public function markOnline()
+    public function markOnline(): JsonResponse
     {
         $user = auth()->user();
 
@@ -61,7 +63,7 @@ class OnlineUserController extends Controller
     /**
      * Actualizar última actividad (heartbeat)
      */
-    public function updateActivity()
+    public function updateActivity(): JsonResponse
     {
         $user = auth()->user();
 
@@ -87,7 +89,7 @@ class OnlineUserController extends Controller
     /**
      * Marcar usuario como desconectado
      */
-    public function markOffline()
+    public function markOffline(): JsonResponse
     {
         $user = auth()->user();
 

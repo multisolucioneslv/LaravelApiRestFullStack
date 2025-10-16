@@ -1,5 +1,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/services/api'
+import { useAlert } from '@/composables/useAlert'
 
 export function useOnlineUsers() {
   // Estado reactivo
@@ -7,9 +8,15 @@ export function useOnlineUsers() {
   const count = ref(0)
   const loading = ref(false)
 
+  // IDs previos para detectar nuevos usuarios
+  const previousUserIds = ref(new Set())
+
   // Intervalos
   let heartbeatInterval = null
   let pollingInterval = null
+
+  // Alert composable
+  const alert = useAlert()
 
   /**
    * Obtener lista de usuarios en línea
@@ -20,8 +27,28 @@ export function useOnlineUsers() {
       const response = await api.get('/online-users')
 
       if (response.data.success) {
-        onlineUsers.value = response.data.online_users
-        count.value = response.data.count
+        const newUsers = response.data.online_users
+        const newCount = response.data.count
+
+        // Detectar nuevos usuarios conectados
+        if (previousUserIds.value.size > 0) {
+          const currentUserIds = new Set(newUsers.map(u => u.id))
+
+          // Encontrar usuarios que no estaban antes
+          newUsers.forEach(user => {
+            if (!previousUserIds.value.has(user.id)) {
+              // Nuevo usuario conectado - mostrar notificación
+              alert.toast(`${user.name} se ha conectado`, 'info')
+            }
+          })
+        }
+
+        // Actualizar estado
+        onlineUsers.value = newUsers
+        count.value = newCount
+
+        // Actualizar IDs previos para la próxima comparación
+        previousUserIds.value = new Set(newUsers.map(u => u.id))
       }
     } catch (error) {
       console.error('Error al obtener usuarios en línea:', error)
