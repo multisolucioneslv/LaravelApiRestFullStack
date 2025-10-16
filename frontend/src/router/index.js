@@ -529,6 +529,35 @@ const routes = [
     }
   },
 
+  // Rutas de Detalles de Ventas
+  {
+    path: '/detalle-ventas',
+    name: 'detalle-ventas.index',
+    component: () => import('@/views/detalle-ventas/DetalleVentasIndex.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Detalles de Ventas'
+    }
+  },
+  {
+    path: '/detalle-ventas/crear',
+    name: 'detalle-ventas.create',
+    component: () => import('@/views/detalle-ventas/DetalleVentaCreate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Crear Detalle de Venta'
+    }
+  },
+  {
+    path: '/detalle-ventas/:id/editar',
+    name: 'detalle-ventas.edit',
+    component: () => import('@/views/detalle-ventas/DetalleVentaEdit.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Detalle de Venta'
+    }
+  },
+
   // Rutas de Pedidos
   {
     path: '/pedidos',

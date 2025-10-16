@@ -23,12 +23,24 @@ class DetalleVentaResource extends JsonResource
             'descuento' => (float) $this->descuento,
             'subtotal' => (float) $this->subtotal,
 
+            // Relación con venta (solo datos básicos)
+            'venta' => $this->whenLoaded('venta', function () {
+                return [
+                    'id' => $this->venta->id,
+                    'codigo' => $this->venta->codigo,
+                    'fecha' => $this->venta->fecha?->format('Y-m-d'),
+                    'estado' => $this->venta->estado,
+                ];
+            }),
+
             // Relación con inventario
             'inventario' => $this->whenLoaded('inventario', function () {
                 return [
                     'id' => $this->inventario->id,
                     'nombre' => $this->inventario->nombre,
                     'codigo' => $this->inventario->codigo,
+                    'descripcion' => $this->inventario->descripcion,
+                    'precio_compra' => (float) $this->inventario->precio_compra,
                     'precio_venta' => (float) $this->inventario->precio_venta,
                     'cantidad' => (int) $this->inventario->cantidad,
                 ];
