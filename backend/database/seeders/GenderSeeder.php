@@ -16,7 +16,6 @@ class GenderSeeder extends Seeder
         $genders = [
             ['sexo' => 'Masculino', 'inicial' => 'M'],
             ['sexo' => 'Femenino', 'inicial' => 'F'],
-            ['sexo' => 'Otro', 'inicial' => 'O'],
         ];
 
         foreach ($genders as $gender) {

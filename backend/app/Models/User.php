@@ -25,10 +25,8 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'gender_id',
-        'phone_id',
-        'chatid_id',
-        'telefono',     // Nuevo campo string
-        'chatid',       // Nuevo campo string
+        'telefono',     // Campo string directo
+        'chatid',       // Campo string directo
         'avatar',
         'cuenta',
         'razon_suspendida',
@@ -97,25 +95,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Gender::class, 'gender_id');
     }
 
-    /**
-     * Un usuario pertenece a un teléfono
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function phone()
-    {
-        return $this->belongsTo(Phone::class, 'phone_id');
-    }
-
-    /**
-     * Un usuario pertenece a un chatid
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function chatid()
-    {
-        return $this->belongsTo(Chatid::class, 'chatid_id');
-    }
 
     /**
      * Un usuario pertenece a una empresa

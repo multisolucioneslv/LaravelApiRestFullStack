@@ -37,11 +37,42 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Verificar si el usuario está activo
+        // Verificar el estado de la cuenta
+        switch ($user->cuenta) {
+            case 'creada':
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tu cuenta existe, pero aun no esta activa, contacta a tu proveedor para consultar los detalles.'
+                ], Response::HTTP_FORBIDDEN);
+
+            case 'suspendida':
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tu cuenta ha sido suspendida. Razón: ' . ($user->razon_suspendida ?? 'No especificada')
+                ], Response::HTTP_FORBIDDEN);
+
+            case 'cancelada':
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tu cuenta ha sido cancelada. Razón: ' . ($user->razon_suspendida ?? 'No especificada')
+                ], Response::HTTP_FORBIDDEN);
+
+            case 'activada':
+                // Continuar con el login
+                break;
+
+            default:
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Estado de cuenta desconocido. Contacta al administrador.'
+                ], Response::HTTP_FORBIDDEN);
+        }
+
+        // Verificar si el usuario está activo (validación adicional legacy)
         if (!$user->activo) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tu cuenta está suspendida. Razón: ' . ($user->razon_suspendida ?? 'No especificada')
+                'message' => 'Tu cuenta está desactivada. Contacta al administrador.'
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -68,6 +99,7 @@ class AuthController extends Controller
             'telefono' => $request->telefono,
             'chatid' => $request->chatid,
             'empresa_id' => $request->empresa_id,
+            'cuenta' => 'creada', // Por defecto cuenta creada (requiere activación)
             'activo' => true,
         ]);
 

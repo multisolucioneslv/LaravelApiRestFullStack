@@ -19,11 +19,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('gender_id')->nullable()->constrained('genders')->onDelete('set null');
-            $table->foreignId('phone_id')->nullable()->constrained('phones')->onDelete('set null');
-            $table->foreignId('chatid_id')->nullable()->constrained('chatids')->onDelete('set null');
+            $table->string('telefono')->nullable(); // Teléfono directo
+            $table->string('chatid')->nullable();   // ChatID directo
             $table->foreignId('empresa_id')->nullable()->constrained('empresas')->onDelete('set null');
             $table->string('avatar')->nullable();
-            $table->string('cuenta', 100)->nullable();
+            $table->enum('cuenta',['creada', 'activada', 'suspendida', 'cancelada'])->default('creada');
             $table->text('razon_suspendida')->nullable();
             $table->boolean('activo')->default(true);
             $table->rememberToken();

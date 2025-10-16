@@ -33,6 +33,8 @@ class UserFactory extends Factory
             'gender_id' => fake()->numberBetween(1, 3),
             'telefono' => fake()->phoneNumber(),
             'chatid' => fake()->numerify('##########'),
+            'cuenta' => 'activada', // Default para tests: cuenta activada
+            'razon_suspendida' => null,
             'activo' => true,
             'empresa_id' => 1, // Usa la empresa creada en TestCase
         ];
