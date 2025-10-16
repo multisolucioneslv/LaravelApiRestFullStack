@@ -119,8 +119,8 @@ class AuthController extends Controller
     {
         $user = auth('api')->user();
 
-        // Cargar relaciones
-        $user->load(['gender', 'phone', 'chatid', 'empresa.currency', 'empresa.phone', 'roles']);
+        // Cargar relaciones (usar chatidPrimary, no chatid)
+        $user->load(['gender', 'phone', 'additionalPhones', 'chatidPrimary', 'empresa.currency', 'empresa.phone', 'roles']);
 
         return response()->json([
             'success' => true,
@@ -129,7 +129,7 @@ class AuthController extends Controller
                 'usuario' => $user->usuario,
                 'name' => $user->name,
                 'email' => $user->email,
-                'avatar' => $user->avatar,
+                'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
                 'empresa' => $user->empresa ? [
                     'id' => $user->empresa->id,
                     'nombre' => $user->empresa->nombre,
@@ -149,9 +149,19 @@ class AuthController extends Controller
                         'simbolo' => $user->empresa->currency->simbolo,
                     ] : null,
                 ] : null,
-                'gender' => $user->gender,
-                'phone' => $user->phone,
-                'chatid' => $user->chatid,
+                'gender' => $user->gender ? [
+                    'id' => $user->gender->id,
+                    'sexo' => $user->gender->sexo,
+                    'inicial' => $user->gender->inicial,
+                ] : null,
+                'phone' => $user->phone ? [
+                    'id' => $user->phone->id,
+                    'telefono' => $user->phone->telefono,
+                ] : null,
+                'chatid' => $user->chatidPrimary ? [
+                    'id' => $user->chatidPrimary->id,
+                    'idtelegram' => $user->chatidPrimary->idtelegram,
+                ] : null,
                 'roles' => $user->roles->map(function ($role) {
                     return [
                         'id' => $role->id,
@@ -193,13 +203,16 @@ class AuthController extends Controller
      */
     protected function respondWithToken(string $token, User $user, int $statusCode = Response::HTTP_OK): JsonResponse
     {
-        // Cargar relaciones si no están cargadas
-        if (!$user->relationLoaded('roles')) {
-            $user->load('roles');
-        }
-        if (!$user->relationLoaded('empresa')) {
-            $user->load('empresa.currency', 'empresa.phone');
-        }
+        // Cargar todas las relaciones necesarias
+        $user->load([
+            'roles',
+            'gender',
+            'phone',
+            'additionalPhones',
+            'chatidPrimary',
+            'empresa.currency',
+            'empresa.phone'
+        ]);
 
         return response()->json([
             'success' => true,
@@ -211,7 +224,7 @@ class AuthController extends Controller
                 'usuario' => $user->usuario,
                 'name' => $user->name,
                 'email' => $user->email,
-                'avatar' => $user->avatar,
+                'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
                 'empresa' => $user->empresa ? [
                     'id' => $user->empresa->id,
                     'nombre' => $user->empresa->nombre,
@@ -230,6 +243,19 @@ class AuthController extends Controller
                         'nombre' => $user->empresa->currency->nombre,
                         'simbolo' => $user->empresa->currency->simbolo,
                     ] : null,
+                ] : null,
+                'gender' => $user->gender ? [
+                    'id' => $user->gender->id,
+                    'sexo' => $user->gender->sexo,
+                    'inicial' => $user->gender->inicial,
+                ] : null,
+                'phone' => $user->phone ? [
+                    'id' => $user->phone->id,
+                    'telefono' => $user->phone->telefono,
+                ] : null,
+                'chatid' => $user->chatidPrimary ? [
+                    'id' => $user->chatidPrimary->id,
+                    'idtelegram' => $user->chatidPrimary->idtelegram,
                 ] : null,
                 'roles' => $user->roles->map(function ($role) {
                     return [
