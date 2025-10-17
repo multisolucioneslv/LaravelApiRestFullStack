@@ -28,7 +28,7 @@ export function useAIChat() {
   }
 
   /**
-   * Crear una nueva conversación
+   * Crear una nueva conversaciï¿½n
    */
   const createConversation = async (title = null) => {
     try {
@@ -40,13 +40,13 @@ export function useAIChat() {
         return newConversation
       }
     } catch (error) {
-      console.error('Error al crear conversación:', error)
+      console.error('Error al crear conversaciï¿½n:', error)
       throw error
     }
   }
 
   /**
-   * Abrir una conversación existente
+   * Abrir una conversaciï¿½n existente
    */
   const openConversation = async (conversationId) => {
     try {
@@ -58,7 +58,7 @@ export function useAIChat() {
         messages.value = response.data.conversation.messages || []
       }
     } catch (error) {
-      console.error('Error al abrir conversación:', error)
+      console.error('Error al abrir conversaciï¿½n:', error)
       throw error
     } finally {
       isLoading.value = false
@@ -108,13 +108,13 @@ export function useAIChat() {
         messages.value.push(response.data.data.user_message)
         messages.value.push(response.data.data.assistant_message)
 
-        // Actualizar la conversación actual
+        // Actualizar la conversaciï¿½n actual
         if (currentConversation.value) {
           currentConversation.value.title =
             response.data.data.assistant_message.content.substring(0, 50) + '...'
         }
 
-        // Recargar lista de conversaciones para actualizar el último mensaje
+        // Recargar lista de conversaciones para actualizar el ï¿½ltimo mensaje
         await fetchConversations()
       }
     } catch (error) {
@@ -128,7 +128,7 @@ export function useAIChat() {
   }
 
   /**
-   * Eliminar una conversación
+   * Eliminar una conversaciï¿½n
    */
   const deleteConversation = async (conversationId) => {
     try {
@@ -138,19 +138,19 @@ export function useAIChat() {
         // Eliminar de la lista
         conversations.value = conversations.value.filter(c => c.id !== conversationId)
 
-        // Si era la conversación actual, cerrarla
+        // Si era la conversaciï¿½n actual, cerrarla
         if (currentConversation.value?.id === conversationId) {
           closeConversation()
         }
       }
     } catch (error) {
-      console.error('Error al eliminar conversación:', error)
+      console.error('Error al eliminar conversaciï¿½n:', error)
       throw error
     }
   }
 
   /**
-   * Cerrar conversación actual
+   * Cerrar conversaciï¿½n actual
    */
   const closeConversation = () => {
     currentConversation.value = null
@@ -158,7 +158,7 @@ export function useAIChat() {
   }
 
   /**
-   * Crear nueva conversación y abrirla
+   * Crear nueva conversaciï¿½n y abrirla
    */
   const startNewConversation = async () => {
     try {
@@ -166,7 +166,7 @@ export function useAIChat() {
       await openConversation(newConversation.id)
       return newConversation
     } catch (error) {
-      console.error('Error al iniciar nueva conversación:', error)
+      console.error('Error al iniciar nueva conversaciï¿½n:', error)
       throw error
     }
   }
@@ -179,7 +179,7 @@ export function useAIChat() {
     isLoading,
     isSending,
 
-    // Métodos
+    // Mï¿½todos
     fetchConversations,
     createConversation,
     openConversation,
