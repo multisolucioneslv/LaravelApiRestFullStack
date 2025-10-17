@@ -1,291 +1,159 @@
 {
   "proyecto": "BackendProfesional",
-  "descripcion": "Sistema ERP con Laravel 12 + Vue 3 - API REST con autenticaci贸n JWT",
-  "fecha_creacion": "2025-10-15",
-  "ultima_actualizacion": "2025-10-15",
+  "fecha_creacion": "2025-10-16",
+  "ultima_actualizacion": "2025-10-16",
   "componentes": {
-    "vue": [
-      {
-        "nombre": "LoginView.vue",
-        "ruta_origen": "../../.componentes/vue/auth/LoginView.vue",
-        "ruta_destino": "frontend/src/views/auth/LoginView.vue",
+    "vue_ui": {
+      "badge": {
+        "ruta_origen": ".componentes/vue/ui/badge/Badge.vue",
+        "ruta_destino": "frontend/src/components/ui/badge/Badge.vue",
         "modificado": false,
-        "notas": "Vista de login con integraci贸n JWT y Pinia store"
+        "notas": "Sistema de variantes (6 tipos). Incluye success/warning."
+      },
+      "button": {
+        "ruta_origen": ".componentes/vue/ui/button/Button.vue",
+        "ruta_destino": "frontend/src/components/ui/button/Button.vue",
+        "modificado": false,
+        "notas": "Sistema de variantes con CVA. Cero dependencias espec韋icas."
+      },
+      "card": {
+        "ruta_origen": ".componentes/vue/ui/card/*.vue",
+        "ruta_destino": "frontend/src/components/ui/card/",
+        "archivos": ["Card.vue", "CardContent.vue", "CardHeader.vue", "CardTitle.vue"],
+        "modificado": false,
+        "notas": "Sistema completo de Cards con dark mode."
+      },
+      "checkbox": {
+        "ruta_origen": ".componentes/vue/ui/checkbox/Checkbox.vue",
+        "ruta_destino": "frontend/src/components/ui/checkbox/Checkbox.vue",
+        "modificado": false,
+        "notas": "Gen閞ico con SVG inline. Indeterminate state incluido."
+      },
+      "dialog": {
+        "ruta_origen": ".componentes/vue/ui/dialog/*.vue",
+        "ruta_destino": "frontend/src/components/ui/dialog/",
+        "archivos": ["Dialog.vue", "DialogContent.vue", "DialogDescription.vue", "DialogHeader.vue", "DialogTitle.vue", "DialogTrigger.vue"],
+        "modificado": false,
+        "notas": "Sistema completo de modales con radix-vue."
+      },
+      "dropdown-menu": {
+        "ruta_origen": ".componentes/vue/ui/dropdown-menu/*.vue",
+        "ruta_destino": "frontend/src/components/ui/dropdown-menu/",
+        "archivos": ["DropdownMenu.vue", "DropdownMenuCheckboxItem.vue", "DropdownMenuContent.vue", "DropdownMenuItem.vue", "DropdownMenuLabel.vue", "DropdownMenuSeparator.vue", "DropdownMenuTrigger.vue"],
+        "modificado": false,
+        "notas": "Sistema completo de men鷖 desplegables."
+      },
+      "input": {
+        "ruta_origen": ".componentes/vue/ui/input/Input.vue",
+        "ruta_destino": "frontend/src/components/ui/input/Input.vue",
+        "modificado": false,
+        "notas": "Input gen閞ico con v-model est醤dar."
+      },
+      "label": {
+        "ruta_origen": ".componentes/vue/ui/label/Label.vue",
+        "ruta_destino": "frontend/src/components/ui/label/Label.vue",
+        "modificado": false,
+        "notas": "Label simple con dark mode."
+      },
+      "select": {
+        "ruta_origen": ".componentes/vue/ui/select/*.vue",
+        "ruta_destino": "frontend/src/components/ui/select/",
+        "archivos": ["Select.vue", "SelectContent.vue", "SelectItem.vue", "SelectTrigger.vue", "SelectValue.vue"],
+        "modificado": false,
+        "notas": "Sistema select con provide/inject."
+      },
+      "table": {
+        "ruta_origen": ".componentes/vue/ui/table/*.vue",
+        "ruta_destino": "frontend/src/components/ui/table/",
+        "archivos": ["Table.vue", "TableBody.vue", "TableCell.vue", "TableHead.vue", "TableHeader.vue", "TableRow.vue"],
+        "modificado": false,
+        "notas": "Sistema completo de tablas responsive."
+      },
+      "textarea": {
+        "ruta_origen": ".componentes/vue/ui/textarea/Textarea.vue",
+        "ruta_destino": "frontend/src/components/ui/textarea/Textarea.vue",
+        "modificado": false,
+        "notas": "Textarea gen閞ico con dark mode."
+      }
+    },
+    "vue_forms": [
+      {
+        "nombre": "PhoneInput.vue",
+        "ruta_origen": ".componentes/vue/forms/PhoneInput.vue",
+        "ruta_destino": "frontend/src/components/forms/PhoneInput.vue",
+        "modificado": false,
+        "notas": "Componente para agregar/remover m鷏tiples tel閒onos con botones inline."
       },
       {
-        "nombre": "RegisterView.vue",
-        "ruta_origen": "../../.componentes/vue/auth/RegisterView.vue",
-        "ruta_destino": "frontend/src/views/auth/RegisterView.vue",
+        "nombre": "FileUploadSection.vue",
+        "ruta_origen": ".componentes/vue/forms/FileUploadSection.vue",
+        "ruta_destino": "frontend/src/components/common/FileUploadSection.vue",
         "modificado": false,
-        "notas": "Vista de registro de usuarios nuevos"
-      },
+        "notas": "Componente completo: drag&drop, validaciones, preview. Props configurables."
+      }
+    ],
+    "vue_lib": [
       {
-        "nombre": "AppLayout.vue",
-        "ruta_origen": "../../.componentes/vue/layouts/AppLayout.vue",
-        "ruta_destino": "frontend/src/components/layout/AppLayout.vue",
+        "nombre": "utils.js",
+        "ruta_origen": ".componentes/vue/lib/utils.js",
+        "ruta_destino": "frontend/src/lib/utils.js",
         "modificado": false,
-        "notas": "Layout principal con Sidebar y Navbar incluidos"
-      },
-      {
-        "nombre": "Sidebar.vue",
-        "ruta_origen": "../../.componentes/vue/layouts/Sidebar.vue",
-        "ruta_destino": "frontend/src/components/layout/Sidebar.vue",
-        "modificado": true,
-        "notas": "Sidebar personalizado con 18 m贸dulos del ERP. Se agregaron m贸dulos espec铆ficos del proyecto."
-      },
-      {
-        "nombre": "Navbar.vue",
-        "ruta_origen": "../../.componentes/vue/layouts/Navbar.vue",
-        "ruta_destino": "frontend/src/components/layout/Navbar.vue",
-        "modificado": false,
-        "notas": "Navbar con perfil de usuario y notificaciones"
-      },
-      {
-        "nombre": "DarkModeToggle.vue",
-        "ruta_origen": "../../.componentes/vue/layouts/DarkModeToggle.vue",
-        "ruta_destino": "frontend/src/components/layout/DarkModeToggle.vue",
-        "modificado": false,
-        "notas": "Toggle para cambiar entre modo claro y oscuro"
-      },
-      {
-        "nombre": "AvatarEditModal.vue",
-        "ruta_origen": "../../.componentes/vue/modals/AvatarEditModal.vue",
-        "ruta_destino": "frontend/src/components/modals/AvatarEditModal.vue",
-        "modificado": false,
-        "notas": "Modal para editar avatar del usuario con upload de imagen"
+        "notas": "Funci髇 cn() para combinar clases Tailwind. Esencial para shadcn-vue."
       }
     ],
     "composables": [
       {
-        "nombre": "useAlert.js",
-        "ruta_origen": "../../.componentes/composables/useAlert.js",
-        "ruta_destino": "frontend/src/composables/useAlert.js",
-        "modificado": false,
-        "notas": "Sistema de alertas con SweetAlert2"
-      },
-      {
         "nombre": "useDarkMode.js",
-        "ruta_origen": "../../.componentes/composables/useDarkMode.js",
+        "ruta_origen": ".componentes/composables/useDarkMode.js",
         "ruta_destino": "frontend/src/composables/useDarkMode.js",
         "modificado": false,
-        "notas": "Manejo de modo oscuro con localStorage"
+        "notas": "Usa VueUse. Persistencia autom醫ica en localStorage."
       },
       {
         "nombre": "useFileUpload.js",
-        "ruta_origen": "../../.componentes/composables/useFileUpload.js",
+        "ruta_origen": ".componentes/composables/useFileUpload.js",
         "ruta_destino": "frontend/src/composables/useFileUpload.js",
         "modificado": false,
-        "notas": "Helper para carga de archivos con FormData"
+        "notas": "100% gen閞ico. Validaciones, preview, drag&drop."
       },
       {
-        "nombre": "useUsers.js",
-        "ruta_origen": "../../.componentes/composables/useUsers.js",
-        "ruta_destino": "frontend/src/composables/useUsers.js",
+        "nombre": "useAlert.js",
+        "ruta_origen": ".componentes/composables/useAlert.js",
+        "ruta_destino": "frontend/src/composables/useAlert.js",
         "modificado": false,
-        "notas": "CRUD completo para gesti贸n de usuarios"
+        "notas": "Wrapper de sweetalert2 con dark mode autom醫ico. 8 m閠odos 鷗iles."
       },
       {
-        "nombre": "useBodegas.js",
-        "ruta_origen": "../../.componentes/composables/useBodegas.js",
-        "ruta_destino": "frontend/src/composables/useBodegas.js",
+        "nombre": "useSidebar.js",
+        "ruta_origen": ".componentes/composables/useSidebar.js",
+        "ruta_destino": "frontend/src/composables/useSidebar.js",
         "modificado": false,
-        "notas": "CRUD completo para gesti贸n de bodegas/almacenes"
-      },
-      {
-        "nombre": "useChatids.js",
-        "ruta_origen": "../../.componentes/composables/useChatids.js",
-        "ruta_destino": "frontend/src/composables/useChatids.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de chat IDs de Telegram"
-      },
-      {
-        "nombre": "useCotizaciones.js",
-        "ruta_origen": "../../.componentes/composables/useCotizaciones.js",
-        "ruta_destino": "frontend/src/composables/useCotizaciones.js",
-        "modificado": false,
-        "notas": "CRUD completo con master-detail para cotizaciones. Incluye carga de cat谩logos."
-      },
-      {
-        "nombre": "useEmpresas.js",
-        "ruta_origen": "../../.componentes/composables/useEmpresas.js",
-        "ruta_destino": "frontend/src/composables/useEmpresas.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de empresas"
-      },
-      {
-        "nombre": "useGalerias.js",
-        "ruta_origen": "../../.componentes/composables/useGalerias.js",
-        "ruta_destino": "frontend/src/composables/useGalerias.js",
-        "modificado": false,
-        "notas": "CRUD completo para galer铆as de im谩genes con relaci贸n polim贸rfica"
-      },
-      {
-        "nombre": "useInventarios.js",
-        "ruta_origen": "../../.componentes/composables/useInventarios.js",
-        "ruta_destino": "frontend/src/composables/useInventarios.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de inventario"
-      },
-      {
-        "nombre": "useMonedas.js",
-        "ruta_origen": "../../.componentes/composables/useMonedas.js",
-        "ruta_destino": "frontend/src/composables/useMonedas.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de monedas"
-      },
-      {
-        "nombre": "usePedidos.js",
-        "ruta_origen": "../../.componentes/composables/usePedidos.js",
-        "ruta_destino": "frontend/src/composables/usePedidos.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de pedidos con c贸digos autogenerados"
-      },
-      {
-        "nombre": "useRutas.js",
-        "ruta_origen": "../../.componentes/composables/useRutas.js",
-        "ruta_destino": "frontend/src/composables/useRutas.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de rutas API del sistema"
-      },
-      {
-        "nombre": "useSettings.js",
-        "ruta_origen": "../../.componentes/composables/useSettings.js",
-        "ruta_destino": "frontend/src/composables/useSettings.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de configuraciones del sistema"
-      },
-      {
-        "nombre": "useSexes.js",
-        "ruta_origen": "../../.componentes/composables/useSexes.js",
-        "ruta_destino": "frontend/src/composables/useSexes.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de g茅neros/sexos"
-      },
-      {
-        "nombre": "useSistemas.js",
-        "ruta_origen": "../../.componentes/composables/useSistemas.js",
-        "ruta_destino": "frontend/src/composables/useSistemas.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de sistemas de medida"
-      },
-      {
-        "nombre": "useTaxes.js",
-        "ruta_origen": "../../.componentes/composables/useTaxes.js",
-        "ruta_destino": "frontend/src/composables/useTaxes.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de impuestos"
-      },
-      {
-        "nombre": "useTelefonos.js",
-        "ruta_origen": "../../.componentes/composables/useTelefonos.js",
-        "ruta_destino": "frontend/src/composables/useTelefonos.js",
-        "modificado": false,
-        "notas": "CRUD completo para gesti贸n de tipos de tel茅fono"
-      },
-      {
-        "nombre": "useVentas.js",
-        "ruta_origen": "../../.componentes/composables/useVentas.js",
-        "ruta_destino": "frontend/src/composables/useVentas.js",
-        "modificado": false,
-        "notas": "CRUD completo con master-detail para ventas. Incluye tipo de pago."
+        "notas": "Maneja estado collapse del sidebar. Persistencia en localStorage."
       }
     ],
-    "laravel": [
+    "laravel_requests": [
       {
-        "nombre": "BaseApiController.php",
-        "ruta_origen": "../../.componentes/laravel/controllers/BaseApiController.php",
-        "ruta_destino": "backend/app/Http/Controllers/BaseApiController.php",
+        "nombre": "LoginRequest.php",
+        "ruta_origen": ".componentes/laravel/requests/LoginRequest.php",
+        "ruta_destino": "backend/app/Http/Requests/Auth/LoginRequest.php",
         "modificado": false,
-        "notas": "Controlador abstracto base usado por todos los controladores API del proyecto. Incluye m茅todos CRUD est谩ndar."
-      },
-      {
-        "nombre": "BaseFormRequest.php",
-        "ruta_origen": "../../.componentes/laravel/requests/BaseFormRequest.php",
-        "ruta_destino": "backend/app/Http/Requests/BaseFormRequest.php",
-        "modificado": false,
-        "notas": "FormRequest base con validaciones en espa帽ol usadas en todos los FormRequests del proyecto."
-      },
-      {
-        "nombre": "BaseResource.php",
-        "ruta_origen": "../../.componentes/laravel/resources/BaseResource.php",
-        "ruta_destino": "backend/app/Http/Resources/BaseResource.php",
-        "modificado": false,
-        "notas": "Resource abstracto base con helpers de formateo usado por todos los Resources API."
-      }
-    ],
-    "comandos_artisan": [
-      {
-        "nombre": "RegisterApiRoutes.php",
-        "ruta_origen": "../../.componentes/laravel/commands/RegisterApiRoutes.php",
-        "ruta_destino": "backend/app/Console/Commands/RegisterApiRoutes.php",
-        "modificado": false,
-        "notas": "Comando artisan para registrar autom谩ticamente todas las rutas API en la tabla 'rutas'. Uso: php artisan routes:register"
+        "notas": "Login dual (email O usuario). Mensajes en espa駉l. failedValidation personalizado."
       }
     ]
   },
-  "estadisticas": {
-    "total_componentes": 30,
-    "componentes_vue": 7,
-    "composables": 19,
-    "laravel_templates": 3,
-    "comandos_artisan": 1
+  "dependencias_npm": {
+    "requeridas": [
+      "class-variance-authority",
+      "clsx",
+      "tailwind-merge",
+      "radix-vue",
+      "@vueuse/core",
+      "sweetalert2",
+      "@heroicons/vue"
+    ],
+    "dev": [
+      "tailwindcss"
+    ]
   },
-  "modulos_implementados": [
-    "Usuarios (Users)",
-    "Sistemas",
-    "Sexos (Sexes)",
-    "Monedas",
-    "Tel茅fonos",
-    "Chat IDs (Telegram)",
-    "Bodegas",
-    "Empresas",
-    "Inventarios",
-    "Impuestos (Taxes)",
-    "Galer铆as",
-    "Cotizaciones (Master-Detail)",
-    "Ventas (Master-Detail)",
-    "Pedidos",
-    "Configuraciones (Settings)",
-    "Rutas API"
-  ],
-  "tecnologias": {
-    "backend": {
-      "framework": "Laravel 12",
-      "autenticacion": "tymon/jwt-auth",
-      "permisos": "spatie/laravel-permission",
-      "base_datos": "MySQL",
-      "patron": "Repository + Service Layer"
-    },
-    "frontend": {
-      "framework": "Vue 3 Composition API",
-      "router": "Vue Router",
-      "state_management": "Pinia",
-      "estilos": "Tailwind CSS",
-      "http_client": "Axios",
-      "tablas": "@tanstack/vue-table",
-      "alertas": "SweetAlert2",
-      "iconos": "Heroicons",
-      "build_tool": "Vite"
-    }
-  },
-  "patrones_implementados": [
-    "CRUD est谩ndar (6 m茅todos: index, show, store, update, destroy, destroyBulk)",
-    "Master-Detail con transacciones DB (Cotizaciones, Ventas)",
-    "C贸digos autogenerados por a帽o (COT-2025-NNNN, VEN-2025-NNNN, PED-2025-NNNN)",
-    "Relaciones polim贸rficas (Galer铆as con morphs)",
-    "Soft Deletes en todos los modelos",
-    "Eager Loading para performance",
-    "Carga m煤ltiple de archivos",
-    "Real-time calculations en formularios"
-  ],
-  "notas": [
-    "Todos los componentes del frontend siguen Vue 3 Composition API",
-    "Todos los controladores extienden de BaseApiController",
-    "Todos los FormRequests extienden de BaseFormRequest con validaciones en espa帽ol",
-    "Todos los Resources extienden de BaseResource para formateo consistente",
-    "El Sidebar fue modificado para incluir los 18 m贸dulos del ERP",
-    "Se implement贸 sistema de paginaci贸n, b煤squeda y ordenamiento en todos los CRUDs",
-    "Las rutas API fueron registradas autom谩ticamente con el comando routes:register",
-    "Total de 101 rutas API registradas en la base de datos"
-  ]
+  "notas": "Todos los componentes UI son de tipo shadcn-vue. Se copiaron 41 archivos reutilizables desde BackendProfesional."
 }

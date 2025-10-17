@@ -121,6 +121,125 @@ frontend/
 
 ---
 
+## 🛍️ Módulo de Productos y Categorías
+
+Sistema completo de gestión de inventario implementado con Vue 3 Composition API.
+
+### Componentes Implementados
+
+**Componentes de Productos:**
+- `ProductosList.vue` - Vista completa con grid/table toggle
+- `ProductosTable.vue` - Tabla responsive con acciones inline
+- `ProductoCard.vue` - Card individual para vista en cuadrícula
+- `ProductoFilters.vue` - Panel de filtros avanzados
+- `StockBadge.vue` - Indicador visual de estado de stock
+
+**Ubicación:** `src/components/productos/`
+
+### Stores (Pinia)
+
+**useProductosStore:**
+```javascript
+// State
+productos: []        // Array de productos
+loading: false       // Estado de carga
+pagination: {}       // Datos de paginación
+filters: {}          // Filtros aplicados
+
+// Actions
+fetchProductos(page)      // Listar con paginación
+fetchProducto(id)         // Ver detalle
+createProducto(data)      // Crear (FormData)
+updateProducto(id, data)  // Actualizar (FormData)
+deleteProducto(id)        // Eliminar (soft delete)
+restoreProducto(id)       // Restaurar
+updateStock(id, cantidad, tipo) // Ajustar stock
+```
+
+**useCategoriasStore:**
+```javascript
+// State
+categorias: []            // Array de categorías
+categoriasOptions: []     // Para selects
+
+// Actions
+fetchAllCategorias()      // Todas activas
+fetchCategorias(page)     // Con paginación
+```
+
+### Características Principales
+
+✅ **Vista Dual:** Toggle entre Grid (cards) y Table (tabla)
+✅ **Búsqueda Avanzada:** Por nombre, SKU, código de barras (con debounce)
+✅ **Filtros:**
+  - Por categoría
+  - Por rango de precio (mín/máx)
+  - Por estado (activo/inactivo)
+  - Por stock mínimo
+
+✅ **Gestión de Stock:**
+  - Badge visual con 4 estados (sin stock, bajo, medio, alto)
+  - Actualización rápida desde tabla
+  - Alertas visuales de stock bajo
+
+✅ **Imágenes:**
+  - Upload con preview
+  - Placeholder si no hay imagen
+  - Manejo de errores de carga
+
+✅ **Responsive:**
+  - Mobile-first design
+  - Grid adaptativo (1-4 columnas según viewport)
+  - Tabla con scroll horizontal en móviles
+
+### Rutas
+
+```javascript
+{
+  path: '/productos',
+  component: ProductosView,
+  children: [
+    { path: '', name: 'productos.index' },       // Listado
+    { path: 'create', name: 'productos.create' }, // Crear
+    { path: ':id', name: 'productos.detail' },    // Ver
+    { path: ':id/edit', name: 'productos.edit' }  // Editar
+  ]
+}
+```
+
+### Permisos Requeridos
+
+- `productos.index` - Ver listado
+- `productos.show` - Ver detalles
+- `productos.store` - Crear productos
+- `productos.update` - Actualizar productos
+- `productos.destroy` - Eliminar productos
+- `productos.restore` - Restaurar productos
+- `productos.stock` - Gestionar stock
+
+### Ejemplo de Uso
+
+```vue
+<template>
+  <div class="container mx-auto p-6">
+    <!-- Lista completa con filtros, paginación y acciones -->
+    <ProductosList />
+  </div>
+</template>
+
+<script setup>
+import ProductosList from '@/components/productos/ProductosList.vue'
+</script>
+```
+
+### Documentación Detallada
+
+- **Componentes:** `frontend/docs/PRODUCTOS_COMPONENTES.md`
+- **API:** `backend/docs/api/PRODUCTOS_API.md`
+- **Guía de Usuario:** `docs/PRODUCTOS_GUIA_USUARIO.md`
+
+---
+
 ## 📞 Soporte
 
 **Usuario:** jscothserver
@@ -129,5 +248,5 @@ frontend/
 
 ---
 
-**Última actualización:** 2025-10-14
+**Última actualización:** 2025-10-16
 **Estado:** ✅ Funcional y listo para desarrollo

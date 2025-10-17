@@ -267,11 +267,12 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::post('/', [App\Http\Controllers\Api\ProductoController::class, 'store']);
         Route::get('/bajo-stock', [App\Http\Controllers\Api\ProductoController::class, 'bajoStock']);
         Route::get('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'show']);
-        Route::post('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'update']);
+        Route::put('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'update']);
         Route::delete('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'destroy']);
         Route::post('/bulk/delete', [App\Http\Controllers\Api\ProductoController::class, 'destroyBulk']);
         Route::post('/{id}/stock', [App\Http\Controllers\Api\ProductoController::class, 'updateStock']);
         Route::post('/{id}/restore', [App\Http\Controllers\Api\ProductoController::class, 'restore']);
+        Route::post('/{id}/categorias', [App\Http\Controllers\Api\ProductoController::class, 'syncCategorias']);
     });
 
     // Módulo de Categorías
@@ -284,6 +285,7 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::delete('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'destroy']);
         Route::post('/bulk/delete', [App\Http\Controllers\Api\CategoriaController::class, 'destroyBulk']);
         Route::post('/{id}/restore', [App\Http\Controllers\Api\CategoriaController::class, 'restore']);
+        Route::get('/{id}/productos', [App\Http\Controllers\Api\CategoriaController::class, 'productos']);
     });
 
     // Aquí irán más módulos del ERP

@@ -59,3 +59,130 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+# Backend Professional - Módulos Implementados
+
+## Módulo de Productos y Categorías
+
+Sistema completo de gestión de inventario con las siguientes características:
+
+### Productos
+- CRUD completo de productos
+- Upload de imágenes (JPG, PNG, WEBP, max 2MB)
+- Gestión de stock con alertas de stock bajo
+- Múltiples categorías por producto
+- Precios: compra, venta, mayoreo
+- SKU y código de barras únicos
+- Soft delete con restauración
+- Multi-tenancy (aislamiento por empresa)
+
+### Categorías
+- CRUD completo de categorías
+- Slug automático generado desde el nombre
+- Iconos y colores personalizados
+- Prevención de eliminación si tiene productos asociados
+- Relación Many-to-Many con productos
+
+### Endpoints Principales
+
+**Productos:**
+```
+GET    /api/productos              - Listar con paginación y búsqueda
+POST   /api/productos              - Crear producto (multipart/form-data)
+GET    /api/productos/bajo-stock   - Productos con stock bajo
+GET    /api/productos/{id}         - Ver producto con detalles
+POST   /api/productos/{id}         - Actualizar producto
+DELETE /api/productos/{id}         - Eliminar producto (soft delete)
+POST   /api/productos/{id}/restore - Restaurar producto eliminado
+POST   /api/productos/{id}/stock   - Actualizar stock
+POST   /api/productos/bulk/delete  - Eliminar múltiples productos
+```
+
+**Categorías:**
+```
+GET    /api/categorias              - Listar con paginación
+POST   /api/categorias              - Crear categoría
+GET    /api/categorias/all          - Todas activas (sin paginación)
+GET    /api/categorias/{id}         - Ver categoría con productos
+PUT    /api/categorias/{id}         - Actualizar categoría
+DELETE /api/categorias/{id}         - Eliminar categoría
+POST   /api/categorias/{id}/restore - Restaurar categoría
+POST   /api/categorias/bulk/delete  - Eliminar múltiples categorías
+```
+
+### Documentación Completa
+
+- **API REST:** `backend/docs/api/PRODUCTOS_API.md`
+- **Schema de BD:** `backend/docs/database/PRODUCTOS_SCHEMA.md`
+- **Permisos:** `backend/docs/PRODUCTOS_PERMISOS.md`
+- **Guía de Usuario:** `docs/PRODUCTOS_GUIA_USUARIO.md`
+
+### Características de Seguridad
+
+- **JWT Authentication:** Autenticación mediante tokens
+- **Multi-tenancy:** Datos aislados por empresa
+- **Permisos:** 14 permisos granulares (Spatie Permission)
+  - 7 para productos
+  - 7 para categorías
+- **Middleware:** Validación en cada endpoint
+- **Policies:** Validación adicional de acceso
+- **Validaciones:** Mensajes en español
+- **Soft Delete:** Eliminación lógica, no física
+
+### Instalación del Módulo
+
+```bash
+# Ejecutar migraciones del módulo
+php artisan migrate --path=database/migrations/2025_10_16_210000_create_productos_table.php
+php artisan migrate --path=database/migrations/2025_10_16_210001_create_categorias_table.php
+php artisan migrate --path=database/migrations/2025_10_16_210002_create_categoria_producto_table.php
+
+# Crear link simbólico para imágenes
+php artisan storage:link
+
+# Seeders (si existen)
+php artisan db:seed --class=ProductosPermissionsSeeder
+```
+
+### Estructura de Archivos
+
+```
+backend/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── Api/
+│   │           ├── ProductoController.php
+│   │           └── CategoriaController.php
+│   ├── Models/
+│   │   ├── Producto.php
+│   │   └── Categoria.php
+│   └── Traits/
+│       └── MultiTenantScope.php
+├── database/
+│   └── migrations/
+│       ├── 2025_10_16_210000_create_productos_table.php
+│       ├── 2025_10_16_210001_create_categorias_table.php
+│       └── 2025_10_16_210002_create_categoria_producto_table.php
+├── docs/
+│   ├── api/
+│   │   └── PRODUCTOS_API.md
+│   ├── database/
+│   │   └── PRODUCTOS_SCHEMA.md
+│   └── PRODUCTOS_PERMISOS.md
+└── storage/
+    └── app/
+        └── public/
+            └── productos/
+```
+
+---
+
+## Soporte y Contacto
+
+- **Email:** jscothserver@gmail.com
+- **Telegram:** @Multisolucioneslv_bot
+
+**Última actualización:** 2025-10-16

@@ -63,9 +63,17 @@ class PermissionsSeeder extends Seeder
             'dashboard.view' => 'Ver dashboard',
             'profile.view' => 'Ver perfil',
             'profile.edit' => 'Editar perfil',
+            'productos.create' => 'Crear productos',
+            'productos.update' => 'Actualizar productos',
+            'productos.delete' => 'Eliminar productos',
             'productos.restore' => 'Restaurar productos eliminados',
             'productos.stock' => 'Actualizar stock de productos',
+            'productos.categorias.sync' => 'Sincronizar categorías de productos',
+            'categorias.create' => 'Crear categorías',
+            'categorias.update' => 'Actualizar categorías',
+            'categorias.delete' => 'Eliminar categorías',
             'categorias.restore' => 'Restaurar categorías eliminadas',
+            'categorias.productos' => 'Listar productos de categoría',
         ];
 
         foreach ($specialPermissions as $name => $description) {
@@ -122,8 +130,8 @@ class PermissionsSeeder extends Seeder
             'inventarios.index', 'inventarios.show', 'inventarios.store', 'inventarios.update', 'inventarios.destroy',
 
             // Productos y Categorías (todos los permisos)
-            'productos.index', 'productos.show', 'productos.store', 'productos.update', 'productos.destroy', 'productos.restore', 'productos.stock',
-            'categorias.index', 'categorias.show', 'categorias.store', 'categorias.update', 'categorias.destroy', 'categorias.restore',
+            'productos.index', 'productos.show', 'productos.create', 'productos.update', 'productos.delete', 'productos.restore', 'productos.stock', 'productos.categorias.sync',
+            'categorias.index', 'categorias.show', 'categorias.create', 'categorias.update', 'categorias.delete', 'categorias.restore', 'categorias.productos',
 
             // Ventas y cotizaciones
             'cotizaciones.index', 'cotizaciones.show', 'cotizaciones.store', 'cotizaciones.update', 'cotizaciones.destroy',
@@ -145,8 +153,8 @@ class PermissionsSeeder extends Seeder
         // Supervisor - puede ver, crear y editar productos (NO eliminar)
         $supervisor->syncPermissions([
             // Productos (sin eliminar)
-            'productos.index', 'productos.show', 'productos.store', 'productos.update',
-            'categorias.index', 'categorias.show', 'categorias.store', 'categorias.update',
+            'productos.index', 'productos.show', 'productos.create', 'productos.update',
+            'categorias.index', 'categorias.show', 'categorias.create', 'categorias.update',
 
             // Inventarios
             'inventarios.index', 'inventarios.show', 'inventarios.store', 'inventarios.update',
