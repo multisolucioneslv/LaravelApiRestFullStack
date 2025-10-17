@@ -37,6 +37,8 @@ class PermissionsSeeder extends Seeder
             'rutas' => 'Rutas API',
             'settings' => 'Configuraciones',
             'reports' => 'Reportes',
+            'productos' => 'Productos',
+            'categorias' => 'Categorías',
         ];
 
         $actions = ['index', 'show', 'store', 'update', 'destroy'];
@@ -61,6 +63,9 @@ class PermissionsSeeder extends Seeder
             'dashboard.view' => 'Ver dashboard',
             'profile.view' => 'Ver perfil',
             'profile.edit' => 'Editar perfil',
+            'productos.restore' => 'Restaurar productos eliminados',
+            'productos.stock' => 'Actualizar stock de productos',
+            'categorias.restore' => 'Restaurar categorías eliminadas',
         ];
 
         foreach ($specialPermissions as $name => $description) {
@@ -116,6 +121,10 @@ class PermissionsSeeder extends Seeder
             // Inventarios
             'inventarios.index', 'inventarios.show', 'inventarios.store', 'inventarios.update', 'inventarios.destroy',
 
+            // Productos y Categorías (todos los permisos)
+            'productos.index', 'productos.show', 'productos.store', 'productos.update', 'productos.destroy', 'productos.restore', 'productos.stock',
+            'categorias.index', 'categorias.show', 'categorias.store', 'categorias.update', 'categorias.destroy', 'categorias.restore',
+
             // Ventas y cotizaciones
             'cotizaciones.index', 'cotizaciones.show', 'cotizaciones.store', 'cotizaciones.update', 'cotizaciones.destroy',
             'ventas.index', 'ventas.show', 'ventas.store', 'ventas.update', 'ventas.destroy',
@@ -133,18 +142,69 @@ class PermissionsSeeder extends Seeder
             'profile.view', 'profile.edit',
         ]);
 
-        // Vendedor - solo operaciones de venta
-        $vendedor->syncPermissions([
+        // Supervisor - puede ver, crear y editar productos (NO eliminar)
+        $supervisor->syncPermissions([
+            // Productos (sin eliminar)
+            'productos.index', 'productos.show', 'productos.store', 'productos.update',
+            'categorias.index', 'categorias.show', 'categorias.store', 'categorias.update',
+
+            // Inventarios
+            'inventarios.index', 'inventarios.show', 'inventarios.store', 'inventarios.update',
+
+            // Ventas
             'cotizaciones.index', 'cotizaciones.show', 'cotizaciones.store', 'cotizaciones.update',
             'ventas.index', 'ventas.show', 'ventas.store',
             'pedidos.index', 'pedidos.show', 'pedidos.store', 'pedidos.update',
-            'inventarios.index', 'inventarios.show',
+
+            // Dashboard y perfil
             'dashboard.view',
             'profile.view', 'profile.edit',
         ]);
 
-        // Usuario - solo lectura
+        // Vendedor - solo lectura de productos, actualizar stock y operaciones de venta
+        $vendedor->syncPermissions([
+            // Productos (solo lectura y actualizar stock)
+            'productos.index', 'productos.show', 'productos.stock',
+            'categorias.index', 'categorias.show',
+
+            // Ventas
+            'cotizaciones.index', 'cotizaciones.show', 'cotizaciones.store', 'cotizaciones.update',
+            'ventas.index', 'ventas.show', 'ventas.store',
+            'pedidos.index', 'pedidos.show', 'pedidos.store', 'pedidos.update',
+
+            // Inventarios (solo lectura)
+            'inventarios.index', 'inventarios.show',
+
+            // Dashboard y perfil
+            'dashboard.view',
+            'profile.view', 'profile.edit',
+        ]);
+
+        // Usuario - solo lectura de productos
         $usuario->syncPermissions([
+            // Productos (solo lista)
+            'productos.index',
+
+            // Dashboard y perfil
+            'dashboard.view',
+            'profile.view', 'profile.edit',
+        ]);
+
+        // Contabilidad - solo lectura de productos y acceso a reportes
+        $contabilidad->syncPermissions([
+            // Productos (lectura)
+            'productos.index', 'productos.show',
+            'categorias.index', 'categorias.show',
+
+            // Ventas (lectura)
+            'cotizaciones.index', 'cotizaciones.show',
+            'ventas.index', 'ventas.show',
+            'pedidos.index', 'pedidos.show',
+
+            // Reportes
+            'reports.index', 'reports.show',
+
+            // Dashboard y perfil
             'dashboard.view',
             'profile.view', 'profile.edit',
         ]);

@@ -261,5 +261,30 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::post('/mark-offline', [App\Http\Controllers\Api\OnlineUserController::class, 'markOffline']);
     });
 
+    // Módulo de Productos
+    Route::prefix('productos')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\ProductoController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\ProductoController::class, 'store']);
+        Route::get('/bajo-stock', [App\Http\Controllers\Api\ProductoController::class, 'bajoStock']);
+        Route::get('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'show']);
+        Route::post('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\ProductoController::class, 'destroyBulk']);
+        Route::post('/{id}/stock', [App\Http\Controllers\Api\ProductoController::class, 'updateStock']);
+        Route::post('/{id}/restore', [App\Http\Controllers\Api\ProductoController::class, 'restore']);
+    });
+
+    // Módulo de Categorías
+    Route::prefix('categorias')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\CategoriaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\CategoriaController::class, 'store']);
+        Route::get('/all', [App\Http\Controllers\Api\CategoriaController::class, 'all']);
+        Route::get('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'destroy']);
+        Route::post('/bulk/delete', [App\Http\Controllers\Api\CategoriaController::class, 'destroyBulk']);
+        Route::post('/{id}/restore', [App\Http\Controllers\Api\CategoriaController::class, 'restore']);
+    });
+
     // Aquí irán más módulos del ERP
 });
