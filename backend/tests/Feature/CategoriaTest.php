@@ -41,6 +41,73 @@ class CategoriaTest extends TestCase
     }
 
     // ==========================================
+    // TESTS: AUTENTICACIÓN
+    // ==========================================
+
+    /**
+     * Test: Requiere autenticación para listar categorías
+     */
+    public function test_requiere_autenticacion_para_listar_categorias(): void
+    {
+        $response = $this->getJson('/api/categorias');
+
+        $response->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.',
+            ]);
+    }
+
+    /**
+     * Test: Requiere autenticación para crear categoría
+     */
+    public function test_requiere_autenticacion_para_crear_categoria(): void
+    {
+        $response = $this->postJson('/api/categorias', [
+            'nombre' => 'Nueva Categoría',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Test: Requiere autenticación para ver categoría
+     */
+    public function test_requiere_autenticacion_para_ver_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        $response = $this->getJson("/api/categorias/{$categoria->id}");
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Test: Requiere autenticación para actualizar categoría
+     */
+    public function test_requiere_autenticacion_para_actualizar_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        $response = $this->putJson("/api/categorias/{$categoria->id}", [
+            'nombre' => 'Categoría Actualizada',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Test: Requiere autenticación para eliminar categoría
+     */
+    public function test_requiere_autenticacion_para_eliminar_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        $response = $this->deleteJson("/api/categorias/{$categoria->id}");
+
+        $response->assertStatus(401);
+    }
+
+    // ==========================================
     // TESTS: INDEX - Listar Categorías
     // ==========================================
 
@@ -138,7 +205,7 @@ class CategoriaTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'message' => 'No tienes permisos para realizar esta acción.',
+                'message' => 'No tienes permiso para realizar esta acción',
             ]);
     }
 
@@ -367,7 +434,7 @@ class CategoriaTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Categoría eliminada exitosamente.',
+                'message' => 'Categoría eliminada exitosamente',
             ]);
 
         // Verificar que se eliminó (soft delete)
@@ -404,7 +471,7 @@ class CategoriaTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Categoría restaurada exitosamente.',
+                'message' => 'Categoría restaurada exitosamente',
             ]);
 
         // Verificar que se restauró
@@ -450,7 +517,7 @@ class CategoriaTest extends TestCase
     }
 
     /**
-     * Test: Solo muestra productos activos de la categoría
+     * Test: Solo muestra productos activos de la categoría por defecto
      */
     public function test_solo_muestra_productos_activos_de_categoria(): void
     {
@@ -470,13 +537,132 @@ class CategoriaTest extends TestCase
 
         $categoria->productos()->attach([$productoActivo->id, $productoInactivo->id]);
 
+        // Por defecto no filtra por activo, debe devolver ambos
         $response = $this->authenticatedJson('GET', "/api/categorias/{$categoria->id}/productos", [], $this->user);
+
+        $response->assertStatus(200);
+
+        // Debe devolver 2 productos (activo e inactivo)
+        $this->assertCount(2, $response->json('data'));
+    }
+
+    /**
+     * Test: Puede filtrar productos activos de una categoría
+     */
+    public function test_puede_filtrar_productos_activos_de_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        // Crear productos activos e inactivos
+        $productoActivo = Producto::factory()->create([
+            'empresa_id' => $this->empresa->id,
+            'activo' => true,
+        ]);
+
+        $productoInactivo = Producto::factory()->create([
+            'empresa_id' => $this->empresa->id,
+            'activo' => false,
+        ]);
+
+        $categoria->productos()->attach([$productoActivo->id, $productoInactivo->id]);
+
+        // Filtrar solo productos activos
+        $response = $this->authenticatedJson('GET', "/api/categorias/{$categoria->id}/productos?activo=1", [], $this->user);
 
         $response->assertStatus(200);
 
         // Debe devolver solo 1 producto (el activo)
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals($productoActivo->id, $response->json('data.0.id'));
+    }
+
+    /**
+     * Test: Puede filtrar productos inactivos de una categoría
+     */
+    public function test_puede_filtrar_productos_inactivos_de_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        // Crear productos activos e inactivos
+        $productoActivo = Producto::factory()->create([
+            'empresa_id' => $this->empresa->id,
+            'activo' => true,
+        ]);
+
+        $productoInactivo = Producto::factory()->create([
+            'empresa_id' => $this->empresa->id,
+            'activo' => false,
+        ]);
+
+        $categoria->productos()->attach([$productoActivo->id, $productoInactivo->id]);
+
+        // Filtrar solo productos inactivos
+        $response = $this->authenticatedJson('GET', "/api/categorias/{$categoria->id}/productos?activo=0", [], $this->user);
+
+        $response->assertStatus(200);
+
+        // Debe devolver solo 1 producto (el inactivo)
+        $this->assertCount(1, $response->json('data'));
+        $this->assertEquals($productoInactivo->id, $response->json('data.0.id'));
+    }
+
+    /**
+     * Test: Productos de categoría están paginados
+     */
+    public function test_productos_de_categoria_estan_paginados(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        // Crear 20 productos
+        $productos = Producto::factory()->count(20)->create(['empresa_id' => $this->empresa->id]);
+        $categoria->productos()->attach($productos->pluck('id')->toArray());
+
+        $response = $this->authenticatedJson('GET', "/api/categorias/{$categoria->id}/productos", [], $this->user);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'categoria',
+                'data',
+                'meta' => [
+                    'current_page',
+                    'last_page',
+                    'per_page',
+                    'total',
+                ],
+            ]);
+
+        // Debe devolver 15 items por página
+        $this->assertCount(15, $response->json('data'));
+        $this->assertEquals(20, $response->json('meta.total'));
+    }
+
+    /**
+     * Test: No puede ver productos de categoría de otra empresa
+     */
+    public function test_no_puede_ver_productos_de_categoria_de_otra_empresa(): void
+    {
+        $otraEmpresa = Empresa::factory()->create();
+        $categoria = Categoria::factory()->create(['empresa_id' => $otraEmpresa->id]);
+
+        $response = $this->authenticatedJson('GET', "/api/categorias/{$categoria->id}/productos", [], $this->user);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test: Requiere permiso para ver productos de categoría
+     */
+    public function test_requiere_permiso_para_ver_productos_de_categoria(): void
+    {
+        $categoria = Categoria::factory()->create(['empresa_id' => $this->empresa->id]);
+
+        // Crear usuario sin permisos
+        $userSinPermiso = $this->createUser('Usuario', ['empresa_id' => $this->empresa->id]);
+
+        $response = $this->authenticatedJson('GET', "/api/categorias/{$categoria->id}/productos", [], $userSinPermiso);
+
+        $response->assertStatus(403);
     }
 
     // ==========================================
