@@ -645,6 +645,73 @@ const routes = [
     }
   },
 
+  // Rutas de Productos
+  {
+    path: '/productos',
+    name: 'productos.index',
+    component: () => import('@/views/productos/ProductosIndex.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Productos'
+    }
+  },
+  {
+    path: '/productos/crear',
+    name: 'productos.create',
+    component: () => import('@/views/productos/ProductosCreate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Crear Producto'
+    }
+  },
+  {
+    path: '/productos/:id',
+    name: 'productos.detail',
+    component: () => import('@/views/productos/ProductosShow.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Ver Producto'
+    }
+  },
+  {
+    path: '/productos/:id/editar',
+    name: 'productos.edit',
+    component: () => import('@/views/productos/ProductosEdit.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Producto'
+    }
+  },
+
+  // Rutas de Categorías
+  {
+    path: '/categorias',
+    name: 'categorias.index',
+    component: () => import('@/views/categorias/CategoriasIndex.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Categorías'
+    }
+  },
+  {
+    path: '/categorias/crear',
+    name: 'categorias.create',
+    component: () => import('@/views/categorias/CategoriasCreate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Crear Categoría'
+    }
+  },
+  {
+    path: '/categorias/:id/editar',
+    name: 'categorias.edit',
+    component: () => import('@/views/categorias/CategoriasEdit.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Categoría'
+    }
+  },
+
   // Rutas de Rutas API del Sistema
   {
     path: '/rutas',

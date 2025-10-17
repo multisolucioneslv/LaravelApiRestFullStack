@@ -271,5 +271,14 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
     Route::post('categorias/{id}/restore', [\App\Http\Controllers\CategoriaController::class, 'restore']);
     Route::get('categorias/{categoria}/productos', [\App\Http\Controllers\CategoriaController::class, 'productosDeCategoria']);
 
+    // Módulo de Chat con IA
+    Route::prefix('ai-chat')->group(function () {
+        Route::get('/conversations', [App\Http\Controllers\Api\AIChatController::class, 'getConversations']);
+        Route::post('/conversations', [App\Http\Controllers\Api\AIChatController::class, 'createConversation']);
+        Route::get('/conversations/{conversationId}', [App\Http\Controllers\Api\AIChatController::class, 'getConversation']);
+        Route::post('/conversations/{conversationId}/messages', [App\Http\Controllers\Api\AIChatController::class, 'sendMessage']);
+        Route::delete('/conversations/{conversationId}', [App\Http\Controllers\Api\AIChatController::class, 'deleteConversation']);
+    });
+
     // Aquí irán más módulos del ERP
 });
