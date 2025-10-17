@@ -11,19 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 class CategoriaController extends Controller
 {
     /**
-     * Constructor - Asignar middleware de permisos
-     */
-    public function __construct()
-    {
-        $this->middleware('permission:categorias.index')->only(['index']);
-        $this->middleware('permission:categorias.show')->only(['show']);
-        $this->middleware('permission:categorias.store')->only(['store']);
-        $this->middleware('permission:categorias.update')->only(['update']);
-        $this->middleware('permission:categorias.destroy')->only(['destroy']);
-        $this->middleware('permission:categorias.restore')->only(['restore']);
-    }
-
-    /**
      * Listar categorías con paginación y búsqueda
      */
     public function index(Request $request): JsonResponse

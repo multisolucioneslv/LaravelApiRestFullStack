@@ -12,19 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 class ProductoController extends Controller
 {
     /**
-     * Constructor - Asignar middleware de permisos
-     */
-    public function __construct()
-    {
-        $this->middleware('permission:productos.index')->only(['index']);
-        $this->middleware('permission:productos.show')->only(['show']);
-        $this->middleware('permission:productos.store')->only(['store']);
-        $this->middleware('permission:productos.update')->only(['update']);
-        $this->middleware('permission:productos.destroy')->only(['destroy']);
-        $this->middleware('permission:productos.restore')->only(['restore']);
-    }
-
-    /**
      * Listar productos con paginación y búsqueda
      * Búsqueda por: nombre, sku, codigo_barras
      * Orden: DESC por defecto
