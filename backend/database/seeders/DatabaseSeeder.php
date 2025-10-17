@@ -22,9 +22,12 @@ class DatabaseSeeder extends Seeder
             PhoneSeeder::class,       // 4. Phones (teléfonos del sistema)
             ChatidSeeder::class,      // 5. Chatids (chatids del sistema)
             EmpresaSeeder::class,     // 6. Empresa default (Yapame)
+            TaxSeeder::class,         // Taxes  
             RoleSeeder::class,        // 7. Roles (SuperAdmin, Administrador, etc.)
             PermissionsSeeder::class, // 8. Permisos del sistema
             SuperAdminSeeder::class,  // 9. Usuario SuperAdmin (jscothserver)
+            CategoriaSeeder::class,   // 10. Categorías de productos
+            ProductoSeeder::class,    // 11. Productos de ejemplo
         ]);
     }
 }

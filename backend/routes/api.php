@@ -262,31 +262,14 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
     });
 
     // Módulo de Productos
-    Route::prefix('productos')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\ProductoController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Api\ProductoController::class, 'store']);
-        Route::get('/bajo-stock', [App\Http\Controllers\Api\ProductoController::class, 'bajoStock']);
-        Route::get('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Api\ProductoController::class, 'destroy']);
-        Route::post('/bulk/delete', [App\Http\Controllers\Api\ProductoController::class, 'destroyBulk']);
-        Route::post('/{id}/stock', [App\Http\Controllers\Api\ProductoController::class, 'updateStock']);
-        Route::post('/{id}/restore', [App\Http\Controllers\Api\ProductoController::class, 'restore']);
-        Route::post('/{id}/categorias', [App\Http\Controllers\Api\ProductoController::class, 'syncCategorias']);
-    });
+    Route::apiResource('productos', \App\Http\Controllers\ProductoController::class);
+    Route::post('productos/{id}/restore', [\App\Http\Controllers\ProductoController::class, 'restore']);
+    Route::patch('productos/{producto}/stock', [\App\Http\Controllers\ProductoController::class, 'updateStock']);
 
     // Módulo de Categorías
-    Route::prefix('categorias')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\CategoriaController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Api\CategoriaController::class, 'store']);
-        Route::get('/all', [App\Http\Controllers\Api\CategoriaController::class, 'all']);
-        Route::get('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Api\CategoriaController::class, 'destroy']);
-        Route::post('/bulk/delete', [App\Http\Controllers\Api\CategoriaController::class, 'destroyBulk']);
-        Route::post('/{id}/restore', [App\Http\Controllers\Api\CategoriaController::class, 'restore']);
-        Route::get('/{id}/productos', [App\Http\Controllers\Api\CategoriaController::class, 'productos']);
-    });
+    Route::apiResource('categorias', \App\Http\Controllers\CategoriaController::class);
+    Route::post('categorias/{id}/restore', [\App\Http\Controllers\CategoriaController::class, 'restore']);
+    Route::get('categorias/{categoria}/productos', [\App\Http\Controllers\CategoriaController::class, 'productosDeCategoria']);
 
     // Aquí irán más módulos del ERP
 });

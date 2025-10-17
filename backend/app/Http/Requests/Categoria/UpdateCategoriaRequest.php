@@ -16,7 +16,7 @@ class UpdateCategoriaRequest extends FormRequest
 
     public function rules(): array
     {
-        $categoriaId = $this->route('id');
+        $categoriaId = $this->route('categoria')->id ?? $this->route('id');
 
         return [
             'nombre' => 'required|string|max:200',
