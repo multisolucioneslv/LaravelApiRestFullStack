@@ -24,7 +24,7 @@ class UpdateMonedaRequest extends FormRequest
                 'required',
                 'string',
                 'max:10',
-                Rule::unique('monedas', 'codigo')->ignore($monedaId),
+                Rule::unique('currencies', 'codigo')->ignore($monedaId),
             ],
             'nombre' => 'required|string|max:100',
             'simbolo' => 'required|string|max:10',

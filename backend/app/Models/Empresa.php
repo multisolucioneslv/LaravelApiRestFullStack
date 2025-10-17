@@ -56,13 +56,23 @@ class Empresa extends Model
     // ==========================================
 
     /**
-     * Una empresa pertenece a un teléfono
+     * Teléfono principal de la empresa (relación directa)
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function phone()
     {
         return $this->belongsTo(Phone::class, 'telefono_id');
+    }
+
+    /**
+     * Teléfonos adicionales de la empresa (relación polimórfica)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function additionalPhones()
+    {
+        return $this->morphMany(Phone::class, 'phonable');
     }
 
     /**

@@ -239,8 +239,8 @@ const columns = [
     id: 'telefono',
     header: 'Teléfono',
     cell: ({ row }) => {
-      const telefono = row.original.telefono
-      return h('div', {}, telefono?.telefono || '-')
+      const phone = row.original.phone
+      return h('div', {}, phone?.telefono || '-')
     },
     enableHiding: true, // Toggleable
   },
@@ -249,8 +249,8 @@ const columns = [
     id: 'moneda',
     header: 'Moneda',
     cell: ({ row }) => {
-      const moneda = row.original.moneda
-      return h('div', {}, moneda ? `${moneda.nombre} (${moneda.simbolo})` : '-')
+      const currency = row.original.currency
+      return h('div', {}, currency ? `${currency.nombre} (${currency.simbolo})` : '-')
     },
     enableHiding: true, // Toggleable
   },

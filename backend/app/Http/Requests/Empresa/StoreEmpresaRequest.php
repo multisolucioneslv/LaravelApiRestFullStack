@@ -18,8 +18,8 @@ class StoreEmpresaRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string|max:200',
-            'telefono_id' => 'nullable|exists:telefonos,id',
-            'moneda_id' => 'nullable|exists:monedas,id',
+            'telefono_id' => 'nullable|exists:phones,id',
+            'currency_id' => 'nullable|exists:currencies,id',
             'email' => 'nullable|email|max:100',
             'direccion' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg|max:5120', // Max 5MB
@@ -36,7 +36,7 @@ class StoreEmpresaRequest extends FormRequest
             'nombre.required' => 'El campo nombre es requerido.',
             'nombre.max' => 'El nombre no puede exceder los :max caracteres.',
             'telefono_id.exists' => 'El teléfono seleccionado no es válido.',
-            'moneda_id.exists' => 'La moneda seleccionada no es válida.',
+            'currency_id.exists' => 'La moneda seleccionada no es válida.',
             'email.email' => 'El email debe ser una dirección válida.',
             'email.max' => 'El email no puede exceder los :max caracteres.',
             'direccion.string' => 'La dirección debe ser texto válido.',

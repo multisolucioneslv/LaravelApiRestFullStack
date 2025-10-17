@@ -23,7 +23,7 @@ class StoreVentaRequest extends FormRequest
             'observaciones' => 'nullable|string',
             'empresa_id' => 'required|exists:empresas,id',
             'cotizacion_id' => 'nullable|exists:cotizaciones,id',
-            'moneda_id' => 'required|exists:monedas,id',
+            'moneda_id' => 'required|exists:currencies,id',
             'tax_id' => 'required|exists:taxes,id',
 
             // Validaciones para detalles (array)

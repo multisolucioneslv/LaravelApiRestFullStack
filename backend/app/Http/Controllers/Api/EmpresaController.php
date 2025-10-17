@@ -25,7 +25,7 @@ class EmpresaController extends Controller
         $search = $request->input('search', '');
 
         $empresas = Empresa::query()
-            ->with(['phone', 'currency'])
+            ->with(['phone', 'additionalPhones', 'currency'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nombre', 'like', "%{$search}%")
@@ -108,7 +108,7 @@ class EmpresaController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $empresa = Empresa::with(['phone', 'currency'])
+        $empresa = Empresa::with(['phone', 'additionalPhones', 'currency'])
             ->findOrFail($id);
 
         return response()->json([
@@ -180,7 +180,48 @@ class EmpresaController extends Controller
         }
 
         $empresa->update($data);
-        $empresa->load(['phone', 'currency']);
+
+        // Actualizar teléfonos: el primero como principal, el resto como adicionales
+        if ($request->has('phones') && is_array($request->phones)) {
+            $validPhones = array_filter($request->phones, function ($phoneData) {
+                return !empty($phoneData['telefono']);
+            });
+
+            if (!empty($validPhones)) {
+                // Actualizar o crear el teléfono principal
+                $firstPhoneData = array_values($validPhones)[0];
+                if ($empresa->telefono_id) {
+                    // Actualizar teléfono existente
+                    $empresa->phone->update(['telefono' => $firstPhoneData['telefono']]);
+                } else {
+                    // Crear nuevo teléfono principal
+                    $firstPhone = \App\Models\Phone::create([
+                        'telefono' => $firstPhoneData['telefono'],
+                    ]);
+                    $empresa->update(['telefono_id' => $firstPhone->id]);
+                }
+
+                // Eliminar teléfonos adicionales existentes
+                $empresa->additionalPhones()->delete();
+
+                // Crear nuevos teléfonos adicionales
+                $additionalPhones = array_slice(array_values($validPhones), 1);
+                foreach ($additionalPhones as $phoneData) {
+                    $empresa->additionalPhones()->create([
+                        'telefono' => $phoneData['telefono'],
+                    ]);
+                }
+            } else {
+                // Si no hay teléfonos válidos, eliminar relaciones
+                if ($empresa->telefono_id) {
+                    $empresa->phone->delete();
+                    $empresa->update(['telefono_id' => null]);
+                }
+                $empresa->additionalPhones()->delete();
+            }
+        }
+
+        $empresa->load(['phone', 'additionalPhones', 'currency']);
 
         return response()->json([
             'success' => true,

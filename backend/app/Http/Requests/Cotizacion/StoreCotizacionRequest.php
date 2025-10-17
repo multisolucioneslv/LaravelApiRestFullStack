@@ -22,7 +22,7 @@ class StoreCotizacionRequest extends FormRequest
             'estado' => 'nullable|in:pendiente,aprobada,rechazada,convertida',
             'observaciones' => 'nullable|string',
             'empresa_id' => 'required|exists:empresas,id',
-            'moneda_id' => 'nullable|exists:monedas,id',
+            'moneda_id' => 'nullable|exists:currencies,id',
             'tax_id' => 'nullable|exists:taxes,id',
 
             // Validaciones para detalles (array)

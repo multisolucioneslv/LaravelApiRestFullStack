@@ -17,7 +17,7 @@ class StoreMonedaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo' => 'required|string|max:10|unique:monedas,codigo',
+            'codigo' => 'required|string|max:10|unique:currencies,codigo',
             'nombre' => 'required|string|max:100',
             'simbolo' => 'required|string|max:10',
             'tasa_cambio' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,4})?$/',

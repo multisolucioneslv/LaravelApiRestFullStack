@@ -36,6 +36,17 @@ class EmpresaResource extends JsonResource
                     'telefono' => $this->phone->telefono,
                 ];
             }),
+            'phones' => $this->whenLoaded('additionalPhones', function () {
+                // Combinar teléfono principal con adicionales
+                $phones = [];
+                if ($this->phone) {
+                    $phones[] = ['telefono' => $this->phone->telefono];
+                }
+                foreach ($this->additionalPhones as $additionalPhone) {
+                    $phones[] = ['telefono' => $additionalPhone->telefono];
+                }
+                return $phones;
+            }),
             'currency' => $this->whenLoaded('currency', function () {
                 return [
                     'id' => $this->currency->id,

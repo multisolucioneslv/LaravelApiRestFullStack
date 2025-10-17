@@ -61,42 +61,26 @@
                 />
               </div>
 
-              <!-- Teléfono -->
-              <div>
-                <label for="telefono_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  Teléfono
-                </label>
-                <select
-                  id="telefono_id"
-                  v-model="form.telefono_id"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="">Seleccione...</option>
-                  <option
-                    v-for="telefono in telefonos"
-                    :key="telefono.id"
-                    :value="telefono.id"
-                  >
-                    {{ telefono.telefono }}
-                  </option>
-                </select>
+              <!-- Teléfonos (múltiples) -->
+              <div class="md:col-span-2">
+                <PhoneInput v-model="form.phones" />
               </div>
 
               <!-- Moneda -->
               <div>
-                <label for="moneda_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label for="currency_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                   Moneda
                 </label>
                 <select
-                  id="moneda_id"
-                  v-model="form.moneda_id"
+                  id="currency_id"
+                  v-model.number="form.currency_id"
                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  <option value="">Seleccione...</option>
+                  <option :value="null">Seleccione...</option>
                   <option
                     v-for="moneda in monedas"
                     :key="moneda.id"
-                    :value="moneda.id"
+                    :value="Number(moneda.id)"
                   >
                     {{ moneda.nombre }} ({{ moneda.simbolo }})
                   </option>
@@ -214,12 +198,12 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEmpresas } from '@/composables/useEmpresas'
-import { useTelefonos } from '@/composables/useTelefonos'
 import { useMonedas } from '@/composables/useMonedas'
 import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import PhoneInput from '@/components/forms/PhoneInput.vue'
 import FileUploadSection from '@/components/common/FileUploadSection.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
@@ -227,7 +211,6 @@ const authStore = useAuthStore()
 
 const route = useRoute()
 const { fetchEmpresa, updateEmpresa, loading, goToIndex } = useEmpresas()
-const { telefonos, fetchTelefonos, cleanupTelefonos } = useTelefonos()
 const { monedas, fetchMonedas, cleanupMonedas } = useMonedas()
 
 const loadingEmpresa = ref(true)
@@ -252,8 +235,9 @@ const currentFondo = ref(null)
 const form = ref({
   nombre: '',
   email: '',
-  telefono_id: '',
-  moneda_id: '',
+  telefono_id: null,
+  phones: [{ telefono: '' }],
+  currency_id: '',
   direccion: '',
   zona_horaria: '',
   logo: null,
@@ -273,7 +257,6 @@ onMounted(async () => {
     try {
       // Cargar datos en paralelo
       await Promise.all([
-        fetchTelefonos(),
         fetchMonedas()
       ])
 
@@ -282,8 +265,18 @@ onMounted(async () => {
       // Llenar formulario con datos existentes
       form.value.nombre = empresa.nombre
       form.value.email = empresa.email || ''
-      form.value.telefono_id = empresa.telefono_id || ''
-      form.value.moneda_id = empresa.moneda_id || ''
+
+      // Asignar telefono_id si existe
+      form.value.telefono_id = empresa.telefono_id ? Number(empresa.telefono_id) : null
+
+      // Convertir teléfonos a formato esperado por PhoneInput
+      form.value.phones = empresa.phones && empresa.phones.length > 0
+        ? empresa.phones.map(phone => ({ telefono: phone.telefono }))
+        : [{ telefono: '' }]
+
+      // Forzar conversión de currency_id a número para que el select funcione
+      form.value.currency_id = empresa.currency_id ? Number(empresa.currency_id) : null
+
       form.value.direccion = empresa.direccion || ''
       form.value.zona_horaria = empresa.zona_horaria || ''
       form.value.activo = empresa.activo
@@ -307,7 +300,6 @@ onMounted(async () => {
 // Limpiar datos cuando se sale de la vista
 onUnmounted(() => {
   console.log('[SECURITY] EmpresaEdit: Limpiando datos al desmontar componente')
-  if (typeof cleanupTelefonos === 'function') cleanupTelefonos()
   if (typeof cleanupMonedas === 'function') cleanupMonedas()
 })
 
@@ -315,21 +307,29 @@ onUnmounted(() => {
 watch(() => authStore.isAuthenticated, async (isAuth) => {
   if (!isAuth) {
     console.warn('[SECURITY] EmpresaEdit: Sesión cerrada, limpiando datos')
-    if (typeof cleanupTelefonos === 'function') cleanupTelefonos()
     if (typeof cleanupMonedas === 'function') cleanupMonedas()
   } else {
     console.log('[SECURITY] EmpresaEdit: Sesión iniciada, recargando datos')
     try {
       await Promise.all([
-        fetchTelefonos(),
         fetchMonedas()
       ])
       const empresa = await fetchEmpresa(empresaId.value)
       // Actualizar formulario...
       form.value.nombre = empresa.nombre
       form.value.email = empresa.email || ''
-      form.value.telefono_id = empresa.telefono_id || ''
-      form.value.moneda_id = empresa.moneda_id || ''
+
+      // Asignar telefono_id si existe
+      form.value.telefono_id = empresa.telefono_id ? Number(empresa.telefono_id) : null
+
+      // Convertir teléfonos
+      form.value.phones = empresa.phones && empresa.phones.length > 0
+        ? empresa.phones.map(phone => ({ telefono: phone.telefono }))
+        : [{ telefono: '' }]
+
+      // Convertir currency_id a número
+      form.value.currency_id = empresa.currency_id ? Number(empresa.currency_id) : null
+
       form.value.direccion = empresa.direccion || ''
       form.value.zona_horaria = empresa.zona_horaria || ''
       form.value.activo = empresa.activo
@@ -352,11 +352,16 @@ const handleSubmit = async () => {
     if (form.value.email) {
       formData.append('email', form.value.email)
     }
-    if (form.value.telefono_id) {
-      formData.append('telefono_id', form.value.telefono_id)
+
+    // Agregar teléfonos (filtrar vacíos)
+    const validPhones = form.value.phones.filter(phone => phone.telefono && phone.telefono.trim() !== '')
+    if (validPhones.length > 0) {
+      // Enviar como JSON string para FormData
+      formData.append('phones', JSON.stringify(validPhones))
     }
-    if (form.value.moneda_id) {
-      formData.append('moneda_id', form.value.moneda_id)
+
+    if (form.value.currency_id) {
+      formData.append('currency_id', form.value.currency_id)
     }
     if (form.value.direccion) {
       formData.append('direccion', form.value.direccion)

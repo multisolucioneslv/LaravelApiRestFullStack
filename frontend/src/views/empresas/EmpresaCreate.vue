@@ -79,12 +79,12 @@
 
               <!-- Moneda -->
               <div>
-                <label for="moneda_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label for="currency_id" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                   Moneda
                 </label>
                 <select
-                  id="moneda_id"
-                  v-model="form.moneda_id"
+                  id="currency_id"
+                  v-model="form.currency_id"
                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <option value="">Seleccione...</option>
@@ -276,7 +276,7 @@ const form = ref({
   nombre: '',
   email: '',
   telefono_id: '',
-  moneda_id: '',
+  currency_id: '',
   direccion: '',
   zona_horaria: 'America/Los_Angeles',
   logo: null,
@@ -298,8 +298,8 @@ const handleSubmit = async () => {
     if (form.value.telefono_id) {
       formData.append('telefono_id', form.value.telefono_id)
     }
-    if (form.value.moneda_id) {
-      formData.append('moneda_id', form.value.moneda_id)
+    if (form.value.currency_id) {
+      formData.append('currency_id', form.value.currency_id)
     }
     if (form.value.direccion) {
       formData.append('direccion', form.value.direccion)
