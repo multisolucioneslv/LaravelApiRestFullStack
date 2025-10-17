@@ -1,5 +1,5 @@
 <template>
-  <!-- Overlay oscuro cuando está abierto -->
+  <!-- Overlay oscuro cuando estÃ¡ abierto -->
   <Transition name="fade">
     <div
       v-if="isOpen"
@@ -22,7 +22,7 @@
           </div>
           <div>
             <h2 class="font-semibold text-lg text-white">Asistente IA</h2>
-            <p class="text-xs text-white/80">Con integración N8N</p>
+            <p class="text-xs text-white/80">Con integraciÃ³n N8N</p>
           </div>
         </div>
         <button
@@ -33,18 +33,18 @@
         </button>
       </div>
 
-      <!-- Área principal -->
+      <!-- Ãrea principal -->
       <div class="flex-1 flex overflow-hidden">
         <!-- Sidebar de conversaciones -->
         <div class="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-900">
-          <!-- Botón nueva conversación -->
+          <!-- BotÃ³n nueva conversaciÃ³n -->
           <div class="p-3">
             <button
               @click="handleNewConversation"
               class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <PlusIcon class="w-4 h-4" />
-              Nueva conversación
+              Nueva conversaciÃ³n
             </button>
           </div>
 
@@ -62,7 +62,7 @@
               ]"
             >
               <p class="font-medium text-sm text-gray-900 dark:text-white truncate">
-                {{ conv.title || 'Nueva conversación' }}
+                {{ conv.title || 'Nueva conversaciÃ³n' }}
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
                 {{ formatTime(conv.last_message_at || conv.created_at) }}
@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <!-- Área de chat -->
+        <!-- Ãrea de chat -->
         <div class="flex-1 flex flex-col">
           <!-- Mensajes -->
           <div
@@ -86,9 +86,9 @@
           >
             <div v-if="!currentConversation" class="flex items-center justify-center h-full">
               <div class="text-center text-gray-500 dark:text-gray-400">
-                <div class="text-6xl mb-4">=¬</div>
-                <p class="text-lg font-medium">Inicia una nueva conversación</p>
-                <p class="text-sm mt-2">Pregúntame sobre usuarios, productos, empresas, etc.</p>
+                <div class="text-6xl mb-4">ðŸ’¬</div>
+                <p class="text-lg font-medium">Inicia una nueva conversaciÃ³n</p>
+                <p class="text-sm mt-2">PregÃºntame sobre usuarios, productos, empresas, etc.</p>
               </div>
             </div>
 
@@ -142,7 +142,7 @@
                 v-model="newMessage"
                 @keyup.enter="handleSendMessage"
                 :disabled="!currentConversation || isSending"
-                placeholder="Escribe tu mensaje... (ej: ¿Cuántos usuarios tengo?)"
+                placeholder="Escribe tu mensaje... (ej: Â¿CuÃ¡ntos usuarios tengo?)"
                 class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
@@ -159,7 +159,7 @@
               </button>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Puedes preguntar sobre: usuarios, empresas, productos, proveedores, categorías
+              Puedes preguntar sobre: usuarios, empresas, productos, proveedores, categorÃ­as
             </p>
           </div>
         </div>
@@ -208,8 +208,8 @@ const handleNewConversation = async () => {
     await nextTick()
     scrollToBottom()
   } catch (error) {
-    console.error('Error al crear conversación:', error)
-    alert('Error al crear nueva conversación')
+    console.error('Error al crear conversaciÃ³n:', error)
+    alert('Error al crear nueva conversaciÃ³n')
   }
 }
 
@@ -219,8 +219,8 @@ const handleSelectConversation = async (conversationId) => {
     await nextTick()
     scrollToBottom()
   } catch (error) {
-    console.error('Error al abrir conversación:', error)
-    alert('Error al abrir conversación')
+    console.error('Error al abrir conversaciÃ³n:', error)
+    alert('Error al abrir conversaciÃ³n')
   }
 }
 
