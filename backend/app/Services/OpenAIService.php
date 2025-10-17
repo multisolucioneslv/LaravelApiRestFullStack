@@ -16,8 +16,8 @@ class OpenAIService
     {
         $this->apiKey = config('services.openai.api_key', env('OPENAI_API_KEY'));
         $this->model = config('services.openai.model', env('OPENAI_MODEL', 'gpt-4'));
-        $this->maxTokens = config('services.openai.max_tokens', env('OPENAI_MAX_TOKENS', 1500));
-        $this->temperature = config('services.openai.temperature', env('OPENAI_TEMPERATURE', 0.7));
+        $this->maxTokens = (int) config('services.openai.max_tokens', env('OPENAI_MAX_TOKENS', 1500));
+        $this->temperature = (float) config('services.openai.temperature', env('OPENAI_TEMPERATURE', 0.7));
     }
 
     /**
@@ -71,7 +71,7 @@ class OpenAIService
     }
 
     /**
-     * Generar un resumen o título basado en un texto
+     * Generar un resumen o tï¿½tulo basado en un texto
      *
      * @param string $text
      * @return string|null
@@ -82,7 +82,7 @@ class OpenAIService
             $messages = [
                 [
                     'role' => 'system',
-                    'content' => 'Eres un asistente que genera títulos cortos (máximo 50 caracteres) para conversaciones basados en el primer mensaje del usuario. Responde solo con el título, sin comillas ni puntuación adicional.'
+                    'content' => 'Eres un asistente que genera tï¿½tulos cortos (mï¿½ximo 50 caracteres) para conversaciones basados en el primer mensaje del usuario. Responde solo con el tï¿½tulo, sin comillas ni puntuaciï¿½n adicional.'
                 ],
                 [
                     'role' => 'user',
@@ -99,13 +99,13 @@ class OpenAIService
             return null;
 
         } catch (\Exception $e) {
-            Log::error('Error generando título con OpenAI', ['error' => $e->getMessage()]);
+            Log::error('Error generando tï¿½tulo con OpenAI', ['error' => $e->getMessage()]);
             return null;
         }
     }
 
     /**
-     * Preparar mensajes para enviar a OpenAI desde el historial de la conversación
+     * Preparar mensajes para enviar a OpenAI desde el historial de la conversaciï¿½n
      *
      * @param \Illuminate\Database\Eloquent\Collection $messages
      * @return array
