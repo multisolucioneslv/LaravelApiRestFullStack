@@ -173,6 +173,7 @@ import {
   BriefcaseIcon,
   ShieldCheckIcon,
   BookOpenIcon,
+  CubeIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -213,6 +214,7 @@ const empresaIniciales = computed(() => {
 const openGroups = reactive({
   operaciones: false,
   inventario: false,
+  productos: false,
   empresas: false,
   usuarios: false,
   catalogos: false,
@@ -269,6 +271,25 @@ const menuGroups = [
         label: 'Galerías',
         to: '/galerias',
         icon: PhotoIcon,
+      },
+    ],
+  },
+  {
+    name: 'productos',
+    label: 'Productos',
+    icon: CubeIcon,
+    items: [
+      {
+        name: 'productos',
+        label: 'Productos',
+        to: '/productos',
+        icon: CubeIcon,
+      },
+      {
+        name: 'categorias',
+        label: 'Categorías',
+        to: '/categorias',
+        icon: TagIcon,
       },
     ],
   },

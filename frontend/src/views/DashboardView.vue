@@ -93,8 +93,11 @@
           </div>
         </div>
 
-        <!-- Card 4 -->
-        <div class="card">
+        <!-- Card 4 - Productos -->
+        <router-link
+          to="/productos"
+          class="card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+        >
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -103,12 +106,15 @@
               <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
                 789
               </p>
+              <p class="mt-2 text-xs text-purple-600 dark:text-purple-400">
+                Ver productos →
+              </p>
             </div>
             <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <CubeIcon class="w-8 h-8 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
-        </div>
+        </router-link>
       </div>
 
       <!-- Contenido adicional -->
