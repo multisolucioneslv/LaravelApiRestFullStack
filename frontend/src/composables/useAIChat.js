@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import axios from '@/lib/axios'
+import api from '@/services/api'
 
 const conversations = ref([])
 const currentConversation = ref(null)
@@ -14,7 +14,7 @@ export function useAIChat() {
   const fetchConversations = async () => {
     try {
       isLoading.value = true
-      const response = await axios.get('/ai-chat/conversations')
+      const response = await api.get('/ai-chat/conversations')
 
       if (response.data.success) {
         conversations.value = response.data.conversations
@@ -32,7 +32,7 @@ export function useAIChat() {
    */
   const createConversation = async (title = null) => {
     try {
-      const response = await axios.post('/ai-chat/conversations', { title })
+      const response = await api.post('/ai-chat/conversations', { title })
 
       if (response.data.success) {
         const newConversation = response.data.conversation
@@ -51,7 +51,7 @@ export function useAIChat() {
   const openConversation = async (conversationId) => {
     try {
       isLoading.value = true
-      const response = await axios.get(`/ai-chat/conversations/${conversationId}`)
+      const response = await api.get(`/ai-chat/conversations/${conversationId}`)
 
       if (response.data.success) {
         currentConversation.value = response.data.conversation
@@ -95,7 +95,7 @@ export function useAIChat() {
       }
       messages.value.push(tempAssistantMessage)
 
-      const response = await axios.post(
+      const response = await api.post(
         `/ai-chat/conversations/${conversationId}/messages`,
         { message }
       )
@@ -132,7 +132,7 @@ export function useAIChat() {
    */
   const deleteConversation = async (conversationId) => {
     try {
-      const response = await axios.delete(`/ai-chat/conversations/${conversationId}`)
+      const response = await api.delete(`/ai-chat/conversations/${conversationId}`)
 
       if (response.data.success) {
         // Eliminar de la lista
