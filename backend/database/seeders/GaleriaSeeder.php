@@ -31,16 +31,12 @@ class GaleriaSeeder extends Seeder
             $numImagenes = $faker->numberBetween(2, 5);
             $imagenes = [];
 
-            // Colores variados para las imágenes
-            $colores = ['0066CC', 'FF6B6B', '4ECDC4', 'FFE66D', '95E1D3', 'FF8B94', '6C5CE7', 'FD79A8', '00B894', 'FDCB6E'];
-
             for ($i = 0; $i < $numImagenes; $i++) {
-                $colorAleatorio = $faker->randomElement($colores);
-                $nombreImagen = urlencode(substr($producto->nombre, 0, 15));
-                $angulo = ['Front', 'Back', 'Side', 'Detail', 'Close'][$i] ?? 'View' . $i;
+                // Usar picsum.photos con seed basado en producto ID + índice de imagen
+                $seed = ($producto->id * 100) + $i;
 
                 $imagenes[] = [
-                    'url' => "https://via.placeholder.com/400x400/{$colorAleatorio}/FFFFFF?text={$nombreImagen}+{$angulo}",
+                    'url' => "https://picsum.photos/400/400?random={$seed}",
                     'orden' => $i + 1,
                     'es_principal' => $i === 0, // La primera es la principal
                 ];

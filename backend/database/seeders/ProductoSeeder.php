@@ -29,7 +29,7 @@ class ProductoSeeder extends Seeder
         // Productos de ejemplo por categoría (con imágenes)
         $productosBase = [
             // Electrónica
-            'Laptop HP 15"' => ['categoria' => 'Electrónica', 'precio_compra' => 450, 'precio_venta' => 650, 'imagen' => 'https://via.placeholder.com/400x400/0066CC/FFFFFF?text=Laptop'],
+            'Laptop HP 15"' => ['categoria' => 'Electrónica', 'precio_compra' => 450, 'precio_venta' => 650, 'imagen' => 'https://picsum.photos/400/400?random=laptop'],
             'Mouse Inalámbrico' => ['categoria' => 'Electrónica', 'precio_compra' => 8, 'precio_venta' => 15],
             'Teclado Mecánico' => ['categoria' => 'Electrónica', 'precio_compra' => 35, 'precio_venta' => 55],
             'Monitor 24" LED' => ['categoria' => 'Electrónica', 'precio_compra' => 120, 'precio_venta' => 180],
@@ -110,11 +110,9 @@ class ProductoSeeder extends Seeder
                 continue;
             }
 
-            // Generar URL de imagen usando placeholder con color aleatorio
-            $colores = ['0066CC', 'FF6B6B', '4ECDC4', 'FFE66D', '95E1D3', 'FF8B94', '6C5CE7', 'FD79A8'];
-            $colorAleatorio = $faker->randomElement($colores);
-            $nombreImagen = urlencode(substr($nombre, 0, 20));
-            $imagenUrl = "https://via.placeholder.com/400x400/{$colorAleatorio}/FFFFFF?text={$nombreImagen}";
+            // Generar URL de imagen usando picsum.photos con seed único por producto
+            $seed = $count + 1000; // Asegurar imágenes únicas y consistentes
+            $imagenUrl = "https://picsum.photos/400/400?random={$seed}";
 
             $producto = Producto::create([
                 'nombre' => $nombre,
