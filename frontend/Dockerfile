@@ -13,9 +13,9 @@ WORKDIR /app
 # Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar dependencias de producción (usa cache de npm)
+# Instalar TODAS las dependencias (incluidas devDependencies para el build)
 # --prefer-offline y --no-audit para builds más rápidos
-RUN npm ci --only=production --prefer-offline --no-audit && \
+RUN npm ci --prefer-offline --no-audit && \
     npm cache clean --force
 
 # Copiar código fuente
