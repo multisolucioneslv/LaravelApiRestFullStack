@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'empresa' => \App\Http\Middleware\EnsureUserBelongsToEmpresa::class,
+            'can-use-ai' => \App\Http\Middleware\CanUseAIChat::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

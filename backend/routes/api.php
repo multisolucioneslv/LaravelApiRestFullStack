@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\PublicConfigController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -272,14 +273,17 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
     Route::post('categorias/{id}/restore', [\App\Http\Controllers\CategoriaController::class, 'restore']);
     Route::get('categorias/{categoria}/productos', [\App\Http\Controllers\CategoriaController::class, 'productosDeCategoria']);
 
-    // Módulo de Chat con IA
-    Route::prefix('ai-chat')->group(function () {
+    // Módulo de Chat con IA (requiere permiso específico y empresa con AI habilitado)
+    Route::prefix('ai-chat')->middleware('can-use-ai')->group(function () {
         Route::get('/conversations', [App\Http\Controllers\Api\AIChatController::class, 'getConversations']);
         Route::post('/conversations', [App\Http\Controllers\Api\AIChatController::class, 'createConversation']);
         Route::get('/conversations/{conversationId}', [App\Http\Controllers\Api\AIChatController::class, 'getConversation']);
         Route::post('/conversations/{conversationId}/messages', [App\Http\Controllers\Api\AIChatController::class, 'sendMessage']);
         Route::delete('/conversations/{conversationId}', [App\Http\Controllers\Api\AIChatController::class, 'deleteConversation']);
     });
+
+    // Módulo de Dashboard - Estadísticas
+    Route::get('dashboard/statistics', [DashboardController::class, 'statistics']);
 
     // Aquí irán más módulos del ERP
 });
