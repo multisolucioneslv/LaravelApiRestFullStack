@@ -1,0 +1,217 @@
+version: '3.8'
+
+# ========================================
+# Docker Compose - BackendProfesional
+# ========================================
+# Orquestación de servicios:
+# - MySQL 8.0
+# - Redis
+# - Backend Laravel
+# - Frontend Vue3
+# - Nginx (Reverse Proxy)
+# - Cloudflare Tunnel
+# ========================================
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  backend-storage:
+    driver: local
+
+services:
+  # ========================================
+  # MySQL 8.0 - Base de Datos
+  # ========================================
+  mysql:
+    image: mysql:8.0
+    container_name: backendprofesional-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-backendprofesional}
+      MYSQL_USER: ${MYSQL_USER:-backend_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-backend_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      TZ: ${TZ:-America/Los_Angeles}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ========================================
+  # Redis - Cache y Sesiones
+  # ========================================
+  redis:
+    image: redis:alpine
+    container_name: backendprofesional-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
+    volumes:
+      - redis-data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ========================================
+  # Backend Laravel - API Rest
+  # ========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+    container_name: backendprofesional-backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    environment:
+      # App Configuration
+      APP_NAME: ${APP_NAME:-BackendProfesional}
+      APP_ENV: ${APP_ENV:-production}
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:8000}
+
+      # Database Configuration
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-backendprofesional}
+      DB_USERNAME: ${MYSQL_USER:-backend_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-backend_password}
+
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+      REDIS_PORT: 6379
+
+      # Cache Configuration
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_TTL: ${JWT_TTL:-60}
+
+      # Timezone
+      TZ: ${TZ:-America/Los_Angeles}
+    volumes:
+      - ./backend:/var/www/html
+      - backend-storage:/var/www/html/storage/app
+      - ./backend/storage/logs:/var/www/html/storage/logs
+    ports:
+      - "${BACKEND_PORT:-9000}:9000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "php", "artisan", "health:check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ========================================
+  # Frontend Vue3 - Interfaz de Usuario
+  # ========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: ${NODE_VERSION:-20}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
+    container_name: backendprofesional-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
+      TZ: ${TZ:-America/Los_Angeles}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/dist
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # Nginx - Reverse Proxy
+  # ========================================
+  nginx:
+    image: nginx:alpine
+    container_name: backendprofesional-nginx
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./backend/public:/var/www/html/public:ro
+    ports:
+      - "${NGINX_HTTP_PORT:-8000}:80"
+      - "${NGINX_HTTPS_PORT:-8443}:443"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # Cloudflare Tunnel - Exposición Segura
+  # ========================================
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: backendprofesional-cloudflare
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - nginx
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "pgrep", "cloudflared"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

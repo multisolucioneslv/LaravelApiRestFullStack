@@ -282,6 +282,27 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
         Route::delete('/conversations/{conversationId}', [App\Http\Controllers\Api\AIChatController::class, 'deleteConversation']);
     });
 
+    // Configuración de AI Chat por Empresa (solo Administradores)
+    Route::prefix('ai-config')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\AIConfigController::class, 'index']);
+        Route::put('/', [App\Http\Controllers\Api\AIConfigController::class, 'update']);
+        Route::get('/users', [App\Http\Controllers\Api\AIConfigController::class, 'getAvailableUsers']);
+        Route::post('/users/permissions', [App\Http\Controllers\Api\AIConfigController::class, 'updateUserPermissions']);
+        Route::get('/usage-stats', [App\Http\Controllers\Api\AIConfigController::class, 'getUsageStats']);
+        Route::get('/plans', [App\Http\Controllers\Api\AIConfigController::class, 'getAvailablePlans']);
+    });
+
+    // Gestión Global de AI Chat (solo SuperAdmin)
+    Route::prefix('superadmin/ai')->group(function () {
+        Route::get('/empresas', [App\Http\Controllers\Api\SuperAdminAIController::class, 'index']);
+        Route::post('/empresas/{empresaId}/toggle', [App\Http\Controllers\Api\SuperAdminAIController::class, 'toggleAI']);
+        Route::get('/stats/global', [App\Http\Controllers\Api\SuperAdminAIController::class, 'getGlobalStats']);
+        Route::post('/empresas/{empresaId}/reset-usage', [App\Http\Controllers\Api\SuperAdminAIController::class, 'resetMonthlyUsage']);
+        Route::put('/empresas/{empresaId}/config', [App\Http\Controllers\Api\SuperAdminAIController::class, 'updateCompanyConfig']);
+        Route::get('/empresas/{empresaId}/config', [App\Http\Controllers\Api\SuperAdminAIController::class, 'showCompanyConfig']);
+        Route::get('/plans', [App\Http\Controllers\Api\SuperAdminAIController::class, 'getPlansInfo']);
+    });
+
     // Módulo de Dashboard - Estadísticas
     Route::get('dashboard/statistics', [DashboardController::class, 'statistics']);
 

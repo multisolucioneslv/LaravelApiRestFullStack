@@ -1,0 +1,67 @@
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Archivos de entorno (usar build args en su lugar)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# Testing
+coverage/
+.nyc_output/
+*.spec.js
+*.test.js
+__tests__/
+tests/
+test/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentación y archivos de desarrollo
+README.md
+docs/
+*.md
+INICIO-RAPIDO.md
+VERSIONS.md
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Logs
+logs/
+*.log
+
+# Archivos temporales
+tmp/
+temp/
+.cache/
+nul
+
+# Otros
+.editorconfig
+.eslintrc*
+.prettierrc*

@@ -1,0 +1,109 @@
+# ============================================
+# .dockerignore para Laravel Backend
+# Excluye archivos innecesarios del contexto Docker
+# ============================================
+
+# Dependencias (se instalan en el Dockerfile)
+/vendor/
+/node_modules/
+/npm-debug.log
+/yarn-error.log
+
+# Archivos de entorno y configuración
+.env
+.env.*
+!.env.example
+
+# Storage y caché (se generan en runtime)
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+!storage/app/.gitignore
+!storage/framework/.gitignore
+!storage/logs/.gitignore
+
+# Testing
+/tests/
+/phpunit.xml
+/.phpunit.result.cache
+/coverage/
+/.phpunit.cache
+
+# Build artifacts
+/public/hot
+/public/storage
+/public/build
+/public/mix-manifest.json
+
+# IDE y editores
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Git
+/.git/
+/.gitignore
+/.gitattributes
+/.github/
+
+# Docker
+/docker/
+/Dockerfile
+/docker-compose*.yml
+/.dockerignore
+
+# Documentación y scripts de desarrollo
+/README.md
+/docs/
+/*.md
+/check_empresas.php
+/update_superadmin.php
+
+# Archivos temporales
+*.log
+*.cache
+*.tmp
+/temp/
+/tmp/
+
+# Composer local
+/composer.phar
+/composer.lock.bak
+/auth.json
+
+# NPM y Vite
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+/vite.config.js
+/package.json
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
+*~
+
+# Certificados y claves (nunca incluir en imagen)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Bases de datos SQLite
+*.sqlite
+*.sqlite3
+*.db
+
+# Otros
+/nul
+.editorconfig
