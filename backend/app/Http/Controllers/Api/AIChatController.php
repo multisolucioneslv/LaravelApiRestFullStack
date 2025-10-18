@@ -244,8 +244,69 @@ class AIChatController extends Controller
     {
         $messageLower = strtolower($message);
 
-        // Detectar consultas sobre usuarios
-        if (preg_match('/(usuario|users?|listar usuarios|mostrar usuarios|cuántos usuarios|registrados)/i', $message)) {
+        // Detectar consultas sobre ventas y productos más vendidos (PRIORIDAD MÁXIMA)
+        if (preg_match('/(venta|ventas|vendido|más vendido|top.*vendido|productos.*vendido|mejor.*venta)/i', $message)) {
+            // Extraer número si se especifica (ej: "top 5", "10 productos")
+            $limit = 10; // Por defecto 10
+            if (preg_match('/(\d+)/', $message, $matches)) {
+                $limit = min((int)$matches[1], 50); // Máximo 50
+            }
+
+            $productosVendidos = DB::table('detalle_ventas as dv')
+                ->join('inventarios as i', 'dv.inventario_id', '=', 'i.id')
+                ->join('productos as p', 'i.producto_id', '=', 'p.id')
+                ->join('ventas as v', 'dv.venta_id', '=', 'v.id')
+                ->where('p.empresa_id', $user->empresa_id)
+                ->whereNull('p.deleted_at')
+                ->whereNull('v.deleted_at')
+                ->where('v.estado', 'completada')
+                ->select(
+                    'p.id',
+                    'p.nombre',
+                    'p.descripcion',
+                    DB::raw('SUM(dv.cantidad) as total_vendido'),
+                    DB::raw('SUM(dv.subtotal) as ingresos_totales'),
+                    DB::raw('AVG(dv.precio_unitario) as precio_promedio')
+                )
+                ->groupBy('p.id', 'p.nombre', 'p.descripcion')
+                ->orderBy('total_vendido', 'desc')
+                ->limit($limit)
+                ->get();
+
+            return [
+                'type' => 'ventas',
+                'data' => $productosVendidos,
+            ];
+        }
+
+        // Detectar consultas sobre productos (ANTES de usuarios para evitar conflictos)
+        if (preg_match('/(producto|products?|inventario|listar productos|mostrar productos|cuántos productos)/i', $message)) {
+            $productos = DB::table('productos as p')
+                ->leftJoin('inventarios as i', 'p.id', '=', 'i.producto_id')
+                ->where('p.empresa_id', $user->empresa_id)
+                ->whereNull('p.deleted_at')
+                ->select(
+                    'p.id',
+                    'p.nombre',
+                    'p.descripcion',
+                    DB::raw('p.precio_venta as precio'),
+                    DB::raw('p.stock_actual as stock'),
+                    'p.empresa_id',
+                    DB::raw('COUNT(i.id) as total_inventario')
+                )
+                ->groupBy('p.id', 'p.nombre', 'p.descripcion', 'p.precio_venta', 'p.stock_actual', 'p.empresa_id')
+                ->orderBy('p.nombre', 'asc')
+                ->limit(50)
+                ->get();
+
+            return [
+                'type' => 'productos',
+                'data' => $productos,
+            ];
+        }
+
+        // Detectar consultas sobre usuarios (MÁS ESPECÍFICO)
+        if (preg_match('/(usuarios?\s+(registrados?|activos?)|cuántos usuarios|listar usuarios|mostrar usuarios)/i', $message)) {
             $usuarios = DB::table('users')
                 ->where('empresa_id', $user->empresa_id)
                 ->whereNull('deleted_at')
@@ -271,32 +332,6 @@ class AIChatController extends Controller
             return [
                 'type' => 'empresas',
                 'data' => $empresas,
-            ];
-        }
-
-        // Detectar consultas sobre productos
-        if (preg_match('/(producto|products?|listar productos|mostrar productos|inventario)/i', $message)) {
-            $productos = DB::table('productos as p')
-                ->leftJoin('inventarios as i', 'p.id', '=', 'i.producto_id')
-                ->where('p.empresa_id', $user->empresa_id)
-                ->whereNull('p.deleted_at')
-                ->select(
-                    'p.id',
-                    'p.nombre',
-                    'p.descripcion',
-                    DB::raw('p.precio_venta as precio'),
-                    DB::raw('p.stock_actual as stock'),
-                    'p.empresa_id',
-                    DB::raw('COUNT(i.id) as total_inventario')
-                )
-                ->groupBy('p.id', 'p.nombre', 'p.descripcion', 'p.precio_venta', 'p.stock_actual', 'p.empresa_id')
-                ->orderBy('p.nombre', 'asc')
-                ->limit(50)
-                ->get();
-
-            return [
-                'type' => 'productos',
-                'data' => $productos,
             ];
         }
 
@@ -335,41 +370,6 @@ class AIChatController extends Controller
             return [
                 'type' => 'categorias',
                 'data' => $categorias,
-            ];
-        }
-
-        // Detectar consultas sobre ventas y productos más vendidos
-        if (preg_match('/(venta|ventas|vendido|más vendido|top.*vendido|productos.*vendido|mejor.*venta)/i', $message)) {
-            // Extraer número si se especifica (ej: "top 5", "10 productos")
-            $limit = 10; // Por defecto 10
-            if (preg_match('/(\d+)/', $message, $matches)) {
-                $limit = min((int)$matches[1], 50); // Máximo 50
-            }
-
-            $productosVendidos = DB::table('detalle_ventas as dv')
-                ->join('inventarios as i', 'dv.inventario_id', '=', 'i.id')
-                ->join('productos as p', 'i.producto_id', '=', 'p.id')
-                ->join('ventas as v', 'dv.venta_id', '=', 'v.id')
-                ->where('p.empresa_id', $user->empresa_id)
-                ->whereNull('p.deleted_at')
-                ->whereNull('v.deleted_at')
-                ->where('v.estado', 'completada')
-                ->select(
-                    'p.id',
-                    'p.nombre',
-                    'p.descripcion',
-                    DB::raw('SUM(dv.cantidad) as total_vendido'),
-                    DB::raw('SUM(dv.subtotal) as ingresos_totales'),
-                    DB::raw('AVG(dv.precio_unitario) as precio_promedio')
-                )
-                ->groupBy('p.id', 'p.nombre', 'p.descripcion')
-                ->orderBy('total_vendido', 'desc')
-                ->limit($limit)
-                ->get();
-
-            return [
-                'type' => 'ventas',
-                'data' => $productosVendidos,
             ];
         }
 
