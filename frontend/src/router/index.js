@@ -366,6 +366,28 @@ const routes = [
     }
   },
 
+  // Configuración de AI para Admin de Empresa
+  {
+    path: '/empresa/configuracion/ai',
+    name: 'empresa.ai-config',
+    component: () => import('@/views/empresa/AIConfigView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Configuración de AI Chat'
+    }
+  },
+
+  // Gestión Global de AI (Solo SuperAdmin)
+  {
+    path: '/settings/ai-management',
+    name: 'settings.ai-management',
+    component: () => import('@/views/settings/AIManagementView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Gestión Global de AI'
+    }
+  },
+
   // Rutas de Impuestos (Taxes)
   {
     path: '/taxes',
