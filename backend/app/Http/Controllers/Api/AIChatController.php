@@ -149,11 +149,11 @@ class AIChatController extends Controller
                 $conversation->generateTitle();
             }
 
-            // 4. Detectar intención y llamar a N8N si es necesario
-            $n8nData = $this->detectAndCallN8N($request->message, $user);
+            // 4. Detectar intención y obtener datos de la base de datos
+            $databaseData = $this->detectAndQueryDatabase($request->message, $user);
 
             // 5. Preparar contexto para OpenAI
-            $messages = $this->prepareOpenAIMessages($conversation, $request->message, $n8nData);
+            $messages = $this->prepareOpenAIMessages($conversation, $request->message, $databaseData);
 
             // 6. Obtener respuesta de OpenAI
             $aiResponse = $this->openAIService->chat($messages);
@@ -170,14 +170,14 @@ class AIChatController extends Controller
                 'metadata' => [
                     'model' => $aiResponse['model'] ?? null,
                     'tokens_used' => $aiResponse['usage'] ?? null,
-                    'n8n_data_used' => $n8nData !== null,
+                    'database_data_used' => $databaseData !== null,
                 ],
             ]);
 
-            // 8. Actualizar contexto de la conversación si hay datos de N8N
-            if ($n8nData) {
-                $conversation->addContext('last_n8n_query', [
-                    'type' => $n8nData['type'],
+            // 8. Actualizar contexto de la conversación si hay datos de la BD
+            if ($databaseData) {
+                $conversation->addContext('last_database_query', [
+                    'type' => $databaseData['type'],
                     'timestamp' => now()->toDateTimeString(),
                 ]);
             }
@@ -238,65 +238,104 @@ class AIChatController extends Controller
     }
 
     /**
-     * Detectar intención del usuario y llamar a N8N si es necesario
+     * Detectar intención del usuario y obtener datos de la base de datos
      */
-    protected function detectAndCallN8N($message, $user)
+    protected function detectAndQueryDatabase($message, $user)
     {
         $messageLower = strtolower($message);
 
         // Detectar consultas sobre usuarios
-        if (preg_match('/(usuario|users?|listar usuarios|mostrar usuarios|cuántos usuarios)/i', $message)) {
-            $response = $this->n8nService->consultarUsuarios(['empresa_id' => $user->empresa_id]);
-            if ($response['success']) {
-                return [
-                    'type' => 'usuarios',
-                    'data' => $response['data'],
-                ];
-            }
+        if (preg_match('/(usuario|users?|listar usuarios|mostrar usuarios|cuántos usuarios|registrados)/i', $message)) {
+            $usuarios = DB::table('users')
+                ->where('empresa_id', $user->empresa_id)
+                ->whereNull('deleted_at')
+                ->select('id', 'name', 'email', 'empresa_id', 'created_at')
+                ->orderBy('created_at', 'desc')
+                ->limit(50)
+                ->get();
+
+            return [
+                'type' => 'usuarios',
+                'data' => $usuarios,
+            ];
         }
 
         // Detectar consultas sobre empresas
         if (preg_match('/(empresa|companies|listar empresas|mostrar empresas)/i', $message)) {
-            $response = $this->n8nService->consultarEmpresas([]);
-            if ($response['success']) {
-                return [
-                    'type' => 'empresas',
-                    'data' => $response['data'],
-                ];
-            }
+            $empresas = DB::table('empresas')
+                ->whereNull('deleted_at')
+                ->select('id', 'nombre', 'rfc', 'telefono', 'email', 'created_at')
+                ->orderBy('nombre', 'asc')
+                ->get();
+
+            return [
+                'type' => 'empresas',
+                'data' => $empresas,
+            ];
         }
 
         // Detectar consultas sobre productos
         if (preg_match('/(producto|products?|listar productos|mostrar productos|inventario)/i', $message)) {
-            $response = $this->n8nService->consultarProductos(['empresa_id' => $user->empresa_id]);
-            if ($response['success']) {
-                return [
-                    'type' => 'productos',
-                    'data' => $response['data'],
-                ];
-            }
+            $productos = DB::table('productos as p')
+                ->leftJoin('inventarios as i', 'p.id', '=', 'i.producto_id')
+                ->where('p.empresa_id', $user->empresa_id)
+                ->whereNull('p.deleted_at')
+                ->select(
+                    'p.id',
+                    'p.nombre',
+                    'p.descripcion',
+                    DB::raw('p.precio_venta as precio'),
+                    DB::raw('p.stock_actual as stock'),
+                    'p.empresa_id',
+                    DB::raw('COUNT(i.id) as total_inventario')
+                )
+                ->groupBy('p.id', 'p.nombre', 'p.descripcion', 'p.precio_venta', 'p.stock_actual', 'p.empresa_id')
+                ->orderBy('p.nombre', 'asc')
+                ->limit(50)
+                ->get();
+
+            return [
+                'type' => 'productos',
+                'data' => $productos,
+            ];
         }
 
         // Detectar consultas sobre proveedores
         if (preg_match('/(proveedor|suppliers?|listar proveedores)/i', $message)) {
-            $response = $this->n8nService->consultarProveedores(['empresa_id' => $user->empresa_id]);
-            if ($response['success']) {
-                return [
-                    'type' => 'proveedores',
-                    'data' => $response['data'],
-                ];
-            }
+            $proveedores = DB::table('proveedores')
+                ->where('empresa_id', $user->empresa_id)
+                ->whereNull('deleted_at')
+                ->select('id', 'nombre', 'telefono', 'email', 'empresa_id', 'created_at')
+                ->orderBy('nombre', 'asc')
+                ->limit(50)
+                ->get();
+
+            return [
+                'type' => 'proveedores',
+                'data' => $proveedores,
+            ];
         }
 
         // Detectar consultas sobre categorías
         if (preg_match('/(categoría|categor[ií]a|categories|listar categorías)/i', $message)) {
-            $response = $this->n8nService->consultarCategorias(['empresa_id' => $user->empresa_id]);
-            if ($response['success']) {
-                return [
-                    'type' => 'categorias',
-                    'data' => $response['data'],
-                ];
-            }
+            $categorias = DB::table('categorias as c')
+                ->leftJoin('categoria_producto as cp', 'c.id', '=', 'cp.categoria_id')
+                ->where('c.empresa_id', $user->empresa_id)
+                ->whereNull('c.deleted_at')
+                ->select(
+                    'c.id',
+                    'c.nombre',
+                    'c.descripcion',
+                    DB::raw('COUNT(cp.producto_id) as total_productos')
+                )
+                ->groupBy('c.id', 'c.nombre', 'c.descripcion')
+                ->orderBy('c.nombre', 'asc')
+                ->get();
+
+            return [
+                'type' => 'categorias',
+                'data' => $categorias,
+            ];
         }
 
         return null;
@@ -305,7 +344,7 @@ class AIChatController extends Controller
     /**
      * Preparar mensajes para enviar a OpenAI
      */
-    protected function prepareOpenAIMessages($conversation, $userMessage, $n8nData = null)
+    protected function prepareOpenAIMessages($conversation, $userMessage, $databaseData = null)
     {
         $messages = [];
 
@@ -339,10 +378,10 @@ class AIChatController extends Controller
             'content' => $userMessage,
         ];
 
-        // Si hay datos de N8N, agregar contexto adicional
-        if ($n8nData) {
+        // Si hay datos de la base de datos, agregar contexto adicional
+        if ($databaseData) {
             $contextMessage = "Información disponible de la base de datos:\n\n";
-            $contextMessage .= json_encode($n8nData['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $contextMessage .= json_encode($databaseData['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
             $messages[] = [
                 'role' => 'system',
