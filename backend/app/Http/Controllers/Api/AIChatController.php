@@ -338,6 +338,41 @@ class AIChatController extends Controller
             ];
         }
 
+        // Detectar consultas sobre ventas y productos más vendidos
+        if (preg_match('/(venta|ventas|vendido|más vendido|top.*vendido|productos.*vendido|mejor.*venta)/i', $message)) {
+            // Extraer número si se especifica (ej: "top 5", "10 productos")
+            $limit = 10; // Por defecto 10
+            if (preg_match('/(\d+)/', $message, $matches)) {
+                $limit = min((int)$matches[1], 50); // Máximo 50
+            }
+
+            $productosVendidos = DB::table('detalle_ventas as dv')
+                ->join('inventarios as i', 'dv.inventario_id', '=', 'i.id')
+                ->join('productos as p', 'i.producto_id', '=', 'p.id')
+                ->join('ventas as v', 'dv.venta_id', '=', 'v.id')
+                ->where('p.empresa_id', $user->empresa_id)
+                ->whereNull('p.deleted_at')
+                ->whereNull('v.deleted_at')
+                ->where('v.estado', 'completada')
+                ->select(
+                    'p.id',
+                    'p.nombre',
+                    'p.descripcion',
+                    DB::raw('SUM(dv.cantidad) as total_vendido'),
+                    DB::raw('SUM(dv.subtotal) as ingresos_totales'),
+                    DB::raw('AVG(dv.precio_unitario) as precio_promedio')
+                )
+                ->groupBy('p.id', 'p.nombre', 'p.descripcion')
+                ->orderBy('total_vendido', 'desc')
+                ->limit($limit)
+                ->get();
+
+            return [
+                'type' => 'ventas',
+                'data' => $productosVendidos,
+            ];
+        }
+
         return null;
     }
 
