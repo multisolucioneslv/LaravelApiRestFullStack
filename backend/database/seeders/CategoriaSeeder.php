@@ -16,6 +16,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Electrónica',
                 'descripcion' => 'Productos electrónicos y tecnología',
+                'slug' => 'electronica',
                 'icono' => 'fas fa-laptop',
                 'color' => '#3B82F6',
                 'activo' => true,
@@ -24,6 +25,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Alimentos',
                 'descripcion' => 'Productos alimenticios y bebidas',
+                'slug' => 'alimentos',
                 'icono' => 'fas fa-utensils',
                 'color' => '#10B981',
                 'activo' => true,
@@ -32,6 +34,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Ropa',
                 'descripcion' => 'Ropa y accesorios',
+                'slug' => 'ropa',
                 'icono' => 'fas fa-tshirt',
                 'color' => '#8B5CF6',
                 'activo' => true,
@@ -40,6 +43,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Hogar',
                 'descripcion' => 'Artículos para el hogar',
+                'slug' => 'hogar',
                 'icono' => 'fas fa-home',
                 'color' => '#F59E0B',
                 'activo' => true,
@@ -48,6 +52,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Deportes',
                 'descripcion' => 'Artículos deportivos y fitness',
+                'slug' => 'deportes',
                 'icono' => 'fas fa-dumbbell',
                 'color' => '#EF4444',
                 'activo' => true,
@@ -56,6 +61,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Belleza',
                 'descripcion' => 'Productos de belleza y cuidado personal',
+                'slug' => 'belleza',
                 'icono' => 'fas fa-spa',
                 'color' => '#EC4899',
                 'activo' => true,
@@ -64,6 +70,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Juguetes',
                 'descripcion' => 'Juguetes y juegos',
+                'slug' => 'juguetes',
                 'icono' => 'fas fa-gamepad',
                 'color' => '#F97316',
                 'activo' => true,
@@ -72,6 +79,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Libros',
                 'descripcion' => 'Libros y material educativo',
+                'slug' => 'libros',
                 'icono' => 'fas fa-book',
                 'color' => '#06B6D4',
                 'activo' => true,
@@ -80,6 +88,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Ferretería',
                 'descripcion' => 'Herramientas y materiales de construcción',
+                'slug' => 'ferreteria',
                 'icono' => 'fas fa-hammer',
                 'color' => '#6B7280',
                 'activo' => true,
@@ -88,6 +97,7 @@ class CategoriaSeeder extends Seeder
             [
                 'nombre' => 'Oficina',
                 'descripcion' => 'Material de oficina y papelería',
+                'slug' => 'oficina',
                 'icono' => 'fas fa-briefcase',
                 'color' => '#14B8A6',
                 'activo' => true,

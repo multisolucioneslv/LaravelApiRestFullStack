@@ -26,6 +26,7 @@ class Inventario extends Model
         'nombre',
         'codigo',
         'descripcion',
+        'producto_id',
         'galeria_id',
         'bodega_id',
         'empresa_id',
@@ -57,6 +58,16 @@ class Inventario extends Model
     // ==========================================
     // RELACIONES (Many-to-One)
     // ==========================================
+
+    /**
+     * Un inventario pertenece a un producto
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'producto_id');
+    }
 
     /**
      * Un inventario pertenece a una galería

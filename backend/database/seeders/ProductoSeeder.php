@@ -26,10 +26,10 @@ class ProductoSeeder extends Seeder
 
         $unidadesMedida = ['Unidad', 'Kg', 'Litro', 'Metro', 'Caja', 'Paquete', 'Pieza'];
 
-        // Productos de ejemplo por categoría
+        // Productos de ejemplo por categoría (con imágenes)
         $productosBase = [
             // Electrónica
-            'Laptop HP 15"' => ['categoria' => 'Electrónica', 'precio_compra' => 450, 'precio_venta' => 650],
+            'Laptop HP 15"' => ['categoria' => 'Electrónica', 'precio_compra' => 450, 'precio_venta' => 650, 'imagen' => 'https://via.placeholder.com/400x400/0066CC/FFFFFF?text=Laptop'],
             'Mouse Inalámbrico' => ['categoria' => 'Electrónica', 'precio_compra' => 8, 'precio_venta' => 15],
             'Teclado Mecánico' => ['categoria' => 'Electrónica', 'precio_compra' => 35, 'precio_venta' => 55],
             'Monitor 24" LED' => ['categoria' => 'Electrónica', 'precio_compra' => 120, 'precio_venta' => 180],
@@ -110,6 +110,12 @@ class ProductoSeeder extends Seeder
                 continue;
             }
 
+            // Generar URL de imagen usando placeholder con color aleatorio
+            $colores = ['0066CC', 'FF6B6B', '4ECDC4', 'FFE66D', '95E1D3', 'FF8B94', '6C5CE7', 'FD79A8'];
+            $colorAleatorio = $faker->randomElement($colores);
+            $nombreImagen = urlencode(substr($nombre, 0, 20));
+            $imagenUrl = "https://via.placeholder.com/400x400/{$colorAleatorio}/FFFFFF?text={$nombreImagen}";
+
             $producto = Producto::create([
                 'nombre' => $nombre,
                 'descripcion' => $faker->sentence(10),
@@ -121,7 +127,7 @@ class ProductoSeeder extends Seeder
                 'stock_minimo' => $faker->numberBetween(5, 20),
                 'stock_actual' => $faker->numberBetween(20, 100),
                 'unidad_medida' => $faker->randomElement($unidadesMedida),
-                'imagen' => null,
+                'imagen' => $imagenUrl,
                 'activo' => $faker->boolean(90), // 90% activos
                 'empresa_id' => 1,
             ]);
