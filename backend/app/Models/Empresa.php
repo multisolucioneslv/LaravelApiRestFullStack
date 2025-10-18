@@ -35,6 +35,18 @@ class Empresa extends Model
         'horarios',
         'activo',
         'show_loading_effect',
+        // Configuración AI Chat
+        'ai_chat_enabled',
+        'ai_detection_mode',
+        'openai_api_key',
+        'openai_model',
+        'openai_max_tokens',
+        'openai_temperature',
+        'ai_monthly_budget',
+        'ai_monthly_usage',
+        'ai_usage_reset_date',
+        'ai_total_queries',
+        'ai_last_used_at',
     ];
 
     /**
@@ -49,6 +61,16 @@ class Empresa extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
+        // AI Chat
+        'ai_chat_enabled' => 'boolean',
+        'openai_api_key' => 'encrypted',
+        'openai_max_tokens' => 'integer',
+        'openai_temperature' => 'decimal:2',
+        'ai_monthly_budget' => 'decimal:2',
+        'ai_monthly_usage' => 'decimal:2',
+        'ai_usage_reset_date' => 'date',
+        'ai_total_queries' => 'integer',
+        'ai_last_used_at' => 'datetime',
     ];
 
     // ==========================================
