@@ -65,58 +65,71 @@ class N8nWebhookService
     }
 
     /**
+     * Consultar datos usando el webhook unificado de N8N
+     *
+     * @param string $type Tipo de consulta (usuarios, empresas, productos, proveedores, categorias)
+     * @param array $filters Filtros de bÃºsqueda
+     * @return array
+     */
+    protected function consultarUnificado(string $type, array $filters = [])
+    {
+        $data = array_merge(['type' => $type], $filters);
+        return $this->callWebhook('webhook/ai-chat-consultas', $data);
+    }
+
+    /**
      * Consultar usuarios
      *
-     * @param array $filters Filtros de búsqueda
+     * @param array $filters Filtros de bÃºsqueda
      * @return array
      */
     public function consultarUsuarios(array $filters = [])
     {
-        return $this->callWebhook('webhook/consultar-usuarios', $filters);
+        return $this->consultarUnificado('usuarios', $filters);
     }
 
     /**
      * Consultar empresas
      *
-     * @param array $filters Filtros de búsqueda
+     * @param array $filters Filtros de bÃºsqueda
      * @return array
      */
     public function consultarEmpresas(array $filters = [])
     {
-        return $this->callWebhook('webhook/consultar-empresas', $filters);
+        return $this->consultarUnificado('empresas', $filters);
     }
 
     /**
      * Consultar productos
      *
-     * @param array $filters Filtros de búsqueda
+     * @param array $filters Filtros de bÃºsqueda
      * @return array
      */
     public function consultarProductos(array $filters = [])
     {
-        return $this->callWebhook('webhook/consultar-productos', $filters);
+        return $this->consultarUnificado('productos', $filters);
     }
 
     /**
      * Consultar proveedores
      *
-     * @param array $filters Filtros de búsqueda
+     * @param array $filters Filtros de bÃºsqueda
      * @return array
      */
     public function consultarProveedores(array $filters = [])
     {
-        return $this->callWebhook('webhook/consultar-proveedores', $filters);
+        return $this->consultarUnificado('proveedores', $filters);
     }
 
     /**
-     * Consultar categorías
+     * Consultar categorÃ­as
      *
-     * @param array $filters Filtros de búsqueda
+     * @param array $filters Filtros de bÃºsqueda
      * @return array
      */
     public function consultarCategorias(array $filters = [])
     {
-        return $this->callWebhook('webhook/consultar-categorias', $filters);
+        return $this->consultarUnificado('categorias', $filters);
     }
 
     /**
@@ -131,10 +144,10 @@ class N8nWebhookService
     }
 
     /**
-     * Ejecutar una acción personalizada en N8N
+     * Ejecutar una acciÃ³n personalizada en N8N
      *
-     * @param string $action Nombre de la acción
-     * @param array $data Datos para la acción
+     * @param string $action Nombre de la acciÃ³n
+     * @param array $data Datos para la acciÃ³n
      * @return array
      */
     public function ejecutarAccion(string $action, array $data = [])
