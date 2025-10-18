@@ -267,6 +267,7 @@ Route::middleware(['auth:api', 'empresa'])->group(function () {
     Route::patch('productos/{producto}/stock', [\App\Http\Controllers\ProductoController::class, 'updateStock']);
 
     // Módulo de Categorías
+    Route::get('categorias/all', [\App\Http\Controllers\CategoriaController::class, 'all']); // Debe estar ANTES del apiResource
     Route::apiResource('categorias', \App\Http\Controllers\CategoriaController::class);
     Route::post('categorias/{id}/restore', [\App\Http\Controllers\CategoriaController::class, 'restore']);
     Route::get('categorias/{categoria}/productos', [\App\Http\Controllers\CategoriaController::class, 'productosDeCategoria']);

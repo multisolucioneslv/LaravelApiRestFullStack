@@ -20,12 +20,31 @@ class CategoriaController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
-        $this->middleware('permission:categorias.index')->only(['index']);
+        $this->middleware('permission:categorias.index')->only(['index', 'all']);
         $this->middleware('permission:categorias.show')->only(['show', 'productosDeCategoria']);
         $this->middleware('permission:categorias.store')->only(['store']);
         $this->middleware('permission:categorias.update')->only(['update']);
         $this->middleware('permission:categorias.destroy')->only(['destroy']);
         $this->middleware('permission:categorias.restore')->only(['restore']);
+    }
+
+    /**
+     * Listar TODAS las categorías (sin paginación) para selectores/dropdowns
+     */
+    public function all(Request $request): JsonResponse
+    {
+        // Autorizar mediante Policy
+        Gate::authorize('viewAny', Categoria::class);
+
+        $categorias = Categoria::query()
+            ->where('activo', true)
+            ->orderBy('nombre', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => CategoriaResource::collection($categorias),
+        ], Response::HTTP_OK);
     }
 
     /**
